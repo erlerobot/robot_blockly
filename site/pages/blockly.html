@@ -346,6 +346,10 @@
         </value>
       </block>
     </category>
+    <category id="spider" name="Erle-Spider" colour="260">
+          <block type="spider_standup"></block>
+          <block type="spider_forward"></block>
+    </category>
     <sep></sep>
     <category id="catVariables" custom="VARIABLE" name="Variables"></category>
     <category id="catFunctions" custom="PROCEDURE" name="Functions"></category>
@@ -369,11 +373,21 @@
     var blocklyDiv = document.getElementById('blocklyDiv');
     var workspace = Blockly.inject(blocklyDiv,
       {toolbox: document.getElementById('toolbox'),
+         scrollbars: true,
+         rtl: true,
+         zoom:
+             {enabled: true,
+              controls: true,
+              wheel: true,
+              maxScale: 4,
+              minScale: .25,
+              scaleSpeed: 1.1
+             },
          grid:
-             {spacing: 30,
+             {spacing: 25,
               length: 3,
               colour: '#ccc',
-              snap: true},
+              snap: false},
          trashcan: true});
 
     var onresize = function(e) {
@@ -390,7 +404,7 @@
     blocklyDiv.style.left = x + 'px';
     blocklyDiv.style.top = y + 'px';
     blocklyDiv.style.width = blocklyArea.offsetWidth + 'px';
-    blocklyDiv.style.height = blocklyArea.offsetHeight + 'px';
+    blocklyDiv.style.height = blocklyArea.offsetHeight - 51 + 'px';
     };
     window.addEventListener('resize', onresize, false);
     onresize();
@@ -421,7 +435,7 @@
 
     function topython(){
         Blockly.Python.addReservedWords('code');
-        var code = Blockly.JavaScript.workspaceToCode(workspace);
+        var code = Blockly.Python.workspaceToCode(workspace);
         try {
           //eval(code);
           alert(code);
