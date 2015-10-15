@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+   <head>
+
+     <script type="text/javascript" src="vis.js"></script>
+     <link href="vis.css" rel="stylesheet" type="text/css" />
+
+     <style type="text/css">
+       #mynetwork {
+         width: 100%;
+         height: 300px;
+         border: 1px solid lightgray;
+       }
+       p {
+         max-width:600px;
+       }
+     </style>
+
+      <script type="text/javascript">
+         var socket = null;
+         var isopen = false;
+
+         window.onload = function() {
+
+            socket = new WebSocket("ws://127.0.0.1:9000");
+            socket.binaryType = "arraybuffer";
+
+            socket.onopen = function() {
+               console.log("Connected!");
+               isopen = true;
+            }
+
+            socket.onmessage = function(e) {
+               if (typeof e.data == "string") {
+                  console.log("Text message received: " + e.data);
+                  json_revieved = JSON.parse(e.data)
+                  console.log(json_revieved['nodes'])
+                  console.log(json_revieved['nodes'][0])
+
+                  var nodes = [];
+                  for(i = 0; i < json_revieved['nodes'].length; i++){
+                     nodo = {id: i, label: json_revieved['nodes'][i]};
+                     nodes.push(nodo)
+                  }
+
+                  console.log(nodes);
+                  // create an array with edges
+                  var edges = [
+                  ];
+
+                 // create a network
+                 var container = document.getElementById('mynetwork');
+                 var data = {
+                   nodes: nodes,
+                   edges: edges
+                 };
+                 var options = {};
+                 var network = new vis.Network(container, data, options);
+
+
+               } else {
+                  var arr = new Uint8Array(e.data);
+                  var hex = '';
+                  for (var i = 0; i < arr.length; i++) {
+                     hex += ('00' + arr[i].toString(16)).substr(-2);
+                  }
+                  console.log("Binary message received: " + hex);
+               }
+            }
+
+            socket.onclose = function(e) {
+               console.log("Connection closed.");
+               socket = null;
+               isopen = false;
+            }
+         };
+
+         function sendText() {
+            if (isopen) {
+               socket.send('get_nodes');
+               console.log("Text message sent.");               
+            } else {
+               console.log("Connection not opened.")
+            }
+         };
+
+         function sendBinary() {
+            if (isopen) {
+               var buf = new ArrayBuffer(32);
+               var arr = new Uint8Array(buf);
+               for (i = 0; i < arr.length; ++i) arr[i] = i;
+               socket.send(buf);
+               console.log("Binary message sent.");
+            } else {
+               console.log("Connection not opened.")
+            }
+         };
+      </script>
+   </head>
+   <body>
+      <p>Open your browser's JavaScript console to see what's happening (hit F12).</p>
+      <button onclick='sendText();'>Send Text Message</button>
+      <button onclick='sendBinary();'>Send Binary Message</button>
+      <div id="mynetwork"></div>
+   </body>
+</html>
