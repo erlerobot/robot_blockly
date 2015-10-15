@@ -1,0 +1,28 @@
+.link line {
+  stroke: #696969;
+}
+
+.selectedNode {
+	stroke: rgb(31, 117, 196) !important;
+	stroke-width: 5px !important;
+	opacity: 0.3;
+}
+
+.link line.double {
+  stroke: #fff;
+  stroke-width: 2px;
+}
+
+.link line.triple {
+  stroke-width: 3px;
+}
+
+.node circle {
+  stroke: #000;
+  stroke-width: 1.5px;
+}
+
+.node text {
+  font: 10px sans-serif;
+  pointer-events: none;
+}
