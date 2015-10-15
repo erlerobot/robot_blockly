@@ -128,239 +128,229 @@
         <!-- Page Content -->
         <div id="page-wrapper">
 
-            <div id="blocklyDiv" style="position: relative; height:800px; padding-top:0px;"></div>
-
-
-            <xml id="toolbox" style="display: none">
-            <category id="catLogic" name="Logic">
-              <block type="controls_if"></block>
-              <block type="logic_compare"></block>
-              <block type="logic_operation"></block>
-              <block type="logic_negate"></block>
-              <block type="logic_boolean"></block>
-              <block type="logic_null"></block>
-              <block type="logic_ternary"></block>
-            </category>
-            <category id="catLoops" name="Loops">
-              <block type="controls_repeat_ext">
-                <value name="TIMES">
-                  <block type="math_number">
-                    <field name="NUM">10</field>
-                  </block>
-                </value>
-              </block>
-              <block type="controls_whileUntil"></block>
-              <block type="controls_for">
-                <value name="FROM">
-                  <block type="math_number">
-                    <field name="NUM">1</field>
-                  </block>
-                </value>
-                <value name="TO">
-                  <block type="math_number">
-                    <field name="NUM">10</field>
-                  </block>
-                </value>
-                <value name="BY">
-                  <block type="math_number">
-                    <field name="NUM">1</field>
-                  </block>
-                </value>
-              </block>
-              <block type="controls_forEach"></block>
-              <block type="controls_flow_statements"></block>
-            </category>
-            <category id="catMath" name="Math">
-              <block type="math_number"></block>
-              <block type="math_arithmetic"></block>
-              <block type="math_single"></block>
-              <block type="math_trig"></block>
-              <block type="math_constant"></block>
-              <block type="math_number_property"></block>
-              <block type="math_change">
-                <value name="DELTA">
-                  <block type="math_number">
-                    <field name="NUM">1</field>
-                  </block>
-                </value>
-              </block>
-              <block type="math_round"></block>
-              <block type="math_on_list"></block>
-              <block type="math_modulo"></block>
-              <block type="math_constrain">
-                <value name="LOW">
-                  <block type="math_number">
-                    <field name="NUM">1</field>
-                  </block>
-                </value>
-                <value name="HIGH">
-                  <block type="math_number">
-                    <field name="NUM">100</field>
-                  </block>
-                </value>
-              </block>
-              <block type="math_random_int">
-                <value name="FROM">
-                  <block type="math_number">
-                    <field name="NUM">1</field>
-                  </block>
-                </value>
-                <value name="TO">
-                  <block type="math_number">
-                    <field name="NUM">100</field>
-                  </block>
-                </value>
-              </block>
-              <block type="math_random_float"></block>
-            </category>
-            <category id="catText" name="Text">
-              <block type="text"></block>
-              <block type="text_join"></block>
-              <block type="text_append">
-                <value name="TEXT">
-                  <block type="text"></block>
-                </value>
-              </block>
-              <block type="text_length"></block>
-              <block type="text_isEmpty"></block>
-              <block type="text_indexOf">
-                <value name="VALUE">
-                  <block type="variables_get">
-                    <field name="VAR" class="textVar">...</field>
-                  </block>
-                </value>
-              </block>
-              <block type="text_charAt">
-                <value name="VALUE">
-                  <block type="variables_get">
-                    <field name="VAR" class="textVar">...</field>
-                  </block>
-                </value>
-              </block>
-              <block type="text_getSubstring">
-                <value name="STRING">
-                  <block type="variables_get">
-                    <field name="VAR" class="textVar">...</field>
-                  </block>
-                </value>
-              </block>
-              <block type="text_changeCase"></block>
-              <block type="text_trim"></block>
-              <block type="text_print"></block>
-              <block type="text_prompt_ext">
-                <value name="TEXT">
-                  <block type="text"></block>
-                </value>
-              </block>
-            </category>
-            <category id="catLists" name="Lists">
-              <block type="lists_create_with">
-                <mutation items="0"></mutation>
-              </block>
-              <block type="lists_create_with"></block>
-              <block type="lists_repeat">
-                <value name="NUM">
-                  <block type="math_number">
-                    <field name="NUM">5</field>
-                  </block>
-                </value>
-              </block>
-              <block type="lists_length"></block>
-              <block type="lists_isEmpty"></block>
-              <block type="lists_indexOf">
-                <value name="VALUE">
-                  <block type="variables_get">
-                    <field name="VAR" class="listVar">...</field>
-                  </block>
-                </value>
-              </block>
-              <block type="lists_getIndex">
-                <value name="VALUE">
-                  <block type="variables_get">
-                    <field name="VAR" class="listVar">...</field>
-                  </block>
-                </value>
-              </block>
-              <block type="lists_setIndex">
-                <value name="LIST">
-                  <block type="variables_get">
-                    <field name="VAR" class="listVar">...</field>
-                  </block>
-                </value>
-              </block>
-              <block type="lists_getSublist">
-                <value name="LIST">
-                  <block type="variables_get">
-                    <field name="VAR" class="listVar">...</field>
-                  </block>
-                </value>
-              </block>
-              <block type="lists_split">
-                <value name="DELIM">
-                  <block type="text">
-                    <field name="TEXT">,</field>
-                  </block>
-                </value>
-              </block>
-            </category>
-            <category id="catColour" name="Colour">
-              <block type="colour_picker"></block>
-              <block type="colour_random"></block>
-              <block type="colour_rgb">
-                <value name="RED">
-                  <block type="math_number">
-                    <field name="NUM">100</field>
-                  </block>
-                </value>
-                <value name="GREEN">
-                  <block type="math_number">
-                    <field name="NUM">50</field>
-                  </block>
-                </value>
-                <value name="BLUE">
-                  <block type="math_number">
-                    <field name="NUM">0</field>
-                  </block>
-                </value>
-              </block>
-              <block type="colour_blend">
-                <value name="COLOUR1">
-                  <block type="colour_picker">
-                    <field name="COLOUR">#ff0000</field>
-                  </block>
-                </value>
-                <value name="COLOUR2">
-                  <block type="colour_picker">
-                    <field name="COLOUR">#3333ff</field>
-                  </block>
-                </value>
-                <value name="RATIO">
-                  <block type="math_number">
-                    <field name="NUM">0.5</field>
-                  </block>
-                </value>
-              </block>
-            </category>
-            <sep></sep>
-            <category id="catVariables" custom="VARIABLE" name="Variables"></category>
-            <category id="catFunctions" custom="PROCEDURE" name="Functions"></category>
-            </xml>
-
-<!--             <div class="container-fluid">
-                <div class="row">
-
-                    <div class="col-lg-12">
-                        <h1 class="page-header">Build your own code</h1>
-                    </div>
-
-                </div>
-            </div>
- -->            <!-- /.container-fluid -->
+            <div id="blocklyArea" style="height:100vh;"></div>
         </div>
         <!-- /#page-wrapper -->
-
     </div>
     <!-- /#wrapper -->
+
+    <div id="blocklyDiv" style="position: absolute"></div>
+
+    <xml id="toolbox" style="display: none">
+    <category id="catLogic" name="Logic">
+      <block type="controls_if"></block>
+      <block type="logic_compare"></block>
+      <block type="logic_operation"></block>
+      <block type="logic_negate"></block>
+      <block type="logic_boolean"></block>
+      <block type="logic_null"></block>
+      <block type="logic_ternary"></block>
+    </category>
+    <category id="catLoops" name="Loops">
+      <block type="controls_repeat_ext">
+        <value name="TIMES">
+          <block type="math_number">
+            <field name="NUM">10</field>
+          </block>
+        </value>
+      </block>
+      <block type="controls_whileUntil"></block>
+      <block type="controls_for">
+        <value name="FROM">
+          <block type="math_number">
+            <field name="NUM">1</field>
+          </block>
+        </value>
+        <value name="TO">
+          <block type="math_number">
+            <field name="NUM">10</field>
+          </block>
+        </value>
+        <value name="BY">
+          <block type="math_number">
+            <field name="NUM">1</field>
+          </block>
+        </value>
+      </block>
+      <block type="controls_forEach"></block>
+      <block type="controls_flow_statements"></block>
+    </category>
+    <category id="catMath" name="Math">
+      <block type="math_number"></block>
+      <block type="math_arithmetic"></block>
+      <block type="math_single"></block>
+      <block type="math_trig"></block>
+      <block type="math_constant"></block>
+      <block type="math_number_property"></block>
+      <block type="math_change">
+        <value name="DELTA">
+          <block type="math_number">
+            <field name="NUM">1</field>
+          </block>
+        </value>
+      </block>
+      <block type="math_round"></block>
+      <block type="math_on_list"></block>
+      <block type="math_modulo"></block>
+      <block type="math_constrain">
+        <value name="LOW">
+          <block type="math_number">
+            <field name="NUM">1</field>
+          </block>
+        </value>
+        <value name="HIGH">
+          <block type="math_number">
+            <field name="NUM">100</field>
+          </block>
+        </value>
+      </block>
+      <block type="math_random_int">
+        <value name="FROM">
+          <block type="math_number">
+            <field name="NUM">1</field>
+          </block>
+        </value>
+        <value name="TO">
+          <block type="math_number">
+            <field name="NUM">100</field>
+          </block>
+        </value>
+      </block>
+      <block type="math_random_float"></block>
+    </category>
+    <category id="catText" name="Text">
+      <block type="text"></block>
+      <block type="text_join"></block>
+      <block type="text_append">
+        <value name="TEXT">
+          <block type="text"></block>
+        </value>
+      </block>
+      <block type="text_length"></block>
+      <block type="text_isEmpty"></block>
+      <block type="text_indexOf">
+        <value name="VALUE">
+          <block type="variables_get">
+            <field name="VAR" class="textVar">...</field>
+          </block>
+        </value>
+      </block>
+      <block type="text_charAt">
+        <value name="VALUE">
+          <block type="variables_get">
+            <field name="VAR" class="textVar">...</field>
+          </block>
+        </value>
+      </block>
+      <block type="text_getSubstring">
+        <value name="STRING">
+          <block type="variables_get">
+            <field name="VAR" class="textVar">...</field>
+          </block>
+        </value>
+      </block>
+      <block type="text_changeCase"></block>
+      <block type="text_trim"></block>
+      <block type="text_print"></block>
+      <block type="text_prompt_ext">
+        <value name="TEXT">
+          <block type="text"></block>
+        </value>
+      </block>
+    </category>
+    <category id="catLists" name="Lists">
+      <block type="lists_create_with">
+        <mutation items="0"></mutation>
+      </block>
+      <block type="lists_create_with"></block>
+      <block type="lists_repeat">
+        <value name="NUM">
+          <block type="math_number">
+            <field name="NUM">5</field>
+          </block>
+        </value>
+      </block>
+      <block type="lists_length"></block>
+      <block type="lists_isEmpty"></block>
+      <block type="lists_indexOf">
+        <value name="VALUE">
+          <block type="variables_get">
+            <field name="VAR" class="listVar">...</field>
+          </block>
+        </value>
+      </block>
+      <block type="lists_getIndex">
+        <value name="VALUE">
+          <block type="variables_get">
+            <field name="VAR" class="listVar">...</field>
+          </block>
+        </value>
+      </block>
+      <block type="lists_setIndex">
+        <value name="LIST">
+          <block type="variables_get">
+            <field name="VAR" class="listVar">...</field>
+          </block>
+        </value>
+      </block>
+      <block type="lists_getSublist">
+        <value name="LIST">
+          <block type="variables_get">
+            <field name="VAR" class="listVar">...</field>
+          </block>
+        </value>
+      </block>
+      <block type="lists_split">
+        <value name="DELIM">
+          <block type="text">
+            <field name="TEXT">,</field>
+          </block>
+        </value>
+      </block>
+    </category>
+    <category id="catColour" name="Colour">
+      <block type="colour_picker"></block>
+      <block type="colour_random"></block>
+      <block type="colour_rgb">
+        <value name="RED">
+          <block type="math_number">
+            <field name="NUM">100</field>
+          </block>
+        </value>
+        <value name="GREEN">
+          <block type="math_number">
+            <field name="NUM">50</field>
+          </block>
+        </value>
+        <value name="BLUE">
+          <block type="math_number">
+            <field name="NUM">0</field>
+          </block>
+        </value>
+      </block>
+      <block type="colour_blend">
+        <value name="COLOUR1">
+          <block type="colour_picker">
+            <field name="COLOUR">#ff0000</field>
+          </block>
+        </value>
+        <value name="COLOUR2">
+          <block type="colour_picker">
+            <field name="COLOUR">#3333ff</field>
+          </block>
+        </value>
+        <value name="RATIO">
+          <block type="math_number">
+            <field name="NUM">0.5</field>
+          </block>
+        </value>
+      </block>
+    </category>
+    <sep></sep>
+    <category id="catVariables" custom="VARIABLE" name="Variables"></category>
+    <category id="catFunctions" custom="PROCEDURE" name="Functions"></category>
+    </xml>
+
 
     <!-- jQuery -->
     <script src="../bower_components/jquery/dist/jquery.min.js"></script>
@@ -375,7 +365,6 @@
     <script src="../dist/js/sb-admin-2.js"></script>
 
 <script>
-
     var blocklyArea = document.getElementById('blocklyArea');
     var blocklyDiv = document.getElementById('blocklyDiv');
     var workspace = Blockly.inject(blocklyDiv,
@@ -387,25 +376,27 @@
               snap: true},
          trashcan: true});
 
-    // var onresize = function(e) {
-    // // Compute the absolute coordinates and dimensions of blocklyArea.
-    // var element = blocklyArea;
-    // var x = 0;
-    // var y = 0;
-    // do {
-    //   x += element.offsetLeft;
-    //   y += element.offsetTop;
-    //   element = element.offsetParent;
-    // } while (element);
-    // // Position blocklyDiv over blocklyArea.
-    // blocklyDiv.style.left = x + 'px';
-    // blocklyDiv.style.top = y + 'px';
-    // blocklyDiv.style.width = blocklyArea.offsetWidth + 'px';
-    // blocklyDiv.style.height = blocklyArea.offsetHeight + 'px';
-    // };
-    // window.addEventListener('resize', onresize, false);
-    // onresize();
+    var onresize = function(e) {
+    // Compute the absolute coordinates and dimensions of blocklyArea.
+    var element = blocklyArea;
+    var x = 0;
+    var y = 0;
+    do {
+      x += element.offsetLeft;
+      y += element.offsetTop;
+      element = element.offsetParent;
+    } while (element);
+    // Position blocklyDiv over blocklyArea.
+    blocklyDiv.style.left = x + 'px';
+    blocklyDiv.style.top = y + 'px';
+    blocklyDiv.style.width = blocklyArea.offsetWidth + 'px';
+    blocklyDiv.style.height = blocklyArea.offsetHeight + 'px';
+    };
+    window.addEventListener('resize', onresize, false);
+    onresize();
+</script>
 
+<script>
     function tojavascript(){
         Blockly.JavaScript.addReservedWords('code');
         var code = Blockly.JavaScript.workspaceToCode(workspace);
