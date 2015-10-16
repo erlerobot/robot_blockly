@@ -40,7 +40,7 @@
 
 </head>
 
-<body>
+<body onload="restorelocal()">
 
     <div id="wrapper">
 
@@ -80,7 +80,8 @@
             <div class="navbar-default sidebar" role="navigation">
                 <div class="sidebar-nav navbar-collapse">
                     <ul class="nav" id="side-menu">
-                        <li class="sidebar-search">
+                        
+<!--                         <li class="sidebar-search">
                             <div class="input-group custom-search-form">
                                 <input type="text" class="form-control" placeholder="Search...">
                                 <span class="input-group-btn">
@@ -89,28 +90,33 @@
                                     </button>
                                 </span>
                             </div>
-                            <!-- /input-group -->
-                        </li>
+                        </li> -->
+                        
                        <!--  <li>
                             <a href="blockly.html"><i class="active fa fa-cubes fa-fw"></i> Blockly</a>
                         </li> -->
 
                         <li>
-                            <a href="#"><i class="fa fa-cubes fa-fw"></i> Blockly<span class="fa arrow"></span></a>
+                            <a href="#"><i class="fa fa-cubes fa-fw"></i> Builder<span class="fa arrow"></span></a>
                             <ul class="nav nav-second-level">
                                 <li>
-                                    <a href="blockly.html">Editor</a>
+                                    <a href="#" onclick="">Save</a>
                                 </li>
                                 <li>
-                                    <a href="#" onclick="topython()">Python</a>
+                                    <a href="#" onclick="">Launch</a>
+                                </li>
+                                <li>
+                                    <a href="#" class="">Saved projects<span class="fa arrow"></span></a>
+
+                                    <ul class="nav nav-third-level">
+                                      <li><a href="#">Test1</a></li>
+                                      <li><a href="#">Test2</a></li>                      
+                                    </ul>  
                                 </li>
 <!--                                 <li>
-                                    <a href="#" onclick="tophp()">PHP</a>
-                                </li>
- -->                                <li>
                                     <a href="#" onclick="tojavascript()">Javascript</a>
                                 </li>
-
+ -->
                             </ul>
                             <!-- /.nav-second-level -->
                         </li>
@@ -127,8 +133,26 @@
 
         <!-- Page Content -->
         <div id="page-wrapper">
+          <div class="">
+              <!-- Nav tabs -->
+              <ul class="nav nav-tabs">
+                  <li class="active"><a href="#home" data-toggle="tab" onclick="show_blockly();">Blocks</a>
+                  </li>
+                  <li><a href="#profile" data-toggle="tab" onclick="hide_blockly();">Code</a>
+                  </li>
+              </ul>
 
-            <div id="blocklyArea" style="height:100vh;"></div>
+              <!-- Tab panes -->
+              <div class="tab-content">
+                  <div class="tab-pane fade in active" id="home">
+                    <div id="blocklyArea" style="height:100vh;"></div>
+                  </div>
+                  <div class="tab-pane fade" id="profile">
+                      <p id="profile_text">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+                  </div>
+              </div>
+          </div>
+          <!-- <div id="blocklyArea" style="height:100vh;"></div> -->
         </div>
         <!-- /#page-wrapper -->
     </div>
@@ -369,82 +393,133 @@
     <script src="../dist/js/sb-admin-2.js"></script>
 
 <script>
-    var blocklyArea = document.getElementById('blocklyArea');
-    var blocklyDiv = document.getElementById('blocklyDiv');
-    var workspace = Blockly.inject(blocklyDiv,
-      {toolbox: document.getElementById('toolbox'),
-         scrollbars: true,
-         rtl: true,
-         zoom:
-             {enabled: true,
-              controls: true,
-              wheel: true,
-              maxScale: 4,
-              minScale: .25,
-              scaleSpeed: 1.1
-             },
-         grid:
-             {spacing: 25,
-              length: 3,
-              colour: '#ccc',
-              snap: false},
-         trashcan: true});
+  var blocklyArea = document.getElementById('blocklyArea');
+  var blocklyDiv = document.getElementById('blocklyDiv');
+  var workspace = Blockly.inject(blocklyDiv,
+    {toolbox: document.getElementById('toolbox'),
+       scrollbars: true,
+       rtl: false,
+       zoom:
+           {enabled: true,
+            controls: true,
+            wheel: true,
+            maxScale: 4,
+            minScale: .25,
+            scaleSpeed: 1.1
+           },
+       grid:
+           {spacing: 25,
+            length: 3,
+            colour: '#ccc',
+            snap: false},
+       trashcan: true});
 
-    var onresize = function(e) {
-    // Compute the absolute coordinates and dimensions of blocklyArea.
-    var element = blocklyArea;
-    var x = 0;
-    var y = 0;
-    do {
-      x += element.offsetLeft;
-      y += element.offsetTop;
-      element = element.offsetParent;
-    } while (element);
-    // Position blocklyDiv over blocklyArea.
-    blocklyDiv.style.left = x + 'px';
-    blocklyDiv.style.top = y + 'px';
-    blocklyDiv.style.width = blocklyArea.offsetWidth + 'px';
-    blocklyDiv.style.height = blocklyArea.offsetHeight - 51 + 'px';
-    };
-    window.addEventListener('resize', onresize, false);
-    onresize();
+  var onresize = function(e) {
+  // Compute the absolute coordinates and dimensions of blocklyArea.
+  var element = blocklyArea;
+  var x = 0;
+  var y = 0;
+  do {
+    x += element.offsetLeft;
+    y += element.offsetTop;
+    element = element.offsetParent;
+  } while (element);
+  // Position blocklyDiv over blocklyArea.
+  blocklyDiv.style.left = x + 'px';
+  blocklyDiv.style.top = y + 'px';
+  blocklyDiv.style.width = blocklyArea.offsetWidth + 'px';
+  blocklyDiv.style.height = blocklyArea.offsetHeight - 51 - 42 + 'px';
+  };
+  window.addEventListener('resize', onresize, false);
+  onresize();
 </script>
 
 <script>
-    function tojavascript(){
-        Blockly.JavaScript.addReservedWords('code');
-        var code = Blockly.JavaScript.workspaceToCode(workspace);
-        try {
-          //eval(code);
-          alert(code);
-        } catch (e) {
-          alert(e);
-        }            
-    };
+  function tojavascript(){
+      Blockly.JavaScript.addReservedWords('code');
+      var code = Blockly.JavaScript.workspaceToCode(workspace);
+      try {
+        //eval(code);
+        alert(code);
+      } catch (e) {
+        alert(e);
+      }            
+  };
 
-    function tophp(){
-        Blockly.JavaScript.addReservedWords('code');
-        var code = Blockly.PHP.workspaceToCode(workspace);
-        try {
-          //eval(code);
-          alert(code);
-        } catch (e) {
-          alert(e);
-        }            
-    };
+  function tophp(){
+      Blockly.JavaScript.addReservedWords('code');
+      var code = Blockly.PHP.workspaceToCode(workspace);
+      try {
+        //eval(code);
+        alert(code);
+      } catch (e) {
+        alert(e);
+      }            
+  };
 
-    function topython(){
-        Blockly.Python.addReservedWords('code');
-        var code = Blockly.Python.workspaceToCode(workspace);
-        try {
-          //eval(code);
-          alert(code);
-        } catch (e) {
-          alert(e);
-        }            
-    };
+  function topython(){
+      Blockly.Python.addReservedWords('code');
+      var code = Blockly.Python.workspaceToCode(workspace);
+      try {
+        //eval(code);
+        alert(code);
+      } catch (e) {
+        alert(e);
+      }            
+  };
+
+  // hide blockly and show the code
+  function hide_blockly() {
+      document.getElementById("blocklyDiv").style.display = 'none';
+      document.getElementById("blocklyArea").style.display = 'none';
+      // onresize();        
+      window.dispatchEvent(new Event('resize'));
+
+      // show the code
+      Blockly.Python.addReservedWords('code');
+      var code = Blockly.Python.workspaceToCode(workspace);      
+      document.getElementById("profile_text").innerHTML = code;
+  };
+
+  function show_blockly() {
+      document.getElementById("blocklyDiv").style.display = 'block';
+      document.getElementById("blocklyArea").style.display = 'block';
+      window.location.reload(true);
+      // alert("resizing");
+      // window.dispatchEvent(new Event('resize'));
+  };
+</script>  
+
+
+<script>
+  
+  // restore at the beginning.
+  // This is launched after the page has finished loading
+  function restorelocal(){
+    var xml_text = localStorage.getItem("blocks");
+    // alert("Restoring: "+xml_text);
+    var xml = Blockly.Xml.textToDom(xml_text);
+    Blockly.Xml.domToWorkspace(workspace, xml);
+
+    // Recursively store everything after x miliseconds
+    automate_localstorage();
+  }
+
+  function automate_localstorage(){
+      localstorage();
+      setTimeout(automate_localstorage, 1000);
+  }
+
+  // Save stuff on local storage
+  function localstorage() {
+    var xml = Blockly.Xml.workspaceToDom(workspace);
+    var xml_text = Blockly.Xml.domToText(xml);
+    localStorage.setItem("blocks", xml_text);
+    // alert("Saved: "+xml_text);
+  }
 
 </script>  
+
 
 </body>
 
