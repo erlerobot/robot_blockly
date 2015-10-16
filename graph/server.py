@@ -32,7 +32,7 @@ import os
 import sys
 import math
 
-import rosgraph
+import rosgraph.impl.graph
 import rospy
 
 ID = '/rosnode'
@@ -90,28 +90,23 @@ class MyServerProtocol(WebSocketServerProtocol):
             print("Text message received: {0}".format(payload.decode('utf8')))
 #            parser_json = json.loads("{0}".format(payload.decode('utf8')))
 
-        namespace = None
+        _graph = rosgraph.impl.graph.Graph()
+        _graph.set_master_stale(5.0)
+        _graph.set_node_stale(5.0)
+        _graph.update()
+        json_to_send= {}
+        json_to_send['nodes'] = list(_graph.nn_nodes)
+        index = 0;
+        Edges_json = {}
+        for edges in _graph.nn_edges.edges_by_end:
+            for edge in _graph.nn_edges.edges_by_end[edges]:
+                Edges_json[index] = {"label": edge.label, "start": edge.start, "end": edge.end }
+                index = index + 1
+        print Edges_json
+        json_to_send['edges'] = Edges_json
+        json_to_send = json.dumps(json_to_send)
 
-        nodes = rosnode_listnodes(namespace=namespace, list_uri=False, list_all=False)
-        print(nodes)
-        try:
-            """            
-            nodes_string = "[";
-            for o in nodes:
-                nodes_string = nodes_string + "'" + str(o) + "' ,";
-            nodes_string = nodes_string + "]";
-            print nodes_string;
-            """
-            json_to_send = {}
-            nodes[0] = {msg: "msg/msg"}
-            json_to_send['nodes'] = nodes
-            print(json_to_send)
-            json_to_send = json.dumps(json_to_send)
-        except Exception as inst:
-            print('Error')
-            print(type(inst))
-        #print json_to_send
-        # echo back message verbatim
+        namespace = None
         self.sendMessage(json_to_send, isBinary)
 
     def onClose(self, wasClean, code, reason):

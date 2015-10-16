@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html>
+   <head>
+		<script type="text/javascript" src="assets/libs/d3/d3.v3.min.js"></script>
+		<script type="text/javascript" src="assets/libs/jquery/jquery-1.10.2.min.js"></script>
+
+		<link rel="stylesheet" type="text/css" href="assets/libs/bootswatch/flatly/bootstrap.min.css">
+		<link rel="stylesheet" type="text/css" href="assets/libs/bootstrap/css/bootstrap-3.0.3.min.css">
+		<link rel="stylesheet" type="text/css" href="assets/libs/messenger/css/messenger.css">
+		<link rel="stylesheet" type="text/css" href="assets/libs/messenger/css/messenger-theme-flat.css">		
+		<script type="text/javascript" src="assets/libs/messenger/js/messenger.min.js"></script>
+		<script type="text/javascript" src="assets/libs/messenger/js/messenger-theme-flat.js"></script>
+		<script type="text/javascript">
+			Messenger.options = {
+			    extraClasses: 'messenger-fixed messenger-on-bottom messenger-on-right',
+			    theme: 'flat'
+			};
+		</script>
+		<script type="text/javascript" src="assets/libs/glow.js"></script>
+		<script type="text/javascript" src="assets/js/main.js"></script>
+		<link rel="stylesheet" type="text/css" href="assets/css/main.css">
+
+     <script type="text/javascript" src="vis.js"></script>
+     <link href="vis.css" rel="stylesheet" type="text/css" />
+
+     <style type="text/css">
+       #mynetwork {
+         width: 100%;
+         height: 300px;
+         border: 1px solid lightgray;
+       }
+       p {
+         max-width:600px;
+       }
+     </style>
+
+      <script type="text/javascript">
+         var socket = null;
+         var isopen = false;
+
+         window.onload = function() {
+
+            socket = new WebSocket("ws://127.0.0.1:9000");
+            socket.binaryType = "arraybuffer";
+
+            socket.onopen = function() {
+               console.log("Connected!");
+               isopen = true;
+            }
+
+            socket.onmessage = function(e) {
+               if (typeof e.data == "string") {
+                  console.log("Text message received: " + e.data);
+                  json_revieved = JSON.parse(e.data)
+
+////////////////////////////////////////////////////////////
+                  var nodesList = [];
+                  for(i = 0; i < json_revieved['nodes'].length; i++){
+                     nodo = {"id": json_revieved['nodes'][i], "symbol": json_revieved['nodes'][i], "size": 12, "bonds": 1,};
+                     nodesList.push(nodo)
+                  }
+	Object.defineProperty(Object.prototype, "IndexOfDictionary", { 
+	    value: function(value) {
+	        for (var key in this){
+	        	if (this[key]["id"] == value)
+	        		return parseInt(key);
+	        }
+	        return undefined;
+	    }
+	});
+
+                  var linksList = [];
+                  // create an array with edges
+                  console.log( )
+                  for(i = 0; i < Object.keys(json_revieved['edges']).length; i++){
+                  	if(json_revieved['edges'][i].label!=("/")){
+	                     edge = {"source": nodesList.IndexOfDictionary(json_revieved['edges'][i].start),
+	                     		 "target": nodesList.IndexOfDictionary(json_revieved['edges'][i].end),
+	                     		  "text": json_revieved['edges'][i].label,
+	                     		  "bondType": 1,
+	                     		  "id": i
+	                     		  };
+	                     linksList.push(edge);
+	                 }
+                  }  
+////////////////////////////////////////////////////////////
+	var width = 1160,
+	    height = 600;
+
+	var color = d3.scale.category20();
+	var radius = d3.scale.sqrt()
+	    .range([0, 6]);
+
+	var atomSelected;
+	var bondSelected;
+	var atomClicked = function (dataPoint) {
+	 	if (dataPoint.symbol === "H")
+	 		return;
+
+	 	atomSelected = d3.select(this)
+ 				 		 .select("circle")
+				    	 .style("filter", "url(#selectionGlove)")
+				    	 .style("fill", "rgb(31, 119, 0)")
+				    	 .attr("r", function(d) { return radius(200); });
+
+	};
+	var mouseout = function (dataPoint) {
+	 	d3.select(this)
+			.select("circle")
+			.style("filter", "")
+			.style("fill", "rgb(31, 119, 180)")
+			.attr("r", function(d) { return radius(12); });
+
+	};
+	var bondClicked = function (dataPoint) {
+	 	Messenger().post({
+				  message: 'New Bond Selected',
+				  type: 'info',
+				  hideAfter: 3,
+				  showCloseButton: true
+		});
+	 	
+	 	if (bondSelected)
+	 		bondSelected.style("filter", "");
+
+	 	bondSelected = d3.select(this)
+						 .select("line")
+				    	 .style("filter", "url(#selectionGlove)");
+    	console.log(bondClicked)
+	};
+
+	var selectionGlove = glow("selectionGlove").rgb("#0000A0").stdDeviation(7);
+
+	var svg = d3.select("#moleculeDisplay").append("svg")
+				.attr("width", width)
+				.attr("height", height)
+				.call(selectionGlove);
+
+	function tick() {
+	  	//Update old and new elements
+	    link.selectAll("line")
+	        .attr("x1", function(d) { return d.source.x; })
+	        .attr("y1", function(d) { return d.source.y; })
+	        .attr("x2", function(d) { return d.target.x; })
+	        .attr("y2", function(d) { return d.target.y; });
+
+	    link.selectAll("text")
+	        .attr("x", function(d) { return (d.source.x + d.target.x)/2; })
+	        .attr("y", function(d) { return (d.source.y + d.target.y)/2; })
+
+	    node.attr("transform", function(d) {return "translate(" + d.x + "," + d.y + ")"; });
+	  }
+	var force = d3.layout.force()
+					.nodes(nodesList)
+					.links(linksList)
+					.size([width, height])
+					.charge(-400)
+					.linkStrength(function (d) { return d.bondType * 8;})
+					.linkDistance(function(d) { return radius(d.source.size) + radius(d.target.size) + 300; })
+					.on("tick", tick);
+
+
+svg.append("defs").selectAll("marker")
+	    .data(["suit", "licensing", "resolved"])
+	  .enter().append("marker")
+	    .attr("id", function(d) { return d; })
+	    .attr("viewBox", "0 -5 10 10")
+	    .attr("refX", 25)
+	    .attr("refY", 0)
+	    .attr("markerWidth", 6)
+	    .attr("markerHeight", 6)
+	    .attr("orient", "auto")
+	  .append("path")
+	    .attr("d", "M0,-5L10,0L0,5 L10,0 L0, -5")
+	    .style("stroke", "#4679BD")
+	    .style("opacity", "1");
+
+	    
+	var links = force.links(),
+	    nodes = force.nodes(),
+	    link = svg.selectAll(".link"),
+	  	node = svg.selectAll(".node");
+
+	  	// Update link data
+  	link = link.data(links, function (d) {return d.id; });
+
+		  // Create new links
+	link.enter().insert("g", ".node")
+	    .attr("class", "link")
+	     .style("marker-end",  "url(#suit)") // Modified line 
+	    .each(function(d) {
+	      	// Add bond line
+	      	d3.select(this)
+	      	  .append("line")
+              .style("stroke-width", function(d) { return (d.bondType * 3 - 2) * 2 + "px"; });
+	      	d3.select(this)
+   	      	  .append("text")
+			  .attr("dy", ".35em")
+			  .attr("text-anchor", "middle")
+			  .attr("fill", "red")
+	      	  .text(function(d){
+                    return d.text;
+                });
+			// If double add second line
+			d3.select(this)
+				.filter(function(d) { return d.bondType >= 2; }).append("line")
+				.style("stroke-width", function(d) { return (d.bondType * 2 - 2) * 2 + "px"; })
+				.attr("class", "double");
+
+			d3.select(this)
+				.filter(function(d) { return d.bondType === 3; }).append("line")
+				.attr("class", "triple");
+
+			// Give bond the power to be selected
+			d3.select(this)
+			  .on("click", bondClicked);
+		}); 
+
+	  	// Delete removed links
+		link.exit().remove(); 	
+	    // Update node data
+	  	node = node.data(nodes, function (d) {return d.id; });
+
+	    // Create new nodes
+		node.enter().append("g")
+		  .attr("class", "node")
+		  .each(function(d) {
+			// Add node circle
+			d3.select(this)
+			  .append("circle")
+			  .attr("r", function(d) { return radius(d.size); })
+			  .style("fill", function(d) { return color(d.symbol); });
+
+			// Add atom symbol
+			d3.select(this)
+			  .append("text")
+			  .attr("dy", ".35em")
+			  .attr("text-anchor", "middle")
+			  .text(function(d) { return d.symbol; });
+
+			// Give atom the power to be selected
+			d3.select(this)
+			  .on("click", atomClicked);
+
+  			// Give atom the power to be selected
+			//d3.select(this)
+			//  .on("mouseover", mouseover);		
+			d3.select(this)
+			  .on("mouseout", mouseout);  
+
+			// Grant atom the power of gravity	
+			d3.select(this)
+			  .call(force.drag);
+		});
+
+	// Delete removed nodes
+    node.exit().remove();
+	force.start();
+
+               } else {
+                  var arr = new Uint8Array(e.data);
+                  var hex = '';
+                  for (var i = 0; i < arr.length; i++) {
+                     hex += ('00' + arr[i].toString(16)).substr(-2);
+                  }
+                  console.log("Binary message received: " + hex);
+               }
+            }
+
+            socket.onclose = function(e) {
+               console.log("Connection closed.");
+               socket = null;
+               isopen = false;
+            }
+         };
+
+         function sendText() {
+            if (isopen) {
+               socket.send('get_nodes');
+               console.log("Text message sent.");               
+            } else {
+               console.log("Connection not opened.")
+            }
+         };
+
+         function sendBinary() {
+            if (isopen) {
+               var buf = new ArrayBuffer(32);
+               var arr = new Uint8Array(buf);
+               for (i = 0; i < arr.length; ++i) arr[i] = i;
+               socket.send(buf);
+               console.log("Binary message sent.");
+            } else {
+               console.log("Connection not opened.")
+            }
+         };
+      </script>
+   </head>
+   <body>
+      <p>Open your browser's JavaScript console to see what's happening (hit F12).</p>
+      <button onclick='sendText();'>Send Text Message</button>
+      <button onclick='sendBinary();'>Send Binary Message</button>
+		<div id="moleculeDisplay" style="border: 1px solid black; background-color: #FFF" class="row"></div>
+<!--      <div id="mynetwork"></div> -->
+   </body>
+</html>
