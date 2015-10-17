@@ -498,11 +498,17 @@
   function restorelocal(){
     var xml_text = localStorage.getItem("blocks");
     // alert("Restoring: "+xml_text);
-    var xml = Blockly.Xml.textToDom(xml_text);
-    Blockly.Xml.domToWorkspace(workspace, xml);
-
+    
+    try {
+      var xml = Blockly.Xml.textToDom(xml_text);
+      Blockly.Xml.domToWorkspace(workspace, xml);
+      automate_localstorage();
+    }
+    catch(err) {
+        automate_localstorage();
+    }
     // Recursively store everything after x miliseconds
-    automate_localstorage();
+    // automate_localstorage();
   }
 
   function automate_localstorage(){
