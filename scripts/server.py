@@ -33,12 +33,14 @@
 #
 
 import rospy
+import time
 from std_msgs.msg import String
 from autobahn.asyncio.websocket import WebSocketServerProtocol, \
     WebSocketServerFactory
+import roslaunch
+import os
 
-class MyServerProtocol(WebSocketServerProtocol):
-
+class ROSimpleServerProtocol(WebSocketServerProtocol):
     def onConnect(self, request):
         print("Client connecting: {0}".format(request.peer))
 
@@ -46,19 +48,54 @@ class MyServerProtocol(WebSocketServerProtocol):
         print("WebSocket connection open.")
 
     def onMessage(self, payload, isBinary):
+        #Debug
         if isBinary:
             print("Binary message received: {0} bytes".format(len(payload)))
         else:
             print("Text message received: {0}".format(payload.decode('utf8')))
 
-        pub = rospy.Publisher('rosimple', String, queue_size=10)
-        pub.publish("Text message received: {0}".format(payload.decode('utf8')))
+        ## Do stuff
+        # pub = rospy.Publisher('rosimple', String, queue_size=10)
+        # time.sleep(1)
+        # pub.publish("ROSimple says: "+payload.decode('utf8'))
+
+        self.build_ros_node(payload.decode('utf8'))
+        print('The file generated contains...')        
+        os.system('cat test.py')
+
+        os.system("python3 test.py")
 
         # echo back message verbatim
-        self.sendMessage(payload, isBinary)
+        # self.sendMessage(payload, isBinary)
 
     def onClose(self, wasClean, code, reason):
         print("WebSocket connection closed: {0}".format(reason))    
+
+    def build_ros_node(self,blockly_code):    
+        print("building the ros node...")
+        filename = "test.py"
+        target = open(filename, 'w')
+        target.truncate() # empties the file
+        
+        ###########################
+        # Start building the ROS node:
+
+        target.write("#!/usr/bin/env python3\n")
+        target.write("import rospy\n")
+        target.write("from std_msgs.msg import String\n")
+        target.write("\n")
+        target.write("rospy.init_node('rosimple_node', anonymous=True)\n")
+
+        # Write the code that comes from blockly
+        target.write(blockly_code+"\n")
+        # target.write("rospy.spin()\n")
+        target.write("\n")
+        
+        # close the file
+        target.close()
+        ###########################
+
+
 
 def callback(data):
     rospy.loginfo(rospy.get_caller_id() + "I heard %s", data.data)
@@ -79,7 +116,7 @@ def talker():
         import trollius as asyncio
 
     factory = WebSocketServerFactory(u"ws://0.0.0.0:9000", debug=False)
-    factory.protocol = MyServerProtocol
+    factory.protocol = ROSimpleServerProtocol
 
     loop = asyncio.get_event_loop()
     coro = loop.create_server(factory, '0.0.0.0', 9000)
