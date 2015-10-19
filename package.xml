@@ -2,7 +2,7 @@
 <package>
   <name>ros_rosimple</name>
   <version>1.0</version>
-  <description>A ROS package that simplifies robot interaction using a web interface</description>
+  <description>A ROS package that simplifies robot interaction using web interfaces</description>
 
   <maintainer email="ahcorde@erlerobot.com">Alejandro Hernández Cordero</maintainer>
   <maintainer email="victor@erlerobot.com">Víctor Mayoral Vilches</maintainer>
@@ -33,8 +33,7 @@
   <!--   <run_depend>message_runtime</run_depend> -->
   <!-- Use test_depend for packages you need only for testing: -->
   <!--   <test_depend>gtest</test_depend> -->
-  <buildtool_depend>catkin</buildtool_depend>
-
+  <buildtool_depend>catkin</buildtool_depend>  
 
   <!-- The export tag contains other, unspecified, tags -->
   <export>
