@@ -100,10 +100,10 @@
                             <a href="#"><i class="fa fa-cubes fa-fw"></i> Builder<span class="fa arrow"></span></a>
                             <ul class="nav nav-second-level">
                                 <li>
-                                    <a href="#" onclick="">Save</a>
+                                    <a href="#" onclick="localstorage();">Save</a>
                                 </li>
                                 <li>
-                                    <a href="#" onclick="">Launch</a>
+                                    <a href="#" onclick='sendText();'>Launch</a>
                                 </li>
                                 <li>
                                     <a href="#" class="">Saved projects<span class="fa arrow"></span></a>
@@ -491,22 +491,29 @@
 </script>  
 
 
-<script>
-  
+
+<script type="text/javascript">
+
   // restore at the beginning.
   // This is launched after the page has finished loading
-  function restorelocal(){
-    var xml_text = localStorage.getItem("blocks");
-    // alert("Restoring: "+xml_text);
-    
+  function restorelocal(){    
+    var xml_text = localStorage.getItem("blocks_cache");
     try {
       var xml = Blockly.Xml.textToDom(xml_text);
       Blockly.Xml.domToWorkspace(workspace, xml);
+
       automate_localstorage();
     }
     catch(err) {
+        // alert(err);
+        console.log(err);
+        console.log("This is generally because there's no tree information");
         automate_localstorage();
     }
+
+    // Launch websockets
+    launchwebsockets();
+
     // Recursively store everything after x miliseconds
     // automate_localstorage();
   }
@@ -520,11 +527,75 @@
   function localstorage() {
     var xml = Blockly.Xml.workspaceToDom(workspace);
     var xml_text = Blockly.Xml.domToText(xml);
-    localStorage.setItem("blocks", xml_text);
+    localStorage.setItem("blocks_cache", xml_text);
+    console.log("Saved: "+xml_text);
+    console.log("-------------");
+    var xml_text_stored = localStorage.getItem("blocks_cache");
+    console.log("Rtved: "+xml_text_stored)
     // alert("Saved: "+xml_text);
   }
 
-</script>  
+  var socket = null;
+  var isopen = false;
+
+  // window.onload = function() {
+  function launchwebsockets() {
+    // socket = new WebSocket("ws://127.0.0.1:9000");
+    socket = new WebSocket("ws://10.211.55.5:9000");
+    socket.binaryType = "arraybuffer";
+
+    socket.onopen = function() {
+       console.log("Connected!");
+       isopen = true;
+    }
+
+    socket.onmessage = function(e) {
+       if (typeof e.data == "string") {
+          console.log("Text message received: " + e.data);
+       } else {
+          var arr = new Uint8Array(e.data);
+          var hex = '';
+          for (var i = 0; i < arr.length; i++) {
+             hex += ('00' + arr[i].toString(16)).substr(-2);
+          }
+          console.log("Binary message received: " + hex);
+       }
+    }
+
+    socket.onclose = function(e) {
+       console.log("Connection closed.");
+       socket = null;
+       isopen = false;
+    }
+  };
+
+  function sendText() {
+    if (isopen) {
+       
+      Blockly.Python.addReservedWords('code');
+      var code = Blockly.Python.workspaceToCode(workspace);
+      // socket.send("Hello, world!");
+      socket.send(code);
+
+
+      console.log("Text message sent.");               
+    } else {
+       console.log("Connection not opened.")
+    }
+  };
+
+  function sendBinary() {
+    if (isopen) {
+       var buf = new ArrayBuffer(32);
+       var arr = new Uint8Array(buf);
+       for (i = 0; i < arr.length; ++i) arr[i] = i;
+       socket.send(buf);
+       console.log("Binary message sent.");
+    } else {
+       console.log("Connection not opened.")
+    }
+  };
+</script>
 
 
 </body>
