@@ -5,7 +5,7 @@ var ros_graph = new ROS_Graph( {width: 1160, height: 600})
 
 function sendText() {
 	if (isopen) {
-		socket.send('get_nodes');
+		socket.send("\"{'command':['get_nodes']}\"");
 		console.log("Text message sent.");               
 	} else {
 		console.log("Connection not opened.")

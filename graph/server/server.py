@@ -35,6 +35,8 @@ import math
 import rosgraph.impl.graph
 import rospy
 
+import ast
+
 import rostopicinfo
 
 ID = '/rosnode'
@@ -84,7 +86,16 @@ class MyServerProtocol(WebSocketServerProtocol):
         else:
             print("Text message received: {0}".format(payload.decode('utf8')))
 #            parser_json = json.loads("{0}".format(payload.decode('utf8')))
-        command = payload.decode('utf8');
+        command = ""
+        try:
+            parser_json = ast.literal_eval(json.loads(payload.decode('utf8')))
+            # json.loads( json.dumps(payload.decode('utf8'), separators=(',', ':'), sort_keys=True) ) 
+            commands = parser_json['command']
+            command = commands[0]
+            print commands[0]
+        except Exception as inst:
+            print inst.args 
+
         if(command =='get_nodes'):
 
             _graph = rosgraph.impl.graph.Graph()
@@ -105,11 +116,14 @@ class MyServerProtocol(WebSocketServerProtocol):
 
             namespace = None
             self.sendMessage(json_to_send, isBinary)
-        elif command[0]=='/':
-            print rostopicinfo.get_info_text(command)[1]
+        #Pasear Topicos
+        elif command=='topic': 
+            print rostopicinfo.get_info_text(commands[1])[1]
             json_to_send={}
-            json_to_send['msg'] = rostopicinfo.get_info_text(command)[1]
+            json_to_send['msg'] = rostopicinfo.get_info_text(commands[1])[1]
             self.sendMessage(json.dumps(json_to_send), isBinary)
+        elif command=='node':
+            print "node"
         else:
             self.sendMessage('Error', isBinary)
 

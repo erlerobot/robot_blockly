@@ -117,8 +117,6 @@ ROS_Graph.prototype = {
 					  showCloseButton: true
 			});
 		 	
-		 	console.log("Traza: " + _thisGraph._bondSelected + " " + _thisGraph._bondSelected_image)
-
 		 	if (_thisGraph._bondSelected){
 		 		_thisGraph._bondSelected.style("filter", "");
 				_thisGraph._bondSelected_image.attr("xlink:href", "");
@@ -127,16 +125,14 @@ ROS_Graph.prototype = {
 		 	_thisGraph._bondSelected =  d3.select(this)
 								    .select("line")
 									.style("filter", "url(#selectionGlove)")
-		 	console.log("Traza2: " + _thisGraph._bondSelected)
 
 			_thisGraph._bondSelected_image  = d3.select(this)
 									 .select("image");
 
-			console.log("Traza3: " + _thisGraph._bondSelected_image)
-
      		//Bind the same click behavior to all three
 			//d3.select(this).each(fadeToFront);
-	    	socket.send(dataPoint.text)
+			console.log("\"{'command': ['topic', '" + dataPoint.text + "'] }\"")
+	    	socket.send("\"{'command': ['topic', '" + dataPoint.text + "'] }\"")
 		};
 
 		var selectionGlove = glow("selectionGlove").rgb("#0000A0").stdDeviation(7);
