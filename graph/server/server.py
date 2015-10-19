@@ -35,6 +35,8 @@ import math
 import rosgraph.impl.graph
 import rospy
 
+import rostopicinfo
+
 ID = '/rosnode'
 def get_node_names(namespace=None):
 
@@ -61,13 +63,6 @@ def _sub_rosnode_listnodes(namespace=None, list_uri=False, list_all=False):
     master = rosgraph.Master(ID)
     nodes = get_node_names(namespace)
     nodes.sort()
-    """
-    if list_all:
-        return ','.join(["%s \t%s"%(get_api_uri(master, n) or 'unknown address', n) for n in nodes])
-    elif list_uri:
-        return '*'.join([(get_api_uri(master, n) or 'unknown address') for n in nodes])
-    else:
-    """
     return nodes
 
 
@@ -89,25 +84,34 @@ class MyServerProtocol(WebSocketServerProtocol):
         else:
             print("Text message received: {0}".format(payload.decode('utf8')))
 #            parser_json = json.loads("{0}".format(payload.decode('utf8')))
+        command = payload.decode('utf8');
+        if(command =='get_nodes'):
 
-        _graph = rosgraph.impl.graph.Graph()
-        _graph.set_master_stale(5.0)
-        _graph.set_node_stale(5.0)
-        _graph.update()
-        json_to_send= {}
-        json_to_send['nodes'] = list(_graph.nn_nodes)
-        index = 0;
-        Edges_json = {}
-        for edges in _graph.nn_edges.edges_by_end:
-            for edge in _graph.nn_edges.edges_by_end[edges]:
-                Edges_json[index] = {"label": edge.label, "start": edge.start, "end": edge.end }
-                index = index + 1
-        print Edges_json
-        json_to_send['edges'] = Edges_json
-        json_to_send = json.dumps(json_to_send)
+            _graph = rosgraph.impl.graph.Graph()
+            _graph.set_master_stale(5.0)
+            _graph.set_node_stale(5.0)
+            _graph.update()
+            json_to_send= {}
+            json_to_send['nodes'] = list(_graph.nn_nodes)
+            index = 0;
+            Edges_json = {}
+            for edges in _graph.nn_edges.edges_by_end:
+                for edge in _graph.nn_edges.edges_by_end[edges]:
+                    Edges_json[index] = {"label": edge.label, "start": edge.start, "end": edge.end }
+                    index = index + 1
+            print Edges_json
+            json_to_send['edges'] = Edges_json
+            json_to_send = json.dumps(json_to_send)
 
-        namespace = None
-        self.sendMessage(json_to_send, isBinary)
+            namespace = None
+            self.sendMessage(json_to_send, isBinary)
+        elif command[0]=='/':
+            print rostopicinfo.get_info_text(command)[1]
+            json_to_send={}
+            json_to_send['msg'] = rostopicinfo.get_info_text(command)[1]
+            self.sendMessage(json.dumps(json_to_send), isBinary)
+        else:
+            self.sendMessage('Error', isBinary)
 
     def onClose(self, wasClean, code, reason):
         print("WebSocket connection closed: {0}".format(reason))
