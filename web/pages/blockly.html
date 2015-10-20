@@ -541,7 +541,8 @@
   // window.onload = function() {
   function launchwebsockets() {
     // socket = new WebSocket("ws://127.0.0.1:9000");
-    socket = new WebSocket("ws://10.211.55.5:9000");
+    // socket = new WebSocket("ws://10.211.55.5:9000");
+    socket = new WebSocket("ws://192.168.1.57:9000");
     socket.binaryType = "arraybuffer";
 
     socket.onopen = function() {
