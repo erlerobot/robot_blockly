@@ -79,7 +79,8 @@ Install the project...
 #### Installing apache and getting the files deployed
 ```
 sudo apt-get install apache2
-cp -r <dir-to-rosimple>/web /var/www/html
-cd /var/www/html/web/
+cd <dir-to-rosimple>/web
 git clone http://github.com/erlerobot/blockly
+cd ../scripts
+./deploy.sh
 ```
