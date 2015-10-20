@@ -9,7 +9,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>Blocky example</title>
+    <title>ROSimple, program your ROS robots in a simple way</title>
 
     <!-- Bootstrap Core CSS -->
     <link href="../bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -37,6 +37,9 @@
     <script src="../blockly/python_compressed.js"></script>
     <script src="../blockly/php_compressed.js"></script>
     <script src="../blockly/msg/js/en.js"></script>
+
+    <!-- Ace editor -->
+    <script src="../ace-builds/src-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
 
 </head>
 
@@ -100,10 +103,10 @@
                             <a href="#"><i class="fa fa-cubes fa-fw"></i> Builder<span class="fa arrow"></span></a>
                             <ul class="nav nav-second-level">
                                 <li>
-                                    <a href="#" onclick="localstorage();">Save</a>
-                                </li>
-                                <li>
                                     <a href="#" onclick='sendText();'>Launch</a>
+                                </li>
+<!--                                 <li>
+                                    <a href="#" onclick="localstorage();">Save</a>
                                 </li>
                                 <li>
                                     <a href="#" class="">Saved projects<span class="fa arrow"></span></a>
@@ -113,7 +116,7 @@
                                       <li><a href="#">Test2</a></li>                      
                                     </ul>  
                                 </li>
-<!--                                 <li>
+ --><!--                                 <li>
                                     <a href="#" onclick="tojavascript()">Javascript</a>
                                 </li>
  -->
@@ -138,7 +141,7 @@
               <ul class="nav nav-tabs">
                   <li class="active"><a href="#home" data-toggle="tab" onclick="show_blockly();">Blocks</a>
                   </li>
-                  <li><a href="#profile" data-toggle="tab" onclick="hide_blockly();">Code</a>
+                  <li><a href="#profile" data-toggle="tab" onclick="hide_blockly();">Python code</a>
                   </li>
               </ul>
 
@@ -148,7 +151,26 @@
                     <div id="blocklyArea" style="height:100vh;"></div>
                   </div>
                   <div class="tab-pane fade" id="profile">
-                      <p id="profile_text">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+                      <div id="editor" style="width:100%; height:100vh;">
+
+                        function foo(items) {
+                          var x = "All this is syntax highlighted";
+                          return x;
+                      }
+                      </div>
+<!--                       
+                      <script>
+                          var editor = ace.edit("editor");
+                          editor.setTheme("ace/theme/monokai");
+                          editor.getSession().setMode("ace/mode/javascript");
+                      </script>
+ -->                      
+
+<!--                   <textarea id="profile_text" style="width:100%; height:100px;">
+                        Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. 
+
+                        Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+                      </textarea> -->
                   </div>
               </div>
           </div>
@@ -242,46 +264,6 @@
       </block>
       <block type="math_random_float"></block>
     </category>
-    <category id="catText" name="Text">
-      <block type="text"></block>
-      <block type="text_join"></block>
-      <block type="text_append">
-        <value name="TEXT">
-          <block type="text"></block>
-        </value>
-      </block>
-      <block type="text_length"></block>
-      <block type="text_isEmpty"></block>
-      <block type="text_indexOf">
-        <value name="VALUE">
-          <block type="variables_get">
-            <field name="VAR" class="textVar">...</field>
-          </block>
-        </value>
-      </block>
-      <block type="text_charAt">
-        <value name="VALUE">
-          <block type="variables_get">
-            <field name="VAR" class="textVar">...</field>
-          </block>
-        </value>
-      </block>
-      <block type="text_getSubstring">
-        <value name="STRING">
-          <block type="variables_get">
-            <field name="VAR" class="textVar">...</field>
-          </block>
-        </value>
-      </block>
-      <block type="text_changeCase"></block>
-      <block type="text_trim"></block>
-      <block type="text_print"></block>
-      <block type="text_prompt_ext">
-        <value name="TEXT">
-          <block type="text"></block>
-        </value>
-      </block>
-    </category>
     <category id="catLists" name="Lists">
       <block type="lists_create_with">
         <mutation items="0"></mutation>
@@ -332,44 +314,9 @@
         </value>
       </block>
     </category>
-    <category id="catColour" name="Colour">
-      <block type="colour_picker"></block>
-      <block type="colour_random"></block>
-      <block type="colour_rgb">
-        <value name="RED">
-          <block type="math_number">
-            <field name="NUM">100</field>
-          </block>
-        </value>
-        <value name="GREEN">
-          <block type="math_number">
-            <field name="NUM">50</field>
-          </block>
-        </value>
-        <value name="BLUE">
-          <block type="math_number">
-            <field name="NUM">0</field>
-          </block>
-        </value>
-      </block>
-      <block type="colour_blend">
-        <value name="COLOUR1">
-          <block type="colour_picker">
-            <field name="COLOUR">#ff0000</field>
-          </block>
-        </value>
-        <value name="COLOUR2">
-          <block type="colour_picker">
-            <field name="COLOUR">#3333ff</field>
-          </block>
-        </value>
-        <value name="RATIO">
-          <block type="math_number">
-            <field name="NUM">0.5</field>
-          </block>
-        </value>
-      </block>
-    </category>
+    <category id="catVariables" custom="VARIABLE" name="Variables"></category>
+    <category id="catFunctions" custom="PROCEDURE" name="Functions"></category>
+    <sep></sep>
     <category id="spider" name="Erle-Spider" colour="260">
           <block type="spider_standup_down"></block>
           <!-- <block type="spider_sitdown"></block> -->
@@ -380,9 +327,12 @@
           <block type="spider_turn_right"></block>
           <block type="spider_turn_left"></block>
     </category>
-    <sep></sep>
-    <category id="catVariables" custom="VARIABLE" name="Variables"></category>
-    <category id="catFunctions" custom="PROCEDURE" name="Functions"></category>
+    <category id="copter" name="Erle-Copter" colour="190">
+    </category>
+    <category id="hexacopter" name="Erle-HexaCopter" colour="90">
+    </category>
+    <category id="rover" name="Erle-Rover" colour="50">
+    </category>
     </xml>
 
 
@@ -397,6 +347,12 @@
 
     <!-- Custom Theme JavaScript -->
     <script src="../dist/js/sb-admin-2.js"></script>
+
+
+<!-- ACE editor configuration -->
+<script type="text/javascript">
+  document.getElementById('editor').style.fontSize='16px';
+</script>
 
 <script>
   var blocklyArea = document.getElementById('blocklyArea');
@@ -484,7 +440,15 @@
       // show the code
       Blockly.Python.addReservedWords('code');
       var code = Blockly.Python.workspaceToCode(workspace);      
-      document.getElementById("profile_text").innerHTML = code;
+      // // the old way of placing the code, this required a textarea
+      // document.getElementById("editor").innerHTML = code;
+
+      var editor = ace.edit("editor");
+      editor.setTheme("ace/theme/monokai");
+      editor.getSession().setMode("ace/mode/python");
+      editor.getSession().setUseWrapMode(true);
+      editor.setShowPrintMargin(false);
+      editor.setValue(code);
   };
 
   function show_blockly() {
@@ -513,7 +477,7 @@
     catch(err) {
         // alert(err);
         console.log(err);
-        console.log("This is generally because there's no tree information");
+        // console.log("This is generally because there's no tree information");
         automate_localstorage();
     }
 
@@ -534,10 +498,10 @@
     var xml = Blockly.Xml.workspaceToDom(workspace);
     var xml_text = Blockly.Xml.domToText(xml);
     localStorage.setItem("blocks_cache", xml_text);
-    console.log("Saved: "+xml_text);
-    console.log("-------------");
+    // console.log("Saved: "+xml_text);
+    // console.log("-------------");
     var xml_text_stored = localStorage.getItem("blocks_cache");
-    console.log("Rtved: "+xml_text_stored)
+    // console.log("Rtved: "+xml_text_stored)
     // alert("Saved: "+xml_text);
   }
 
