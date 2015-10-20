@@ -372,7 +372,13 @@
     </category>
     <category id="spider" name="Erle-Spider" colour="260">
           <block type="spider_standup"></block>
+          <block type="spider_sitdown"></block>
           <block type="spider_forward"></block>
+          <block type="spider_backwards"></block>
+          <block type="spider_right"></block>
+          <block type="spider_left"></block>
+          <block type="spider_turn_right"></block>
+          <block type="spider_turn_left"></block>
     </category>
     <sep></sep>
     <category id="catVariables" custom="VARIABLE" name="Variables"></category>
@@ -541,8 +547,8 @@
   // window.onload = function() {
   function launchwebsockets() {
     // socket = new WebSocket("ws://127.0.0.1:9000");
-    // socket = new WebSocket("ws://10.211.55.5:9000");
-    socket = new WebSocket("ws://192.168.1.57:9000");
+    socket = new WebSocket("ws://10.211.55.5:9000");
+    // socket = new WebSocket("ws://192.168.1.57:9000");
     socket.binaryType = "arraybuffer";
 
     socket.onopen = function() {
