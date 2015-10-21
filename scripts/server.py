@@ -139,7 +139,8 @@ if __name__ == '__main__':
         # Trollius >= 0.3 was renamed
         import trollius as asyncio
 
-    factory = WebSocketServerFactory(u"ws://127.0.0.1:9000", debug=False)
+    # factory = WebSocketServerFactory(u"ws://127.0.0.1:9000", debug=False)
+    factory = WebSocketServerFactory(u"ws://0.0.0.0:9000", debug=False)
     factory.protocol = MyServerProtocol
 
     loop = asyncio.get_event_loop()

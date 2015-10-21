@@ -14,7 +14,7 @@ function sendText() {
 
 window.onload = function() {
 
-    socket = new WebSocket("ws://127.0.0.1:9000");
+    socket = new WebSocket("ws://10.211.55.5:9000");
     socket.binaryType = "arraybuffer";
 
     socket.onopen = function() {
