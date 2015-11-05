@@ -6,7 +6,9 @@ ROSimple is a ROS package that provides visualization and block-based programmin
 ![](img/ROSimple-code.png)
 
 ### Robots where ROSimple has been implemented:
-- Erle-Spider
+- [Erle-Spider](http://erlerobotics.com/blog/product/erle-spider-the-ubuntu-drone-with-legs/)
+
+### Installation:
 
 ### License
 ROSimple is build based on [blockly](http://github.com/erlerobot/blockly) and [ACE](http://github.com/erlerobot/ace-builds) and other open source frameworks. Unless specified, the code is freed under a GPLv3 License.
