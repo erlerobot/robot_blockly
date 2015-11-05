@@ -28,5 +28,10 @@ catkin_make_isolated --pkg ros_rosimple
 
 ```
 
+### Create your own blocks
+- Open `frontend/demos/blockfactory/index.html`
+- Design you own block and then add the metadata to: `frontend/blockly/blocks` and `frontend/blockly/generator`
+- Launch `python build.py` to regenerate the blocks.
+
 ### License
 ROSimple is build based on [blockly](http://github.com/erlerobot/blockly) and [ACE](http://github.com/erlerobot/ace-builds) and other open source frameworks. Unless specified, the code is freed under a GPLv3 License.
