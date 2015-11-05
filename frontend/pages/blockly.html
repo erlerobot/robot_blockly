@@ -8,6 +8,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="">
     <meta name="author" content="">
+    <link href="http://erlerobotics.com/blog/wp-content/uploads/2015/04/favicon.png" rel="shortcut icon" type="image/x-icon">
 
     <title>ROSimple, program your ROS robots in a simple way</title>
 
@@ -395,7 +396,8 @@
   blocklyDiv.style.left = x + 'px';
   blocklyDiv.style.top = y + 'px';
   blocklyDiv.style.width = blocklyArea.offsetWidth + 'px';
-  blocklyDiv.style.height = blocklyArea.offsetHeight - 51 - 42 + 171 + 'px';
+  blocklyDiv.style.height = blocklyArea.offsetHeight  + 'px';
+  // blocklyDiv.style.height = blocklyArea.offsetHeight - 51 - 42 + 171 + 'px';
   };
   window.addEventListener('resize', onresize, false);
   onresize();

@@ -102,6 +102,7 @@ body {
 
 .sidebar ul li a.active {
     background-color: #eee;
+    color: #000;
 }
 
 .sidebar .arrow {
