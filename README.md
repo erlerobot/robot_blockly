@@ -9,6 +9,7 @@ ROSimple is a ROS package that provides visualization and block-based programmin
 - [Erle-Spider](http://erlerobotics.com/blog/product/erle-spider-the-ubuntu-drone-with-legs/)
 
 ### Installation:
+#### Frontend
 ```
 cd <catkin_ws_root>/src
 git clone https://github.com/erlerobot/ros_rosimple
@@ -16,9 +17,19 @@ cd ros_rosimple/frontend
 git clone https://github.com/erlerobot/blockly
 git clone https://github.com/erlerobot/ace-builds
 cd ../scripts
+
+# install apache
+sudo apt-get install apache2
 # make sure that Apache is running properly in your robot and then
 ./deploy.sh
 
+```
+
+#### Backend
+```
+# Install dependencies
+sudo pip3 install rosdep rosinstall_generator wstool rosinstall
+sudo pip3 install autobahn
 cd <catkin_ws_root>
 source install_isolated/setup.bash
 catkin_make_isolated --pkg ros_rosimple
