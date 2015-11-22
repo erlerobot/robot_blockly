@@ -7,6 +7,9 @@ ROSimple is a ROS package that provides visualization and block-based programmin
 
 ### Robots where ROSimple has been implemented:
 - [Erle-Spider](http://erlerobotics.com/blog/product/erle-spider-the-ubuntu-drone-with-legs/)
+- [Erle-Rover](https://erlerobotics.com/blog/product/erle-rover/) (Work in progress)
+
+Do you need help getting your robot supported? Launch your questions at http://forum.erlerobotics.com.
 
 ### Installation:
 #### Frontend
@@ -46,4 +49,6 @@ rosrun rosimple rosimple_backend.py
 - Launch `python build.py` to regenerate the blocks.
 
 ### License
-ROSimple is build based on [blockly](http://github.com/erlerobot/blockly) and [ACE](http://github.com/erlerobot/ace-builds) and other open source frameworks. Unless specified, the code is freed under a GPLv3 License.
+ROSimple has been built based on [blockly](http://github.com/erlerobot/blockly), [ACE](http://github.com/erlerobot/ace-builds) and Bootstrap. Refer to their sources for the corresponding licenses.
+
+Unless specified, the rest of the code is freed under a GPLv3 License.
