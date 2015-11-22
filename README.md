@@ -1,6 +1,6 @@
 # ROSimple
 
-ROSimple is a ROS package that provides visualization and block-based programming tools for robots and drones that use the Robot Operating System.
+ROSimple is a ROS package that provides web-based visualization and block programming tools for robots and drones.
 
 ![](img/ROSimple-peek.png)
 ![](img/ROSimple-code.png)
