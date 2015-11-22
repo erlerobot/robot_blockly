@@ -31,10 +31,11 @@ sudo apt-get install apache2
 sudo pip3 install rosdep rosinstall_generator wstool rosinstall
 sudo pip3 install autobahn
 cd <catkin_ws_root>
+catkin_make_isolated --pkg rosimple --install
 source install_isolated/setup.bash
-catkin_make_isolated --pkg ros_rosimple
+rosrun rosimple rosimple_backend.py
 
-# now go to http://192.168.1.68/frontend/pages/blockly.html
+# now go to http://erle-brain-2.local/
 #  and start playing!
 
 ```
