@@ -47,6 +47,11 @@ ROSimple has been built based on [blockly](http://github.com/erlerobot/blockly),
 
 Unless specified, the rest of the code is freed under a GPLv3 License.
 
+### Documentation
+- [Erle Robotics ROSimple docs](http://erlerobotics.com/docs/ROS/ROSimple/Intro.html)
+- [ROS Wiki](http://wiki.ros.org/rosimple)
+
+
 # Robots where ROSimple has been implemented:
 - [Erle-Spider](http://erlerobotics.com/blog/product/erle-spider-the-ubuntu-drone-with-legs/)
 - [Erle-Rover](https://erlerobotics.com/blog/product/erle-rover/) (Work in progress)
