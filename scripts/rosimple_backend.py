@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 # Software License Agreement (BSD License)
 #
 # Copyright (c) 2015, Erle Robotics LLC
@@ -63,7 +63,7 @@ class ROSimpleServerProtocol(WebSocketServerProtocol):
         print('The file generated contains...')        
         os.system('cat test.py')
 
-        os.system("python3 test.py")
+        os.system("python test.py")
 
         # echo back message verbatim
         # self.sendMessage(payload, isBinary)
@@ -80,7 +80,7 @@ class ROSimpleServerProtocol(WebSocketServerProtocol):
         ###########################
         # Start building the ROS node:
 
-        target.write("#!/usr/bin/env python3\n")
+        target.write("#!/usr/bin/env python\n")
         target.write("import rospy\n")
         target.write("from std_msgs.msg import String\n")
         target.write("\n")
@@ -115,7 +115,7 @@ def talker():
         # Trollius >= 0.3 was renamed
         import trollius as asyncio
 
-    factory = WebSocketServerFactory(u"ws://0.0.0.0:9000", debug=False)
+    factory = WebSocketServerFactory('ws://0.0.0.0:9000', debug=False)
     factory.protocol = ROSimpleServerProtocol
 
     loop = asyncio.get_event_loop()
