@@ -1,0 +1,4 @@
+<launch>
+	<node name="rosimple_backed" pkg="rosimple" type="rosimple_backend.py" output="screen" />
+	<node name="rosimple_webserver" pkg="rosimple" type="pywebserver.py"/>
+</launch>
