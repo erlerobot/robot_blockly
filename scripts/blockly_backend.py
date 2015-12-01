@@ -40,7 +40,7 @@ from autobahn.asyncio.websocket import WebSocketServerProtocol, \
 import roslaunch
 import os
 
-class ROSimpleServerProtocol(WebSocketServerProtocol):
+class BLocklyServerProtocol(WebSocketServerProtocol):
     def onConnect(self, request):
         print("Client connecting: {0}".format(request.peer))
 
@@ -55,9 +55,9 @@ class ROSimpleServerProtocol(WebSocketServerProtocol):
             print("Text message received: {0}".format(payload.decode('utf8')))
 
         ## Do stuff
-        # pub = rospy.Publisher('rosimple', String, queue_size=10)
+        # pub = rospy.Publisher('blockly', String, queue_size=10)
         # time.sleep(1)
-        # pub.publish("ROSimple says: "+payload.decode('utf8'))
+        # pub.publish("blockly says: "+payload.decode('utf8'))
 
         self.build_ros_node(payload.decode('utf8'))
         print('The file generated contains...')        
@@ -84,7 +84,7 @@ class ROSimpleServerProtocol(WebSocketServerProtocol):
         target.write("import rospy\n")
         target.write("from std_msgs.msg import String\n")
         target.write("\n")
-        target.write("rospy.init_node('rosimple_node', anonymous=True)\n")
+        target.write("rospy.init_node('blockly_node', anonymous=True)\n")
 
         # Write the code that comes from blockly
         target.write(blockly_code+"\n")
@@ -106,8 +106,8 @@ def talker():
     # anonymous=True flag means that rospy will choose a unique
     # name for our 'talker' node so that multiple talkers can
     # run simultaneously.
-    rospy.init_node('rosimple_server', anonymous=True)
-    rospy.Subscriber("rosimple", String, callback)
+    rospy.init_node('blockly_server', anonymous=True)
+    rospy.Subscriber("blockly", String, callback)
 
     try:
         import asyncio
@@ -116,7 +116,7 @@ def talker():
         import trollius as asyncio
 
     factory = WebSocketServerFactory(u"ws://0.0.0.0:9000", debug=False)
-    factory.protocol = ROSimpleServerProtocol
+    factory.protocol = BlocklyServerProtocol
 
     loop = asyncio.get_event_loop()
     coro = loop.create_server(factory, '0.0.0.0', 9000)

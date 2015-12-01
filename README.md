@@ -1,16 +1,16 @@
-# ROSimple
+# blockly
 
-ROSimple is a ROS package that provides web-based visualization and block programming tools for robots and drones.
+blockly is a ROS package that provides web-based visualization and block programming tools for robots and drones.
 
-![](img/ROSimple-peek.png)
-![](img/ROSimple-code.png)
+![](img/blockly-peek.png)
+![](img/blockly-code.png)
 
 ### Installation:
 #### Frontend
 ```
 cd <catkin_ws_root>/src
-git clone https://github.com/erlerobot/ros_rosimple
-cd ros_rosimple/frontend
+git clone https://github.com/erlerobot/ros_blockly
+cd ros_blockly/frontend
 git clone https://github.com/erlerobot/blockly
 git clone https://github.com/erlerobot/ace-builds
 cd ../scripts
@@ -28,9 +28,9 @@ sudo apt-get install apache2
 sudo pip3 install rosdep rosinstall_generator wstool rosinstall
 sudo pip3 install autobahn
 cd <catkin_ws_root>
-catkin_make_isolated --pkg rosimple --install
+catkin_make_isolated --pkg blockly --install
 source install_isolated/setup.bash
-rosrun rosimple rosimple_backend.py
+rosrun blockly blockly_backend.py
 
 # now go to http://erle-brain-2.local/
 #  and start playing!
@@ -43,16 +43,16 @@ rosrun rosimple rosimple_backend.py
 - Launch `python build.py` to regenerate the blocks.
 
 ### License
-ROSimple has been built based on [blockly](http://github.com/erlerobot/blockly), [ACE](http://github.com/erlerobot/ace-builds) and Bootstrap. Refer to their sources for the corresponding licenses.
+blockly has been built based on [blockly](http://github.com/erlerobot/blockly), [ACE](http://github.com/erlerobot/ace-builds) and Bootstrap. Refer to their sources for the corresponding licenses.
 
 Unless specified, the rest of the code is freed under a GPLv3 License.
 
 ### Documentation
-- [Erle Robotics ROSimple docs](http://erlerobotics.com/docs/ROS/ROSimple/Intro.html)
-- [ROS Wiki](http://wiki.ros.org/rosimple)
+- [Erle Robotics blockly docs](http://erlerobotics.com/docs/ROS/blockly/Intro.html)
+- [ROS Wiki](http://wiki.ros.org/blockly)
 
 
-# Robots where ROSimple has been implemented:
+# Robots where blockly has been implemented:
 - [Erle-Spider](http://erlerobotics.com/blog/product/erle-spider-the-ubuntu-drone-with-legs/)
 - [Erle-Rover](https://erlerobotics.com/blog/product/erle-rover/) (Work in progress)
 

@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <package>
-  <name>rosimple</name>
+  <name>blockly</name>
   <version>0.1.0</version>
   <description>A ROS package that simplifies robot interaction using web interfaces</description>
 
