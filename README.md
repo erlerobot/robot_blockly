@@ -2,8 +2,9 @@
 
 blockly is a ROS package that provides web-based visualization and block programming tools for robots and drones.
 
-![](img/blockly-peek.png)
-![](img/blockly-code.png)
+*Note: The package has been renamed from ros_rosimple to ros_blockly to meet http://wiki.ros.org/ROS/Patterns/Conventions*
+![](img/ROSimple-peek.png)
+![](img/ROSimple-code.png)
 
 ### Installation:
 #### Frontend
