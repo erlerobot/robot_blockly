@@ -40,7 +40,7 @@ from autobahn.asyncio.websocket import WebSocketServerProtocol, \
 import roslaunch
 import os
 
-class BLocklyServerProtocol(WebSocketServerProtocol):
+class BlocklyServerProtocol(WebSocketServerProtocol):
     def onConnect(self, request):
         print("Client connecting: {0}".format(request.peer))
 
