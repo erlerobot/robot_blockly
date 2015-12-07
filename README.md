@@ -55,7 +55,7 @@ blockly has been built based on [blockly](http://github.com/erlerobot/blockly), 
 Unless specified, the rest of the code is freed under a GPLv3 License.
 
 ### Documentation
-- [Erle Robotics blockly docs](http://erlerobotics.com/docs/ROS/blockly/Intro.html)
+- [Erle Robotics blockly docs](http://erlerobotics.com/docs/ROS/Blockly/Intro.html)
 - [ROS Wiki](http://wiki.ros.org/blockly)
 
 
