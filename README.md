@@ -13,6 +13,8 @@ This package has been renamed to meet the ROS naming conventions http://wiki.ros
 ![](img/ROSimple-code.png)
 
 ### Installation:
+`git clone --recurse-submodules https://github.com/erlerobot/robot_blockly`
+
 #### Frontend
 ```
 cd <catkin_ws_root>/src
