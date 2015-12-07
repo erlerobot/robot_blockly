@@ -1,4 +1,10 @@
-# blockly
+# robot_blockly
+
+------
+
+This package has been renamed to meet the ROS naming conventions http://wiki.ros.org/ROS/Patterns/Conventions
+
+------
 
 blockly is a ROS package that provides web-based visualization and block programming tools for robots and drones.
 
