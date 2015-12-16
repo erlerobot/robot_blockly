@@ -27,7 +27,7 @@ cd ../scripts
 # install apache
 sudo apt-get install apache2
 # make sure that Apache is running properly in your robot and then
-./deploy.sh
+sudo ./deploy.sh
 
 ```
 
@@ -39,7 +39,7 @@ sudo pip3 install autobahn
 cd <catkin_ws_root>
 catkin_make_isolated --pkg blockly --install
 source install_isolated/setup.bash
-rosrun blockly blockly_backend.py
+rosrun robot_blockly blockly_backend.py
 
 # now go to http://erle-brain-2.local/
 #  and start playing!
