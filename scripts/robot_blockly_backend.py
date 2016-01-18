@@ -40,6 +40,13 @@ from autobahn.asyncio.websocket import WebSocketServerProtocol, \
 import roslaunch
 import os
 
+try:
+    import asyncio
+except ImportError:
+    # Trollius >= 0.3 was renamed
+    import trollius as asyncio
+
+
 class BlocklyServerProtocol(WebSocketServerProtocol):
     def onConnect(self, request):
         print("Client connecting: {0}".format(request.peer))
@@ -96,9 +103,15 @@ class BlocklyServerProtocol(WebSocketServerProtocol):
         ###########################
 
 
-
 def callback(data):
     rospy.loginfo(rospy.get_caller_id() + "I heard %s", data.data)
+
+def wait_until_ros_node_shutdown(loop):
+    while not rospy.is_shutdown():
+        time.sleep(.1)
+        yield
+
+    loop.stop()
 
 def talker():
     # In ROS, nodes are uniquely named. If two nodes with the same
@@ -106,14 +119,9 @@ def talker():
     # anonymous=True flag means that rospy will choose a unique
     # name for our 'talker' node so that multiple talkers can
     # run simultaneously.
+
     rospy.init_node('blockly_server', anonymous=True)
     rospy.Subscriber("blockly", String, callback)
-
-    try:
-        import asyncio
-    except ImportError:
-        # Trollius >= 0.3 was renamed
-        import trollius as asyncio
 
     factory = WebSocketServerFactory(u"ws://0.0.0.0:9000", debug=False)
     factory.protocol = BlocklyServerProtocol
@@ -121,17 +129,14 @@ def talker():
     loop = asyncio.get_event_loop()
     coro = loop.create_server(factory, '0.0.0.0', 9000)
     server = loop.run_until_complete(coro)
+    asyncio.async(wait_until_ros_node_shutdown(loop))
 
-    try:
-        loop.run_forever()
-    except KeyboardInterrupt:
-        pass
-    finally:
-        server.close()
-        loop.close()
+    loop.run_forever()
 
-    # spin() simply keeps python from exiting until this node is stopped
-    # rospy.spin()
+    print("Closing...")
+    server.close()
+    loop.run_until_complete(server.wait_closed())
+    loop.close()
 
 if __name__ == '__main__':
     talker()
