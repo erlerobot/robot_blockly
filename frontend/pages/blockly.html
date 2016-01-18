@@ -8,7 +8,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="">
     <meta name="author" content="">
-    <link href="http://erlerobotics.com/blog/wp-content/uploads/2015/04/favicon.png" rel="shortcut icon" type="image/x-icon">
+    <link href="http://www.shadowrobot.com/favicon.ico" rel="shortcut icon" type="image/x-icon">
 
     <title>robot_blockly, program your ROS robots in a simple way</title>
 
@@ -20,6 +20,9 @@
 
     <!-- Custom CSS -->
     <link href="../dist/css/sb-admin-2.css" rel="stylesheet">
+
+    <!-- Shadow Branding -->
+    <link href="../dist/css/shadow.css" rel="stylesheet">
 
     <!-- Custom Fonts -->
     <link href="../bower_components/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
@@ -71,8 +74,8 @@
                 <li class="dropdown">
 
                     <ul style="padding-top:10px;">
-                      <img style="width:30px;" src="http://erlerobotics.com/blog/wp-content/uploads/2015/04/erlerobotics-logo.png"/>
-                      <a href="http://erlerobotics.com">Erle Robotics</a>
+                      <img style="width:30px;" src="http://www.shadowrobot.com/favicon.ico"/>
+                      <a href="http://www.shadowrobot.com">Shadow Robot</a>
                     </ul>
 
                     
@@ -141,10 +144,11 @@
                             </ul>
                             <!-- /.nav-second-level -->
                         </li>
-
+<!--
                         <li>
                             <a href="graph.html"><i class="fa fa-sitemap fa-fw"></i> Graph</a>
                         </li>
+                        -->
                     </ul>
                 </div>
                 <!-- /.sidebar-collapse -->
@@ -335,25 +339,10 @@
     <category id="catVariables" custom="VARIABLE" name="Variables"></category>
     <category id="catFunctions" custom="PROCEDURE" name="Functions"></category>
     <sep></sep>
-    <category id="spider" name="Erle-Spider" colour="260">
-          <block type="spider_standup_down"></block>
-          <!-- <block type="spider_sitdown"></block> -->
-          <block type="spider_forward"></block>
-          <block type="spider_backwards"></block>
-          <block type="spider_right"></block>
-          <block type="spider_left"></block>
-          <block type="spider_turn_right"></block>
-          <block type="spider_turn_left"></block>
-    </category>
-    <category id="copter" name="Erle-Copter" colour="190">
-    </category>
-    <category id="hexacopter" name="Erle-HexaCopter" colour="90">
-    </category>
-    <category id="rover" name="Erle-Rover" colour="50">
-              <block type="rover_mode"></block>
-              <block type="rover_forward"></block>
-	          <block type="rover_steering"></block>
-	          <block type="rover_control"></block>
+    <category id="shadow" name="Shadow Robot" colour="306">
+        <category name="Grasping">
+          <block type="grasp"></block>
+        </category>
     </category>
     </xml>
 
