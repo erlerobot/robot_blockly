@@ -22,16 +22,18 @@ sudo pip3 install rosdep rosinstall_generator wstool rosinstall
 sudo pip3 install autobahn
 ```
 
-Then the workspace:
+Then create a new workspace:
 ```
-mkdir blockly/src
+mkdir -p blockly/src
 cd blockly/src
+wstool init
 wstool set robot_blockly --git git@github.com:shadow-robot/robot_blockly
 wstool up
 ```
 
 To build the workspace (or rebuild it - you can do this while the robot_blockly_backend node is running!):
 ```
+cd ../
 catkin_make_isolated --pkg robot_blockly --install
 source install_isolated/setup.bash 
 cd src/robot_blockly/scripts/
