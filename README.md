@@ -17,9 +17,9 @@ This package has been renamed to meet the ROS naming conventions http://wiki.ros
 Pre-requisites:
 
 ```
-sudo apt-get install apache2 python3-pip
-sudo pip3 install rosdep rosinstall_generator wstool rosinstall
-sudo pip3 install autobahn
+sudo apt-get install apache2 python-pip
+sudo pip install rosdep rosinstall_generator wstool rosinstall
+sudo pip install autobahn trollius
 ```
 
 Then create a new workspace:
