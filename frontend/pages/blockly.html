@@ -36,6 +36,7 @@
     
     <!-- Include Blocky -->
     <script src="../blockly/blockly_compressed.js"></script>
+    <script src="../blockly/blockly_compressed.js"></script>
     <script src="../blockly/blocks_compressed.js"></script>
     <script src="../blockly/javascript_compressed.js"></script>
     <script src="../blockly/python_compressed.js"></script>
@@ -340,11 +341,19 @@
     <category id="catFunctions" custom="PROCEDURE" name="Functions"></category>
     <sep></sep>
     <category id="shadow" name="Shadow Robot" colour="306">
-        <category name="Grasping">
+        <category name="Initialise">
+          <block type="initialise"></block>
+        </category>
+        <category name="Hand">
           <block type="grasp"></block>
         </category>
         <category name="Arm">
           <block type="arm"></block>
+          <block type="pose"></block>
+          <block type="arm_named_pose"></block>
+        </category>
+        <category name="Trajectory">
+          <block type="execute"></block>
         </category>
     </category>
     </xml>
