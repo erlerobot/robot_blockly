@@ -17,9 +17,13 @@
   <author email="ahcorde@erlerobot.com">Alejandro Hernández Cordero</author>
   <author email="victor@erlerobot.com">Víctor Mayoral Vilches</author>
 
-  <build_depend>std_msgs</build_depend> 
-  <run_depend>std_msgs</run_depend> 
-  <buildtool_depend>catkin</buildtool_depend>  
+  <build_depend>std_msgs</build_depend>
+  <build_depend>sound_play</build_depend>
+  <build_depend>pocketsphinx</build_depend>
+  <run_depend>std_msgs</run_depend>
+  <run_depend>sound_play</run_depend>
+  <run_depend>pocketsphinx</run_depend>
+  <buildtool_depend>catkin</buildtool_depend>
 
   <!-- The export tag contains other, unspecified, tags -->
   <export>
