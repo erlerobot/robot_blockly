@@ -33,7 +33,7 @@
         <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
         <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
-    
+
     <!-- Include Blocky -->
     <script src="../blockly/blockly_compressed.js"></script>
     <script src="../blockly/blockly_compressed.js"></script>
@@ -79,7 +79,7 @@
                       <a href="http://www.shadowrobot.com">Shadow Robot</a>
                     </ul>
 
-                    
+
 <!--                     <a class="dropdown-toggle" data-toggle="dropdown" href="#">
                         <i class="fa fa-user fa-fw"></i>  <i class="fa fa-caret-down"></i>
                     </a>
@@ -95,7 +95,7 @@
                         <li><a href="login.html"><i class="fa fa-sign-out fa-fw"></i> Logout</a>
                         </li>
                     </ul>
- -->                    
+ -->
                     <!-- /.dropdown-user -->
                 </li>
                 <!-- /.dropdown -->
@@ -105,7 +105,7 @@
             <div class="navbar-default sidebar" role="navigation">
                 <div class="sidebar-nav navbar-collapse">
                     <ul class="nav" id="side-menu">
-                        
+
 <!--                         <li class="sidebar-search">
                             <div class="input-group custom-search-form">
                                 <input type="text" class="form-control" placeholder="Search...">
@@ -116,7 +116,7 @@
                                 </span>
                             </div>
                         </li> -->
-                        
+
                        <!--  <li>
                             <a href="blockly.html"><i class="active fa fa-cubes fa-fw"></i> Blockly</a>
                         </li> -->
@@ -135,8 +135,8 @@
 
                                     <ul class="nav nav-third-level">
                                       <li><a href="#">Test1</a></li>
-                                      <li><a href="#">Test2</a></li>                      
-                                    </ul>  
+                                      <li><a href="#">Test2</a></li>
+                                    </ul>
                                 </li>
  --><!--                                 <li>
                                     <a href="#" onclick="tojavascript()">Javascript</a>
@@ -181,16 +181,16 @@
                           return x;
                       }
                       </div>
-<!--                       
+<!--
                       <script>
                           var editor = ace.edit("editor");
                           editor.setTheme("ace/theme/monokai");
                           editor.getSession().setMode("ace/mode/javascript");
                       </script>
- -->                      
+ -->
 
 <!--                   <textarea id="profile_text" style="width:100%; height:100px;">
-                        Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. 
+                        Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
 
                         Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
                       </textarea> -->
@@ -337,6 +337,46 @@
         </value>
       </block>
     </category>
+    <category id="catText" name="Text">
+      <block type="text"></block>
+      <block type="text_join"></block>
+      <block type="text_append">
+        <value name="TEXT">
+          <block type="text"></block>
+        </value>
+      </block>
+      <block type="text_length"></block>
+      <block type="text_isEmpty"></block>
+      <block type="text_indexOf">
+        <value name="VALUE">
+          <block type="variables_get">
+            <field name="VAR" class="textVar">...</field>
+          </block>
+        </value>
+      </block>
+      <block type="text_charAt">
+        <value name="VALUE">
+          <block type="variables_get">
+            <field name="VAR" class="textVar">...</field>
+          </block>
+        </value>
+      </block>
+      <block type="text_getSubstring">
+        <value name="STRING">
+          <block type="variables_get">
+            <field name="VAR" class="textVar">...</field>
+          </block>
+        </value>
+      </block>
+      <block type="text_changeCase"></block>
+      <block type="text_trim"></block>
+      <block type="text_print"></block>
+      <block type="text_prompt_ext">
+        <value name="TEXT">
+          <block type="text"></block>
+        </value>
+      </block>
+    </category>
     <category id="catVariables" custom="VARIABLE" name="Variables"></category>
     <category id="catFunctions" custom="PROCEDURE" name="Functions"></category>
     <sep></sep>
@@ -437,7 +477,7 @@
         alert(code);
       } catch (e) {
         alert(e);
-      }            
+      }
   };
 
   function tophp(){
@@ -448,7 +488,7 @@
         alert(code);
       } catch (e) {
         alert(e);
-      }            
+      }
   };
 
   function topython(){
@@ -459,19 +499,19 @@
         alert(code);
       } catch (e) {
         alert(e);
-      }            
+      }
   };
 
   // hide blockly and show the code
   function hide_blockly() {
       document.getElementById("blocklyDiv").style.display = 'none';
       document.getElementById("blocklyArea").style.display = 'none';
-      // onresize();        
+      // onresize();
       window.dispatchEvent(new Event('resize'));
 
       // show the code
       Blockly.Python.addReservedWords('code');
-      var code = Blockly.Python.workspaceToCode(workspace);      
+      var code = Blockly.Python.workspaceToCode(workspace);
       // // the old way of placing the code, this required a textarea
       // document.getElementById("editor").innerHTML = code;
 
@@ -490,7 +530,7 @@
       // alert("resizing");
       // window.dispatchEvent(new Event('resize'));
   };
-</script>  
+</script>
 
 
 
@@ -498,7 +538,7 @@
 
   // restore at the beginning.
   // This is launched after the page has finished loading
-  function restorelocal(){    
+  function restorelocal(){
     var xml_text = localStorage.getItem("blocks_cache");
     try {
       var xml = Blockly.Xml.textToDom(xml_text);
@@ -576,12 +616,12 @@
 
   function sendText() {
     if (isopen) {
-       
+
       Blockly.Python.addReservedWords('code');
       var code = Blockly.Python.workspaceToCode(workspace);
       // socket.send("Hello, world!");
       socket.send(code);
-      console.log("Text message sent.");               
+      console.log("Text message sent.");
     } else {
        console.log("Connection not opened.")
     }
