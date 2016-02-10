@@ -38,6 +38,7 @@ from std_msgs.msg import String
 from autobahn.asyncio.websocket import WebSocketServerProtocol, \
     WebSocketServerFactory
 import os
+from robot_blockly.blockly_msgs.srv import checkForPause
 
 
 class CodeStatus(object):
@@ -138,10 +139,26 @@ class BlocklyServerProtocol(WebSocketServerProtocol):
         target.close()
         ###########################
 
+    def check_status(self, block_id):
+        rospy.wait_for_service('block_status')
+        while not rospy.is_shutdown():
+            try:
+                block_status = rospy.ServiceProxy('block_status', checkForPause)
+                status = block_status(block_id)
+            except rospy.ServiceException, e:
+                print "Service call failed: %s"%e
+
+            if status.is_running:
+                return
 
 
 def callback(data):
     rospy.loginfo(rospy.get_caller_id() + "I heard %s", data.data)
+
+
+def get_status(req):
+
+    return checkForPauseResponse()
 
 def talker():
     # In ROS, nodes are uniquely named. If two nodes with the same
@@ -164,6 +181,8 @@ def talker():
     loop = asyncio.get_event_loop()
     coro = loop.create_server(factory, '0.0.0.0', 9000)
     server = loop.run_until_complete(coro)
+
+    block_status_service = rospy.Service('block_status', checkForPause, get_status)
 
     try:
         loop.run_forever()
