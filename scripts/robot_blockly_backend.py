@@ -1,4 +1,5 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
+# TODO: Remove Python 2 and change to Python 3 before commit !!!
 # Software License Agreement (BSD License)
 #
 # Copyright (c) 2015, Erle Robotics LLC
@@ -33,14 +34,39 @@
 #
 
 import rospy
-import time
 from std_msgs.msg import String
 from autobahn.asyncio.websocket import WebSocketServerProtocol, \
     WebSocketServerFactory
-import roslaunch
 import os
 
+
+class CodeStatus(object):
+    RUNNING = 'running'
+    PAUSED = 'paused'
+    COMPLETED = 'completed'
+
+
 class BlocklyServerProtocol(WebSocketServerProtocol):
+
+    code_status = CodeStatus.COMPLETED
+
+    def get_code_status(self):
+        return self.code_status
+
+    def set_code_status(self, value):
+        if value in [CodeStatus.RUNNING, CodeStatus.PAUSED, CodeStatus.COMPLETED]:
+            self.code_status = value
+            rospy.loginfo('Current code status: %s', self.code_status)
+            if CodeStatus.COMPLETED == self.code_status:
+                self.sendMessage(CodeStatus.COMPLETED.encode('utf-8'), False)
+        else:
+            raise Exception('Incorrect status of code: ' + value)
+
+    def set_current_block_id(self, block_id):
+        payload = 'set_current_block\n'
+        payload += block_id
+        self.sendMessage(payload.encode('utf-8'), False)
+
     def onConnect(self, request):
         print("Client connecting: {0}".format(request.peer))
 
@@ -54,29 +80,46 @@ class BlocklyServerProtocol(WebSocketServerProtocol):
         else:
             print("Text message received: {0}".format(payload.decode('utf8')))
 
-        ## Do stuff
-        # pub = rospy.Publisher('blockly', String, queue_size=10)
-        # time.sleep(1)
-        # pub.publish("blockly says: "+payload.decode('utf8'))
+            ## Do stuff
+            # pub = rospy.Publisher('blockly', String, queue_size=10)
+            # time.sleep(1)
+            # pub.publish("blockly says: "+payload.decode('utf8'))
 
-        self.build_ros_node(payload.decode('utf8'))
-        print('The file generated contains...')        
-        os.system('cat test.py')
+            # Simple text protocol for communication
+            # first line is the name of the method
+            # next lines are body of message
+            message_text = payload.decode('utf8')
+            message_data = message_text.split('\n', 1)
 
-        os.system("python3 test.py")
-
-        # echo back message verbatim
-        # self.sendMessage(payload, isBinary)
+            if len(message_data) > 0:
+                method_name = message_data[0]
+                if len(message_data) > 1:
+                    method_body = message_data[1]
+                    if 'play' == method_name:
+                        self.set_code_status(CodeStatus.RUNNING)
+                        self.build_ros_node(method_body)
+                        rospy.loginfo('The file generated contains...')
+                        os.system('cat test.py')
+                        os.system('python3 test.py')
+                    else:
+                        rospy.logerr('Called unknown method %s', method_name)
+                else:
+                    if 'pause' == method_name:
+                        self.set_code_status(CodeStatus.PAUSED)
+                    elif 'resume' == method_name:
+                        self.set_code_status(CodeStatus.RUNNING)
+                    else:
+                        rospy.logerr('Called unknown method %s', method_name)
 
     def onClose(self, wasClean, code, reason):
-        print("WebSocket connection closed: {0}".format(reason))    
+        print("WebSocket connection closed: {0}".format(reason))
 
-    def build_ros_node(self,blockly_code):    
+    def build_ros_node(self,blockly_code):
         print("building the ros node...")
         filename = "test.py"
         target = open(filename, 'w')
         target.truncate() # empties the file
-        
+
         ###########################
         # Start building the ROS node:
 
@@ -90,7 +133,7 @@ class BlocklyServerProtocol(WebSocketServerProtocol):
         target.write(blockly_code+"\n")
         # target.write("rospy.spin()\n")
         target.write("\n")
-        
+
         # close the file
         target.close()
         ###########################
