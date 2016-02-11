@@ -35,11 +35,12 @@
 import rospy
 import time
 from std_msgs.msg import String
+from std_srvs.srv import Empty
 from autobahn.asyncio.websocket import WebSocketServerProtocol, \
     WebSocketServerFactory
 import roslaunch
 import os
-from robot_blockly.blockly_msgs.srv import checkForPause
+from robot_blockly.blockly_msgs.srv import CheckStatus
 
 class BlocklyServerProtocol(WebSocketServerProtocol):
     def onConnect(self, request):
@@ -86,6 +87,27 @@ class BlocklyServerProtocol(WebSocketServerProtocol):
         target.write("from std_msgs.msg import String\n")
         target.write("\n")
         target.write("rospy.init_node('blockly_node', anonymous=True)\n")
+        target.write("\n")
+        target.write("def check_status(block_id):\n")
+        target.write("    rospy.wait_for_service('block_status')\n")
+        target.write("    r = rospy.Rate(10)\n")
+        target.write("    while not rospy.is_shutdown():\n")
+        target.write("        try:\n")
+        target.write("            program_status = rospy.ServiceProxy('program_status', checkForPause)\n")
+        target.write("            status = program_status(block_id)\n")
+        target.write("        except rospy.ServiceException, e:\n")
+        target.write("            print 'Service call failed: %s'%e\n")
+        target.write("\n")
+        target.write("        if status.state:\n")
+        target.write("            break\n")
+        target.write("        r.sleep()\n")
+        target.write("def send_status_completed(self):\n")
+        target.write("    rospy.wait_for_service('program_completed')\n")
+        target.write("    try:\n")
+        target.write("        program_completed = rospy.ServiceProxy('program_completed', Empty)\n")
+        target.write("    except rospy.ServiceException, e:\n")
+        target.write("        print 'Service call failed: %s'%e\n")
+        target.write("\n")
 
         # Write the code that comes from blockly
         target.write(blockly_code+"\n")
@@ -96,61 +118,48 @@ class BlocklyServerProtocol(WebSocketServerProtocol):
         target.close()
         ###########################
 
-    def check_status(self, block_id):
-        rospy.wait_for_service('block_status')
-        while not rospy.is_shutdown():
-            try:
-                block_status = rospy.ServiceProxy('block_status', checkForPause)
-                status = block_status(block_id)
-            except rospy.ServiceException, e:
-                print "Service call failed: %s"%e
 
-            if status.is_running:
-                return
+class RobotBlocklyBackend(object):
+    def callback(data):
+        rospy.loginfo(rospy.get_caller_id() + "I heard %s", data.data)
 
+    def get_status(req):
+        return CheckStatusResponse()
 
-def callback(data):
-    rospy.loginfo(rospy.get_caller_id() + "I heard %s", data.data)
+    def talker(self):
+        # In ROS, nodes are uniquely named. If two nodes with the same
+        # node are launched, the previous one is kicked off. The
+        # anonymous=True flag means that rospy will choose a unique
+        # name for our 'talker' node so that multiple talkers can
+        # run simultaneously.
+        rospy.init_node('blockly_server', anonymous=True)
+        rospy.Subscriber("blockly", String, self.callback)
 
+        try:
+            import asyncio
+        except ImportError:
+            # Trollius >= 0.3 was renamed
+            import trollius as asyncio
 
-def get_status(req):
+        factory = WebSocketServerFactory(u"ws://0.0.0.0:9000", debug=False)
+        factory.protocol = BlocklyServerProtocol
 
-    return checkForPauseResponse()
+        loop = asyncio.get_event_loop()
+        coro = loop.create_server(factory, '0.0.0.0', 9000)
+        server = loop.run_until_complete(coro)
 
-def talker():
-    # In ROS, nodes are uniquely named. If two nodes with the same
-    # node are launched, the previous one is kicked off. The
-    # anonymous=True flag means that rospy will choose a unique
-    # name for our 'talker' node so that multiple talkers can
-    # run simultaneously.
-    rospy.init_node('blockly_server', anonymous=True)
-    rospy.Subscriber("blockly", String, callback)
+        program_status_service = rospy.Service('program_status', CheckStatus, self.get_status)
 
-    try:
-        import asyncio
-    except ImportError:
-        # Trollius >= 0.3 was renamed
-        import trollius as asyncio
+        try:
+            loop.run_forever()
+        except KeyboardInterrupt:
+            pass
+        finally:
+            server.close()
+            loop.close()
 
-    factory = WebSocketServerFactory(u"ws://0.0.0.0:9000", debug=False)
-    factory.protocol = BlocklyServerProtocol
-
-    loop = asyncio.get_event_loop()
-    coro = loop.create_server(factory, '0.0.0.0', 9000)
-    server = loop.run_until_complete(coro)
-
-    block_status_service = rospy.Service('block_status', checkForPause, get_status)
-
-    try:
-        loop.run_forever()
-    except KeyboardInterrupt:
-        pass
-    finally:
-        server.close()
-        loop.close()
-
-    # spin() simply keeps python from exiting until this node is stopped
-    # rospy.spin()
+        # spin() simply keeps python from exiting until this node is stopped
+        # rospy.spin()
 
 if __name__ == '__main__':
-    talker()
+    RobotBlocklyBackend.talker()
