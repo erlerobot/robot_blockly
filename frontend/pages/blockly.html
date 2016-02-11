@@ -556,34 +556,44 @@
        if (typeof e.data == "string") {
           console.log("Text message received: " + e.data);
 
-           message_data = e.data.split('\n', 1);
+           message_data = e.data.split('\n');
            if (message_data.length > 0) {
                method_name = message_data[0];
                if (message_data.length > 1) {
                    method_data = message_data[1];
                    if ('set_current_block' == method_name) {
-                       var selected_block_id = method_data;
-                       var selected_block = workspace.getBlockById(selected_block_id);
-                       if (null != selected_block) {
-                           if (null != current_block) {
-                               current_block.setShadow(false);
+                       if (CODE_STATUS.RUNNING == current_status) {
+                           var selected_block_id = method_data;
+                           var selected_block = workspace.getBlockById(selected_block_id);
+                           if (null != selected_block) {
+                               if (null != current_block) {
+                                   current_block.setShadow(false);
+                               }
+                               selected_block.setShadow(true);
+                               current_block = selected_block;
+                           } else {
+                               console.log('Not existing block id: ' + selected_block_id);
                            }
-                           selected_block.setShadow(true);
-                           current_block = selected_block;
                        } else {
-                           console.log('Not existing block id: ' + selected_block_id);
+                           console.log('Code is not running. Ignoring current block changed event.')
                        }
                    } else {
                        console.log('Unknown method: ' + method_name);
                    }
                } else if ('completed' == method_name) {
-                   var play_pause_button = document.getElementsById('play_pause_button');
+                   var play_pause_button = document.getElementById('play_pause_button');
                    play_pause_button.innerHTML = 'Launch';
                    current_status = CODE_STATUS.COMPLETED;
                    if (null != current_block) {
                        current_block.setShadow(false);
                        current_block = null;
                    }
+                   var blocks = workspace.getAllBlocks();
+                   for (var i=0; i < blocks.length; i++) {
+                       blocks[i].setShadow(false);
+                   }
+                   workspace.options.readOnly = false;
+
                } else {
                        console.log('Unknown method: ' + method_name);
                }
@@ -608,7 +618,7 @@
 
   function sendPlayPause() {
     if (isopen) {
-      var play_pause_button = document.getElementsById('play_pause_button');
+      var play_pause_button = document.getElementById('play_pause_button');
       var message_data = '';
 
       if (CODE_STATUS.COMPLETED == current_status) {
@@ -617,13 +627,14 @@
           Blockly.Python.addReservedWords('code');
           var saved_statement_prefix = Blockly.Python.STATEMENT_PREFIX;
           try {
-            Blockly.Python.STATEMENT_PREFIX = 'checkForPause(%1);\n';
+            Blockly.Python.STATEMENT_PREFIX = 'checkForPause(%1)\n';
             var code = Blockly.Python.workspaceToCode(workspace);
-            message_data += code + "\nsendStatusCompleted();\n";
+            message_data += code + "\nsendStatusCompleted()\n";
           }
           finally {
             Blockly.Python.STATEMENT_PREFIX = saved_statement_prefix;
           }
+          workspace.options.readOnly = true;
           current_status = CODE_STATUS.RUNNING;
       } else if (CODE_STATUS.RUNNING == current_status) {
           play_pause_button.innerHTML = "Resume";
