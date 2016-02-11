@@ -40,7 +40,7 @@ from std_srvs.srv import Empty
 from autobahn.asyncio.websocket import WebSocketServerProtocol, \
     WebSocketServerFactory
 import os
-from robot_blockly.blockly_msgs.srv import CheckStatus
+from robot_blockly.srv import CheckStatus
 
 
 class CodeStatus(object):
@@ -160,6 +160,7 @@ class BlocklyServerProtocol(WebSocketServerProtocol):
         target.write("    while not rospy.is_shutdown():\n")
         target.write("        try:\n")
         target.write("            program_status = rospy.ServiceProxy('program_status', CheckStatus)\n")
+        target.write("            program_status()\n")
         target.write("            status = program_status(block_id)\n")
         target.write("        except rospy.ServiceException, e:\n")
         target.write("            print 'Service call failed: %s'%e\n")
@@ -171,6 +172,7 @@ class BlocklyServerProtocol(WebSocketServerProtocol):
         target.write("    rospy.wait_for_service('program_completed')\n")
         target.write("    try:\n")
         target.write("        program_completed = rospy.ServiceProxy('program_completed', Empty)\n")
+        target.write("        program_completed()\n")
         target.write("    except rospy.ServiceException, e:\n")
         target.write("        print 'Service call failed: %s'%e\n")
         target.write("\n")
