@@ -188,10 +188,6 @@ class RobotBlocklyBackend(object):
     def callback(data):
         rospy.loginfo(rospy.get_caller_id() + "I heard %s", data.data)
 
-    def get_status(req):
-        return CheckStatusResponse()
-
-
     def talker(self):
         # In ROS, nodes are uniquely named. If two nodes with the same
         # node are launched, the previous one is kicked off. The
@@ -215,7 +211,8 @@ class RobotBlocklyBackend(object):
         coro = loop.create_server(factory, '0.0.0.0', 9000)
         server = loop.run_until_complete(coro)
 
-        program_status_service = rospy.Service('program_status', CheckStatus, self.get_status)
+        program_status_service = rospy.Service('program_status', CheckStatus, CodeStatus.get_current_status())
+        complete_status_service = rospy.Service('program_complete', Empty, CodeStatus.set_current_status(CodeStatus.COMPLETED))
 
         try:
             loop.run_forever()
