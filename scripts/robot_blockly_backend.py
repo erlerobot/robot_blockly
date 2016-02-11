@@ -34,6 +34,7 @@
 #
 
 import rospy
+import threading
 from std_msgs.msg import String
 from autobahn.asyncio.websocket import WebSocketServerProtocol, \
     WebSocketServerFactory
@@ -46,30 +47,51 @@ class CodeStatus(object):
     PAUSED = 'paused'
     COMPLETED = 'completed'
 
+    __current_status = COMPLETED
+    __write_lock = threading.Lock()
+    __status_publisher = None
+
+    @classmethod
+    def initialize_publisher(cls):
+        if cls.__status_publisher is None:
+            cls.__status_publisher = rospy.Publisher('current_code_status', String, queue_size=5)
+
+    @classmethod
+    def get_current_status(cls):
+        return cls.__current_status
+
+    @classmethod
+    def set_current_status(cls, value):
+        with cls.__write_lock:
+            if value not in [cls.RUNNING, cls.PAUSED, cls.COMPLETED]:
+                raise Exception('Incorrect status of code: ' + value)
+            else:
+                cls.__current_status = value
+            cls.initialize_publisher()
+        cls.__status_publisher.publish(value)
+
 
 class BlocklyServerProtocol(WebSocketServerProtocol):
 
-    code_status = CodeStatus.COMPLETED
+    __current_code_status_subscriber = None
+    __current_block_id_subscriber = None
 
-    def get_code_status(self):
-        return self.code_status
+    def _send_completed_code_status(self, message):
+        rospy.loginfo('Current code status: %s', message.data)
+        if CodeStatus.COMPLETED == message.data:
+            self.sendMessage(CodeStatus.COMPLETED.encode('utf-8'), False)
 
-    def set_code_status(self, value):
-        if value in [CodeStatus.RUNNING, CodeStatus.PAUSED, CodeStatus.COMPLETED]:
-            self.code_status = value
-            rospy.loginfo('Current code status: %s', self.code_status)
-            if CodeStatus.COMPLETED == self.code_status:
-                self.sendMessage(CodeStatus.COMPLETED.encode('utf-8'), False)
-        else:
-            raise Exception('Incorrect status of code: ' + value)
-
-    def set_current_block_id(self, block_id):
+    def _send_current_block_id(self, message):
         payload = 'set_current_block\n'
-        payload += block_id
+        payload += message.data
         self.sendMessage(payload.encode('utf-8'), False)
 
     def onConnect(self, request):
         print("Client connecting: {0}".format(request.peer))
+        if self.__current_code_status_subscriber is None:
+            rospy.Subscriber('current_code_status', String, self._send_completed_code_status)
+        if self.__current_block_id_subscriber is None:
+            rospy.Subscriber('current_block_id', String, self._send_current_block_id)
 
     def onOpen(self):
         print("WebSocket connection open.")
@@ -97,7 +119,7 @@ class BlocklyServerProtocol(WebSocketServerProtocol):
                 if len(message_data) > 1:
                     method_body = message_data[1]
                     if 'play' == method_name:
-                        self.set_code_status(CodeStatus.RUNNING)
+                        CodeStatus.set_current_status(CodeStatus.RUNNING)
                         self.build_ros_node(method_body)
                         rospy.loginfo('The file generated contains...')
                         os.system('cat test.py')
@@ -106,9 +128,9 @@ class BlocklyServerProtocol(WebSocketServerProtocol):
                         rospy.logerr('Called unknown method %s', method_name)
                 else:
                     if 'pause' == method_name:
-                        self.set_code_status(CodeStatus.PAUSED)
+                        CodeStatus.set_current_status(CodeStatus.PAUSED)
                     elif 'resume' == method_name:
-                        self.set_code_status(CodeStatus.RUNNING)
+                        CodeStatus.set_current_status(CodeStatus.RUNNING)
                     else:
                         rospy.logerr('Called unknown method %s', method_name)
 
@@ -168,6 +190,7 @@ def talker():
     # run simultaneously.
     rospy.init_node('blockly_server', anonymous=True)
     rospy.Subscriber("blockly", String, callback)
+    CodeStatus.initialize_publisher()
 
     try:
         import asyncio
