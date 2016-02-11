@@ -166,7 +166,7 @@ class BlocklyServerProtocol(WebSocketServerProtocol):
         target.write("        if status.state == 'running' or status.state == 'completed'\n")
         target.write("            break\n")
         target.write("        r.sleep()\n")
-        target.write("def send_status_completed(self):\n")
+        target.write("def send_status_completed():\n")
         target.write("    rospy.wait_for_service('program_completed')\n")
         target.write("    try:\n")
         target.write("        program_completed = rospy.ServiceProxy('program_completed', Empty)\n")
