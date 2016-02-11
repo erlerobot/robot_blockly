@@ -76,6 +76,7 @@ class BlocklyServerProtocol(WebSocketServerProtocol):
 
     __current_code_status_subscriber = None
     __current_block_id_subscriber = None
+    __current_block_publisher = None
 
     def _send_completed_code_status(self, message):
         rospy.loginfo('Current code status: %s', message.data)
@@ -184,46 +185,59 @@ class BlocklyServerProtocol(WebSocketServerProtocol):
         ###########################
 
 
-class RobotBlocklyBackend(object):
-    def callback(data):
-        rospy.loginfo(rospy.get_caller_id() + "I heard %s", data.data)
+def callback(data):
+    rospy.loginfo(rospy.get_caller_id() + "I heard %s", data.data)
 
-    def talker(self):
-        # In ROS, nodes are uniquely named. If two nodes with the same
-        # node are launched, the previous one is kicked off. The
-        # anonymous=True flag means that rospy will choose a unique
-        # name for our 'talker' node so that multiple talkers can
-        # run simultaneously.
-        rospy.init_node('blockly_server', anonymous=True)
-        rospy.Subscriber("blockly", String, self.callback)
-        CodeStatus.initialize_publisher()
 
-        try:
-            import asyncio
-        except ImportError:
-            # Trollius >= 0.3 was renamed
-            import trollius as asyncio
+def set_status_complete():
+    # set status to complete
+    CodeStatus.set_current_status(CodeStatus.COMPLETED)
 
-        factory = WebSocketServerFactory(u"ws://0.0.0.0:9000", debug=False)
-        factory.protocol = BlocklyServerProtocol
 
-        loop = asyncio.get_event_loop()
-        coro = loop.create_server(factory, '0.0.0.0', 9000)
-        server = loop.run_until_complete(coro)
+def get_status(req):
+    if BlocklyServerProtocol.__current_block_publisher is None:
+        current_block_publisher = rospy.Publisher('current_block_id', String, queue_size=5)
+    status = CodeStatus.get_current_status()
+    current_block_publisher.publish(req.block_id)
+    return status
 
-        program_status_service = rospy.Service('program_status', CheckStatus, CodeStatus.get_current_status())
-        complete_status_service = rospy.Service('program_complete', Empty, CodeStatus.set_current_status(CodeStatus.COMPLETED))
 
-        try:
-            loop.run_forever()
-        except KeyboardInterrupt:
-            pass
-        finally:
-            server.close()
-            loop.close()
+def talker():
+    # In ROS, nodes are uniquely named. If two nodes with the same
+    # node are launched, the previous one is kicked off. The
+    # anonymous=True flag means that rospy will choose a unique
+    # name for our 'talker' node so that multiple talkers can
+    # run simultaneously.
+    rospy.init_node('blockly_server', anonymous=True)
+    rospy.Subscriber("blockly", String, callback)
+    CodeStatus.initialize_publisher()
 
-        # spin() simply keeps python from exiting until this node is stopped
-        # rospy.spin()
+    try:
+        import asyncio
+    except ImportError:
+        # Trollius >= 0.3 was renamed
+        import trollius as asyncio
+
+    factory = WebSocketServerFactory(u"ws://0.0.0.0:9000", debug=False)
+    factory.protocol = BlocklyServerProtocol
+
+    loop = asyncio.get_event_loop()
+    coro = loop.create_server(factory, '0.0.0.0', 9000)
+    server = loop.run_until_complete(coro)
+
+    rospy.Service('program_status', CheckStatus, get_status)
+    rospy.Service('program_complete', Empty, set_status_complete)
+
+    try:
+        loop.run_forever()
+    except KeyboardInterrupt:
+        pass
+    finally:
+        server.close()
+        loop.close()
+
+    # spin() simply keeps python from exiting until this node is stopped
+    # rospy.spin()
 
 if __name__ == '__main__':
-    RobotBlocklyBackend.talker()
+    talker()

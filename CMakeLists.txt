@@ -8,7 +8,7 @@ add_service_files(DIRECTORY blockly_msgs/srv FILES CheckStatus.srv)
 
 #generate_messages(DEPENDENCIES std_msgs)
 
-catkin_package(CATKIN_DEPENDS std_msgs)
+catkin_package(CATKIN_DEPENDS std_msgs message_runtime)
 
 # do not wildcard install files since the root folder of the package will contain a debian folder for releasing
 catkin_install_python(PROGRAMS
