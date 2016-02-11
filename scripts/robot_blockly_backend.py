@@ -80,8 +80,9 @@ class BlocklyServerProtocol(WebSocketServerProtocol):
 
     def _send_completed_code_status(self, message):
         rospy.loginfo('Current code status: %s', message.data)
-        if CodeStatus.COMPLETED == message.data:
-            self.sendMessage(CodeStatus.COMPLETED.encode('utf-8'), False)
+        payload = 'status_update\n'
+        payload += message.data
+        self.sendMessage(payload.encode('utf-8'), False)
 
     def _send_current_block_id(self, message):
         payload = 'set_current_block\n'

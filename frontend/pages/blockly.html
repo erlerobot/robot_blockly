@@ -530,13 +530,106 @@
   var CODE_STATUS = {
       RUNNING: "running",
       PAUSED: "paused",
-      COMPLETED: "completed"
+      COMPLETED: "completed",
+      NOT_CONNECTED: "not_connected"
+  };
+
+  function CodeCurrentState() {
+
+      var current_status = CODE_STATUS.NOT_CONNECTED;
+      var current_block = null;
+      var that = this;
+
+      function __update_launch_button() {
+          var play_pause_button = document.igetElementById('play_pause_button');
+          switch (current_status) {
+              case CODE_STATUS.PAUSED:
+                  play_pause_button.innerHTML = "Resume";
+                  break;
+
+              case CODE_STATUS.RUNNING:
+                  play_pause_button.innerHTML = "Pause";
+                  break;
+
+              case CODE_STATUS.COMPLETED:
+                  play_pause_button.innerHTML = "Launch";
+                  break;
+
+              case CODE_STATUS.NOT_CONNECTED:
+                  play_pause_button.innerHTML = "Server is down";
+                  break;
+
+              default:
+                  console.log('Unknown current status: ' + current_status);
+                  break;
+          }
+      };
+
+      function __update_workspace() {
+          switch (current_status) {
+              case CODE_STATUS.PAUSED:
+              case CODE_STATUS.RUNNING:
+                  workspace.options.readOnly = true;
+                  break;
+
+              case CODE_STATUS.COMPLETED:
+              case CODE_STATUS.NOT_CONNECTED:
+                  current_block = null;
+                  var blocks = workspace.getAllBlocks();
+                  for (var i = 0; i < blocks.length; i++) {
+                      blocks[i].setShadow(false);
+                  }
+                  workspace.options.readOnly = false;
+                  break;
+
+              default:
+                  console.log('Unknown current status: ' + current_status);
+                  break;
+          }
+      };
+
+      this.get_current_state = function () {
+          return current_status;
+      };
+
+      this.set_current_state = function (value) {
+          var statuses = [CODE_STATUS.COMPLETED, CODE_STATUS.RUNNING, CODE_STATUS.PAUSED, CODE_STATUS.NOT_CONNECTED];
+          if (0 == statuses.indexOf(value)) {
+              console.log('Unknown status: ' + value);
+              return;
+          }
+          current_status = value;
+          __update_launch_button();
+          __update_workspace();
+      };
+
+      this.set_current_block_id = function (block_id) {
+          if ([CODE_STATUS.RUNNING, CODE_STATUS.PAUSED].indexOf(current_status) >= 0) {
+              var selected_block = workspace.getBlockById(block_id);
+              if (null != selected_block) {
+                  if (null != current_block) {
+                      current_block.setShadow(false);
+                  }
+                  selected_block.setShadow(true);
+                  current_block = selected_block;
+              } else {
+                  console.log('Not existing block id: ' + block_id);
+              }
+          } else {
+            console.log('Code is not running. Ignoring current block changed event.')
+          }
+      };
+
+      this.is_connection_closed = function() {
+          if (CODE_STATUS.NOT_CONNECTED == current_status) {
+              return true;
+          }
+          return false;
+      };
   };
 
   var socket = null;
-  var isopen = false;
-  var current_status = CODE_STATUS.COMPLETED;
-  var current_block = null;
+  var current_state = new CodeCurrentState();
 
   // window.onload = function() {
   function launchwebsockets() {
@@ -549,124 +642,107 @@
 
     socket.onopen = function() {
        console.log("Connected!");
-       isopen = true;
-    }
+       current_state.set_current_state(CODE_STATUS.COMPLETED);
+    };
 
-    socket.onmessage = function(e) {
-       if (typeof e.data == "string") {
-          console.log("Text message received: " + e.data);
-
-           message_data = e.data.split('\n');
-           if (message_data.length > 0) {
-               method_name = message_data[0];
-               if (message_data.length > 1) {
-                   method_data = message_data[1];
-                   if ('set_current_block' == method_name) {
-                       if (CODE_STATUS.RUNNING == current_status) {
-                           var selected_block_id = method_data;
-                           var selected_block = workspace.getBlockById(selected_block_id);
-                           if (null != selected_block) {
-                               if (null != current_block) {
-                                   current_block.setShadow(false);
-                               }
-                               selected_block.setShadow(true);
-                               current_block = selected_block;
-                           } else {
-                               console.log('Not existing block id: ' + selected_block_id);
-                           }
-                       } else {
-                           console.log('Code is not running. Ignoring current block changed event.')
-                       }
-                   } else {
-                       console.log('Unknown method: ' + method_name);
-                   }
-               } else if ('completed' == method_name) {
-                   var play_pause_button = document.getElementById('play_pause_button');
-                   play_pause_button.innerHTML = 'Launch';
-                   current_status = CODE_STATUS.COMPLETED;
-                   if (null != current_block) {
-                       current_block.setShadow(false);
-                       current_block = null;
-                   }
-                   var blocks = workspace.getAllBlocks();
-                   for (var i=0; i < blocks.length; i++) {
-                       blocks[i].setShadow(false);
-                   }
-                   workspace.options.readOnly = false;
-
-               } else {
-                       console.log('Unknown method: ' + method_name);
-               }
-           }
-
-       } else {
-          var arr = new Uint8Array(e.data);
-          var hex = '';
-          for (var i = 0; i < arr.length; i++) {
-             hex += ('00' + arr[i].toString(16)).substr(-2);
+    socket.onmessage = function (e) {
+      if (typeof e.data == "string") {
+        console.log("Text message received: " + e.data);
+        message_data = e.data.split('\n');
+        method_name = '';
+        method_data = '';
+        if (message_data.length > 0) {
+          method_name = message_data[0];
+          if (message_data.length > 1) {
+            method_data = message_data[1];
           }
-          console.log("Binary message received: " + hex);
-       }
-    }
+        }
+
+        switch (method_name) {
+          case 'set_current_block':
+            current_state.set_current_block_id(method_data);
+            break;
+
+          case 'status_update':
+            current_state.set_current_state(method_data);
+            break;
+
+          default:
+            console.log('Unknown method: ' + method_name);
+            break;
+        }
+      } else {
+        var arr = new Uint8Array(e.data);
+        var hex = '';
+        for (var i = 0; i < arr.length; i++) {
+          hex += ('00' + arr[i].toString(16)).substr(-2);
+        }
+        console.log("Binary message received: " + hex);
+      }
+    };
 
     socket.onclose = function(e) {
        console.log("Connection closed.");
        socket = null;
-       isopen = false;
-    }
+       current_state.set_current_state(CODE_STATUS.NOT_CONNECTED);
+    };
   };
 
   function sendPlayPause() {
-    if (isopen) {
-      var play_pause_button = document.getElementById('play_pause_button');
-      var message_data = '';
 
-      if (CODE_STATUS.COMPLETED == current_status) {
-          play_pause_button.innerHTML = "Pause";
-          message_data = 'play\n';
-          Blockly.Python.addReservedWords('code');
-          var saved_statement_prefix = Blockly.Python.STATEMENT_PREFIX;
-          try {
-            Blockly.Python.STATEMENT_PREFIX = 'check_status(%1)\n';
-            var code = Blockly.Python.workspaceToCode(workspace);
-            message_data += code + "\nsend_status_completed()\n";
-          }
-          finally {
-            Blockly.Python.STATEMENT_PREFIX = saved_statement_prefix;
-          }
-          workspace.options.readOnly = true;
-          current_status = CODE_STATUS.RUNNING;
-      } else if (CODE_STATUS.RUNNING == current_status) {
-          play_pause_button.innerHTML = "Resume";
-          message_data = "pause";
-          current_status = CODE_STATUS.PAUSED;
-      } else if (CODE_STATUS.PAUSED == current_status) {
-          play_pause_button.innerHTML = "Pause";
-          message_data = "resume";
-          current_status = CODE_STATUS.RUNNING;
-      } else {
-          console.log("Unknown status: " + current_status);
-      }
+    if (current_state.is_connection_closed()) {
+      console.log("Connection not opened.");
+      return;
+    }
+    var message_data = '';
+    switch (current_state.get_current_state()) {
+      case CODE_STATUS.COMPLETED:
+        message_data = 'play\n';
+        Blockly.Python.addReservedWords('code');
+        var saved_statement_prefix = Blockly.Python.STATEMENT_PREFIX;
+        try {
+          Blockly.Python.STATEMENT_PREFIX = 'check_status(%1)\n';
+          var code = Blockly.Python.workspaceToCode(workspace);
+          // TODO: Add here wrapping to try .. finally construction of the Python code
+          message_data += code + "\nsend_status_completed()\n";
+        }
+        finally {
+          Blockly.Python.STATEMENT_PREFIX = saved_statement_prefix;
+        }
+        current_state.set_current_state(CODE_STATUS.RUNNING);
+        break;
 
-      if (message_data.length > 0) {
-          socket.send(message_data);
-          console.log("Text message sent.");
-      }
-    } else {
-       console.log("Connection not opened.")
+      case CODE_STATUS.RUNNING:
+        current_state.set_current_state(CODE_STATUS.PAUSED)
+        message_data = "pause";
+        break;
+
+      case CODE_STATUS.PAUSED:
+        current_state.set_current_state(CODE_STATUS.RUNNING)
+        message_data = "resume";
+        break;
+
+      default:
+        console.log("Unknown status: " + current_status);
+        break;
+    }
+
+    if (message_data.length > 0) {
+      socket.send(message_data);
+      console.log("Text message sent.");
     }
   };
 
   function sendBinary() {
-    if (isopen) {
-       var buf = new ArrayBuffer(32);
-       var arr = new Uint8Array(buf);
-       for (i = 0; i < arr.length; ++i) arr[i] = i;
-       socket.send(buf);
-       console.log("Binary message sent.");
-    } else {
-       console.log("Connection not opened.")
+    if (current_state.is_connection_closed()) {
+      console.log("Connection not opened.");
+      return;
     }
+    var buf = new ArrayBuffer(32);
+    var arr = new Uint8Array(buf);
+    for (i = 0; i < arr.length; ++i) arr[i] = i;
+    socket.send(buf);
+    console.log("Binary message sent.");
   };
 </script>
 
