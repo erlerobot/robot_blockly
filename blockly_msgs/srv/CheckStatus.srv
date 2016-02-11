@@ -1,3 +1,3 @@
 int32 block_id
 ---
-bool is_running
+string state
