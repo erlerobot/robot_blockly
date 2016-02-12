@@ -139,6 +139,9 @@ var ExecutionLogicModule = (function () {
           switch (method_name) {
             case 'set_current_block':
               set_current_block_id(method_data);
+              if (CODE_STATUS.COMPLETED == current_status) {
+                set_current_status(CODE_STATUS.RUNNING);
+              }
               break;
 
             case 'status_update':
