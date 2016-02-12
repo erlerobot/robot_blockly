@@ -166,8 +166,8 @@ var ExecutionLogicModule = (function () {
           try {
             Blockly.Python.STATEMENT_PREFIX = 'check_status(%1)\n';
             var code = Blockly.Python.workspaceToCode(workspace);
-            // TODO: Add here wrapping to try .. finally construction of the Python code
-            message_data += code + "\nsend_status_completed()\n";
+            message_data += '\ntry:\n' + Blockly.Python.prefixLines(code, Blockly.Python.INDENT) + '\nfinally:\n' +
+              Blockly.Python.INDENT + 'send_status_completed()\n';
           }
           finally {
             Blockly.Python.STATEMENT_PREFIX = saved_statement_prefix;
