@@ -73,26 +73,30 @@ class CodeStatus(object):
         cls.__status_publisher.publish(value)
 
 
+class CodeExecution(object):
+    __node_process = None
+
+    @classmethod
+    def run_process(cls, arguments):
+        if cls.__node_process is not None:
+            rate = rospy.Rate(5)
+            for _ in xrange(10):
+                if cls.__node_process.poll() is None:
+                    rate.sleep()
+                else:
+                    break
+            if cls.__node_process.poll() is None:
+                cls.__node_process.terminate()
+        cls.__node_process = Popen(arguments)
+
+
 class BlocklyServerProtocol(WebSocketServerProtocol):
 
     __current_code_status_subscriber = None
     __current_block_id_subscriber = None
     __current_block_publisher = None
-    __node_process = None
 
     def _send_code_status(self, message):
-
-        if CodeStatus.COMPLETED == message.data and self.__node_process is not None:
-            rate = rospy.Rate(5)
-            for _ in xrange(10):
-                if self.__node_process.poll() is None:
-                    rate.sleep()
-                else:
-                    break
-            if self.__node_process.poll() is None:
-                self.__node_process.terminate()
-            self.__node_process = None
-
         rospy.loginfo('Current code status: %s', message.data)
         payload = 'status_update\n'
         payload += message.data
@@ -141,7 +145,7 @@ class BlocklyServerProtocol(WebSocketServerProtocol):
                         rospy.loginfo('The file generated contains...')
                         os.system('cat test.py')
                         # TODO: Change Python version back to #3 python3
-                        self.__node_process = Popen(['python', 'test.py'])
+                        CodeExecution.run_process(['python', 'test.py'])
                     else:
                         rospy.logerr('Called unknown method %s', method_name)
                 else:
