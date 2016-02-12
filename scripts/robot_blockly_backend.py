@@ -75,19 +75,21 @@ class CodeStatus(object):
 
 class CodeExecution(object):
     __node_process = None
+    __run_lock = threading.Lock()
 
     @classmethod
     def run_process(cls, arguments):
-        if cls.__node_process is not None:
-            rate = rospy.Rate(5)
-            for _ in xrange(10):
+        with cls.__run_lock:
+            if cls.__node_process is not None:
+                rate = rospy.Rate(5)
+                for _ in xrange(10):
+                    if cls.__node_process.poll() is None:
+                        rate.sleep()
+                    else:
+                        break
                 if cls.__node_process.poll() is None:
-                    rate.sleep()
-                else:
-                    break
-            if cls.__node_process.poll() is None:
-                cls.__node_process.terminate()
-        cls.__node_process = Popen(arguments)
+                    cls.__node_process.terminate()
+            cls.__node_process = Popen(arguments)
 
 
 class BlocklyServerProtocol(WebSocketServerProtocol):
