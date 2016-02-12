@@ -39,10 +39,19 @@ var ExecutionLogicModule = (function () {
   }
 
   function update_workspace() {
+    var blocks_tab_selector = "a[href='#home'][data-toggle='tab']";
+    var python_tab_selector = "a[href='#profile'][data-toggle='tab']";
+    var graph_tab_selector = "a[href='graph.html']";
     switch (current_status) {
       case CODE_STATUS.PAUSED:
       case CODE_STATUS.RUNNING:
         workspace.options.readOnly = true;
+        if (null != workspace.toolbox_) {
+          workspace.toolbox_.HtmlDiv.hidden = true;
+        }
+        $(blocks_tab_selector).hide();
+        $(python_tab_selector).hide();
+        $(graph_tab_selector).hide();
         break;
 
       case CODE_STATUS.COMPLETED:
@@ -53,6 +62,12 @@ var ExecutionLogicModule = (function () {
           blocks[i].setShadow(false);
         }
         workspace.options.readOnly = false;
+        if (null != workspace.toolbox_) {
+          workspace.toolbox_.HtmlDiv.hidden = false;
+        }
+        $(blocks_tab_selector).show();
+        $(python_tab_selector).show();
+        $(graph_tab_selector).show();
         break;
 
       default:
