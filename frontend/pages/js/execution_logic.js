@@ -145,9 +145,9 @@ var ExecutionLogicModule = (function () {
       };
 
       socket.onclose = function (e) {
-        console.log("Connection closed. Reason " + e.data);
         socket = null;
         set_current_status(CODE_STATUS.NOT_CONNECTED);
+        console.log("Connection closed. Reason: " + e.reason);
       };
     },
 
