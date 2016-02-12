@@ -41,6 +41,7 @@ from autobahn.asyncio.websocket import WebSocketServerProtocol, \
     WebSocketServerFactory
 import os
 from robot_blockly.srv import CheckStatus, CheckStatusResponse
+from subprocess import Popen
 
 
 class CodeStatus(object):
@@ -77,8 +78,21 @@ class BlocklyServerProtocol(WebSocketServerProtocol):
     __current_code_status_subscriber = None
     __current_block_id_subscriber = None
     __current_block_publisher = None
+    __node_process = None
 
     def _send_code_status(self, message):
+
+        if CodeStatus.COMPLETED == message.data and self.__node_process is not None:
+            rate = rospy.Rate(5)
+            for _ in xrange(10):
+                if self.__node_process.poll() is None:
+                    rate.sleep()
+                else:
+                    break
+            if self.__node_process.poll() is None:
+                self.__node_process.terminate()
+            self.__node_process = None
+
         rospy.loginfo('Current code status: %s', message.data)
         payload = 'status_update\n'
         payload += message.data
@@ -127,7 +141,7 @@ class BlocklyServerProtocol(WebSocketServerProtocol):
                         rospy.loginfo('The file generated contains...')
                         os.system('cat test.py')
                         # TODO: Change Python version back to #3 python3
-                        os.system('python test.py')
+                        self.__node_process = Popen(['python', 'test.py'])
                     else:
                         rospy.logerr('Called unknown method %s', method_name)
                 else:
