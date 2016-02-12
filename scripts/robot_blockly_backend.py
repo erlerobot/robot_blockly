@@ -36,11 +36,11 @@
 import rospy
 import threading
 from std_msgs.msg import String
-from std_srvs.srv import Empty
+from std_srvs.srv import Empty, EmptyResponse
 from autobahn.asyncio.websocket import WebSocketServerProtocol, \
     WebSocketServerFactory
 import os
-from robot_blockly.srv import CheckStatus
+from robot_blockly.srv import CheckStatus, CheckStatusResponse
 
 
 class CodeStatus(object):
@@ -78,7 +78,7 @@ class BlocklyServerProtocol(WebSocketServerProtocol):
     __current_block_id_subscriber = None
     __current_block_publisher = None
 
-    def _send_completed_code_status(self, message):
+    def _send_code_status(self, message):
         rospy.loginfo('Current code status: %s', message.data)
         payload = 'status_update\n'
         payload += message.data
@@ -92,7 +92,7 @@ class BlocklyServerProtocol(WebSocketServerProtocol):
     def onConnect(self, request):
         print("Client connecting: {0}".format(request.peer))
         if self.__current_code_status_subscriber is None:
-            rospy.Subscriber('current_code_status', String, self._send_completed_code_status)
+            rospy.Subscriber('current_code_status', String, self._send_code_status)
         if self.__current_block_id_subscriber is None:
             rospy.Subscriber('current_block_id', String, self._send_current_block_id)
 
@@ -126,7 +126,8 @@ class BlocklyServerProtocol(WebSocketServerProtocol):
                         self.build_ros_node(method_body)
                         rospy.loginfo('The file generated contains...')
                         os.system('cat test.py')
-                        os.system('python3 test.py')
+                        # TODO: Change Python version back to #3 python3
+                        os.system('python test.py')
                     else:
                         rospy.logerr('Called unknown method %s', method_name)
                 else:
@@ -152,21 +153,22 @@ class BlocklyServerProtocol(WebSocketServerProtocol):
         target.write("#!/usr/bin/env python3\n")
         target.write("import rospy\n")
         target.write("from std_msgs.msg import String\n")
+        target.write("from std_srvs.srv import Empty\n")
+        target.write("from robot_blockly.srv import CheckStatus\n")
         target.write("\n")
         target.write("rospy.init_node('blockly_node', anonymous=True)\n")
         target.write("\n")
         target.write("def check_status(block_id):\n")
-        target.write("    rospy.wait_for_service('block_status')\n")
+        target.write("    rospy.wait_for_service('program_status')\n")
         target.write("    r = rospy.Rate(10)\n")
         target.write("    while not rospy.is_shutdown():\n")
         target.write("        try:\n")
         target.write("            program_status = rospy.ServiceProxy('program_status', CheckStatus)\n")
-        target.write("            program_status()\n")
         target.write("            status = program_status(block_id)\n")
         target.write("        except rospy.ServiceException as e:\n")
         target.write("            print ('Service call failed: ', e)\n")
         target.write("\n")
-        target.write("        if status.state == 'running' or status.state == 'completed':\n")
+        target.write("        if status.state in ['running', 'completed']:\n")
         target.write("            break\n")
         target.write("        r.sleep()\n")
         target.write("def send_status_completed():\n")
@@ -195,16 +197,19 @@ def callback(data):
 class RobotBlocklyBackend(object):
     __current_block_publisher = None
 
-    def set_status_complete(self):
-        # set status to complete
+    def set_status_completed(self, req):
+        # set status to completed
         CodeStatus.set_current_status(CodeStatus.COMPLETED)
+        return EmptyResponse()
 
     def get_status(self, req):
         if self.__current_block_publisher is None:
             self.__current_block_publisher = rospy.Publisher('current_block_id', String, queue_size=5)
         status = CodeStatus.get_current_status()
         self.__current_block_publisher.publish(req.block_id)
-        return status
+        response = CheckStatusResponse()
+        response.state = status
+        return response
 
     def talker(self):
         # In ROS, nodes are uniquely named. If two nodes with the same
@@ -230,7 +235,7 @@ class RobotBlocklyBackend(object):
         server = loop.run_until_complete(coro)
 
         rospy.Service('program_status', CheckStatus, self.get_status)
-        rospy.Service('program_complete', Empty, self.set_status_complete)
+        rospy.Service('program_completed', Empty, self.set_status_completed)
 
         try:
             loop.run_forever()
