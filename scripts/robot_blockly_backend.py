@@ -1,5 +1,4 @@
-#!/usr/bin/env python
-# TODO: Remove Python 2 and change to Python 3 before commit !!!
+#!/usr/bin/env python3
 # Software License Agreement (BSD License)
 #
 # Copyright (c) 2015, Erle Robotics LLC
@@ -146,8 +145,7 @@ class BlocklyServerProtocol(WebSocketServerProtocol):
                         BlocklyServerProtocol.build_ros_node(method_body)
                         rospy.loginfo('The file generated contains...')
                         os.system('cat test.py')
-                        # TODO: Change Python version back to #3 python3
-                        CodeExecution.run_process(['python', 'test.py'])
+                        CodeExecution.run_process(['python3', 'test.py'])
                     else:
                         rospy.logerr('Called unknown method %s', method_name)
                 else:
