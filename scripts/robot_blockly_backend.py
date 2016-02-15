@@ -143,7 +143,7 @@ class BlocklyServerProtocol(WebSocketServerProtocol):
                     method_body = message_data[1]
                     if 'play' == method_name:
                         CodeStatus.set_current_status(CodeStatus.RUNNING)
-                        self.build_ros_node(method_body)
+                        BlocklyServerProtocol.build_ros_node(method_body)
                         rospy.loginfo('The file generated contains...')
                         os.system('cat test.py')
                         # TODO: Change Python version back to #3 python3
@@ -161,7 +161,8 @@ class BlocklyServerProtocol(WebSocketServerProtocol):
     def onClose(self, wasClean, code, reason):
         print("WebSocket connection closed: {0}".format(reason))
 
-    def build_ros_node(self, blockly_code):
+    @staticmethod
+    def build_ros_node(blockly_code):
         print("building the ros node...")
         filename = "test.py"
         target = open(filename, 'w')
@@ -214,12 +215,12 @@ class BlocklyServerProtocol(WebSocketServerProtocol):
         ###########################
 
 
-def callback(data):
-    rospy.loginfo(rospy.get_caller_id() + "I heard %s", data.data)
-
-
 class RobotBlocklyBackend(object):
     __current_block_publisher = None
+
+    @staticmethod
+    def callback(data):
+        rospy.loginfo(rospy.get_caller_id() + "I heard %s", data.data)
 
     @staticmethod
     def __set_status_completed(request):
@@ -245,7 +246,7 @@ class RobotBlocklyBackend(object):
         # name for our 'talker' node so that multiple talkers can
         # run simultaneously.
         rospy.init_node('blockly_server', anonymous=True)
-        rospy.Subscriber("blockly", String, callback)
+        rospy.Subscriber("blockly", String, RobotBlocklyBackend.callback)
         CodeStatus.initialize_publisher()
         self.__current_block_publisher = rospy.Publisher('current_block_id', String, queue_size=5)
 
