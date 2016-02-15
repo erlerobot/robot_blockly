@@ -184,6 +184,9 @@ var ExecutionLogicModule = (function () {
           try {
             Blockly.Python.STATEMENT_PREFIX = 'check_status(%1)\n';
             var code = Blockly.Python.workspaceToCode(workspace);
+            if (0 == code.length) {
+              code = 'pass\n'
+            }
             message_data += '\ntry:\n' + Blockly.Python.prefixLines(code, Blockly.Python.INDENT) + '\nfinally:\n' +
               Blockly.Python.INDENT + 'send_status_completed()\n';
           }
