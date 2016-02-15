@@ -36,11 +36,11 @@
 import rospy
 import threading
 from std_msgs.msg import String
-from std_srvs.srv import Empty, EmptyResponse
+from std_srvs.srv import Empty, EmptyResponse, Trigger, TriggerResponse
 from autobahn.asyncio.websocket import WebSocketServerProtocol, \
     WebSocketServerFactory
 import os
-from robot_blockly.srv import CheckStatus, CheckStatusResponse
+from robot_blockly.srv import SetCurrentBlockId, SetCurrentBlockIdResponse
 from subprocess import Popen
 
 
@@ -120,13 +120,13 @@ class BlocklyServerProtocol(WebSocketServerProtocol):
         print("WebSocket connection open.")
 
     def onMessage(self, payload, isBinary):
-        #Debug
+        # Debug
         if isBinary:
             print("Binary message received: {0} bytes".format(len(payload)))
         else:
             print("Text message received: {0}".format(payload.decode('utf8')))
 
-            ## Do stuff
+            # Do stuff
             # pub = rospy.Publisher('blockly', String, queue_size=10)
             # time.sleep(1)
             # pub.publish("blockly says: "+payload.decode('utf8'))
@@ -161,11 +161,11 @@ class BlocklyServerProtocol(WebSocketServerProtocol):
     def onClose(self, wasClean, code, reason):
         print("WebSocket connection closed: {0}".format(reason))
 
-    def build_ros_node(self,blockly_code):
+    def build_ros_node(self, blockly_code):
         print("building the ros node...")
         filename = "test.py"
         target = open(filename, 'w')
-        target.truncate() # empties the file
+        target.truncate()  # empties the file
 
         ###########################
         # Start building the ROS node:
@@ -173,24 +173,28 @@ class BlocklyServerProtocol(WebSocketServerProtocol):
         target.write("#!/usr/bin/env python3\n")
         target.write("import rospy\n")
         target.write("from std_msgs.msg import String\n")
-        target.write("from std_srvs.srv import Empty\n")
-        target.write("from robot_blockly.srv import CheckStatus\n")
+        target.write("from std_srvs.srv import Empty, Trigger\n")
+        target.write("from robot_blockly.srv import SetCurrentBlockId\n")
         target.write("\n")
         target.write("rospy.init_node('blockly_node', anonymous=True)\n")
         target.write("\n")
         target.write("def check_status(block_id):\n")
-        target.write("    rospy.wait_for_service('program_status')\n")
+        target.write("    rospy.wait_for_service('program_is_paused')\n")
+        target.write("    rospy.wait_for_service('program_set_current_block_id')\n")
         target.write("    r = rospy.Rate(10)\n")
         target.write("    while not rospy.is_shutdown():\n")
         target.write("        try:\n")
-        target.write("            program_status = rospy.ServiceProxy('program_status', CheckStatus)\n")
-        target.write("            status = program_status(block_id)\n")
+        target.write("            program_is_paused = rospy.ServiceProxy('program_is_paused', Trigger)\n")
+        target.write("            is_paused = program_is_paused()\n")
         target.write("        except rospy.ServiceException as e:\n")
         target.write("            print ('Service call failed: ', e)\n")
         target.write("\n")
-        target.write("        if status.state in ['running', 'completed']:\n")
+        target.write("        if is_paused.success:\n")
+        target.write("            r.sleep()\n")
+        target.write("        else:\n")
         target.write("            break\n")
-        target.write("        r.sleep()\n")
+        target.write("    set_current_block = rospy.ServiceProxy('program_set_current_block_id', SetCurrentBlockId)\n")
+        target.write("    set_current_block(block_id)\n")
         target.write("def send_status_completed():\n")
         target.write("    rospy.wait_for_service('program_completed')\n")
         target.write("    try:\n")
@@ -217,18 +221,21 @@ def callback(data):
 class RobotBlocklyBackend(object):
     __current_block_publisher = None
 
-    def set_status_completed(self, req):
-        # set status to completed
+    @staticmethod
+    def __set_status_completed(request):
         CodeStatus.set_current_status(CodeStatus.COMPLETED)
         return EmptyResponse()
 
-    def get_status(self, req):
-        if self.__current_block_publisher is None:
-            self.__current_block_publisher = rospy.Publisher('current_block_id', String, queue_size=5)
-        status = CodeStatus.get_current_status()
-        self.__current_block_publisher.publish(req.block_id)
-        response = CheckStatusResponse()
-        response.state = status
+    def __set_current_block_id(self, request):
+        self.__current_block_publisher.publish(request.block_id)
+        response = SetCurrentBlockIdResponse()
+        response.result = True
+        return response
+
+    @staticmethod
+    def __is_status_paused(request):
+        response = TriggerResponse()
+        response.success = (CodeStatus.PAUSED == CodeStatus.get_current_status())
         return response
 
     def talker(self):
@@ -240,6 +247,7 @@ class RobotBlocklyBackend(object):
         rospy.init_node('blockly_server', anonymous=True)
         rospy.Subscriber("blockly", String, callback)
         CodeStatus.initialize_publisher()
+        self.__current_block_publisher = rospy.Publisher('current_block_id', String, queue_size=5)
 
         try:
             import asyncio
@@ -254,8 +262,9 @@ class RobotBlocklyBackend(object):
         coro = loop.create_server(factory, '0.0.0.0', 9000)
         server = loop.run_until_complete(coro)
 
-        rospy.Service('program_status', CheckStatus, self.get_status)
-        rospy.Service('program_completed', Empty, self.set_status_completed)
+        rospy.Service('program_is_paused', Trigger, RobotBlocklyBackend.__is_status_paused)
+        rospy.Service('program_completed', Empty, RobotBlocklyBackend.__set_status_completed)
+        rospy.Service('program_set_current_block_id', SetCurrentBlockId, self.__set_current_block_id)
 
         try:
             loop.run_forever()

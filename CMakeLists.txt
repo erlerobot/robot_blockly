@@ -4,7 +4,7 @@ project(robot_blockly)
 find_package(catkin REQUIRED COMPONENTS rospy std_msgs message_generation)
 
 # add_message_files(DIRECTORY msg FILES Floats.msg HeaderString.msg)
-add_service_files(FILES CheckStatus.srv)
+add_service_files(FILES SetCurrentBlockId.srv)
 
 generate_messages(DEPENDENCIES std_msgs)
 
