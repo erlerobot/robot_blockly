@@ -355,6 +355,10 @@
 	          <block type="rover_steering"></block>
 	          <block type="rover_control"></block>
     </category>
+    <category id="brain" name="Erle-Brain" colour="0">
+	  <block type="turn_on_blue_led"></block>
+	  <block type="turn_on_orange_led"></block>              
+    </category>
     </xml>
 
 
@@ -532,11 +536,11 @@
 
   // window.onload = function() {
   function launchwebsockets() {
-    socket = new WebSocket("ws://0.0.0.0:9000");
+    //socket = new WebSocket("ws://0.0.0.0:9000");
     // socket = new WebSocket("ws://127.0.0.1:9000");
     // socket = new WebSocket("ws://10.0.0.1:9000");
     // socket = new WebSocket("ws:/erle-brain-2.local:9000");
-    // socket = new WebSocket("ws://192.168.1.57:9000");
+    socket = new WebSocket("ws://192.168.1.40:9000");
     socket.binaryType = "arraybuffer";
 
     socket.onopen = function() {
