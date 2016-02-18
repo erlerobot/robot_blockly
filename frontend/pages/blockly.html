@@ -124,10 +124,10 @@
                                     <a id="launch_button" name="launch_button" href="#" onclick='ExecutionLogicModule.launch_code();'>Launch</a>
                                 </li>
                                 <li>
-                                    <a href="#" onclick="loadFromFile();">Load From File</a>
+                                    <a id="load_from_file_button" name="load_from_file_button" href="#" onclick='ExecutionLogicModule.load_from_file();'>Load From File</a>
                                 </li>
                                 <li>
-                                    <a href="#" onclick="saveToFile();">Save To File</a>
+                                    <a id="save_to_file_button" name="save_to_file_button" href="#" onclick='ExecutionLogicModule.save_to_file();'>Save To File</a>
                                 </li>
 <!--                                 <li>
                                     <a href="#" onclick="localstorage();">Save</a>
@@ -536,65 +536,6 @@
     // console.log("Rtved: "+xml_text_stored)
     // alert("Saved: "+xml_text);
   }
-
-  function loadFromFile() {
-    var can_load_file = false;
-    if (workspace.getAllBlocks().length > 0) {
-      can_load_file = confirm("Current workspace is not empty. Do you want to override it?");
-    } else {
-      can_load_file = true;
-    }
-
-    if (true == can_load_file) {
-      var input_field_name = 'load_workspace_from_file_input';
-      var file_input = document.getElementById(input_field_name);
-      if (null == file_input) {
-          var file_input = document.createElement('input');
-          file_input.type = 'file';
-          file_input.id = input_field_name;
-          file_input.name = input_field_name;
-          file_input.addEventListener('change',
-                    function (evt) {
-                        var files = evt.target.files;
-                        if (files.length > 0) {
-                            var file = files[0];
-                            var reader = new FileReader();
-                            reader.onload = function () {
-                                workspace.clear();
-                                var xml = Blockly.Xml.textToDom(this.result);
-                                console.log("Loading workspace from file.");
-                                Blockly.Xml.domToWorkspace(workspace, xml);
-                            }
-                            reader.readAsText(file);
-                            // This is done in order to allow open the same file several times in the row
-                            document.body.removeChild(file_input);
-                        }
-                    }, false);
-          // Hidding element from view
-          file_input.style = 'position: fixed; top: -100em';
-      document.body.appendChild(file_input);
-      }
-      file_input.click();
-    }
-  };
-
-  function saveToFile() {
-    var filename = 'blockly_workspace.xml';
-    var xml = Blockly.Xml.workspaceToDom(workspace);
-    var xml_text = Blockly.Xml.domToText(xml);
-    var blob = new Blob([xml_text], {type: 'text/xml'});
-    if(window.navigator.msSaveOrOpenBlob) {
-        window.navigator.msSaveBlob(blob, filename);
-    } else {
-        var elem = window.document.createElement('a');
-        elem.href = window.URL.createObjectURL(blob);
-        elem.download = filename;
-        document.body.appendChild(elem);
-        elem.click();
-        document.body.removeChild(elem);
-    }
-    console.log("Workspace saved.");
-  };
 
 </script>
 

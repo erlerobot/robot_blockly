@@ -42,6 +42,8 @@ var ExecutionLogicModule = (function () {
     var blocks_tab_selector = "a[href='#home'][data-toggle='tab']";
     var python_tab_selector = "a[href='#profile'][data-toggle='tab']";
     var graph_tab_selector = "a[href='graph.html']";
+    var load_from_file_button_selector = "a[id='load_from_file_button']";
+    var save_to_file_button_selector = "a[id='save_to_file_button']";
     switch (current_status) {
       case CODE_STATUS.PAUSED:
       case CODE_STATUS.RUNNING:
@@ -52,6 +54,8 @@ var ExecutionLogicModule = (function () {
         $(blocks_tab_selector).hide();
         $(python_tab_selector).hide();
         $(graph_tab_selector).hide();
+        $(load_from_file_button_selector).hide();
+        $(save_to_file_button_selector).hide();
         break;
 
       case CODE_STATUS.COMPLETED:
@@ -68,6 +72,8 @@ var ExecutionLogicModule = (function () {
         $(blocks_tab_selector).show();
         $(python_tab_selector).show();
         $(graph_tab_selector).show();
+        $(load_from_file_button_selector).show();
+        $(save_to_file_button_selector).show();
         break;
 
       default:
@@ -215,6 +221,65 @@ var ExecutionLogicModule = (function () {
         socket.send(message_data);
         console.log("Text message sent.");
       }
+    },
+
+    load_from_file: function() {
+      var can_load_file = false;
+      if (workspace.getAllBlocks().length > 0) {
+        can_load_file = confirm("Current workspace is not empty. Do you want to override it?");
+      } else {
+        can_load_file = true;
+      }
+
+      if (true == can_load_file) {
+        var input_field_name = 'load_workspace_from_file_input';
+        var file_input = document.getElementById(input_field_name);
+        if (null == file_input) {
+            file_input = document.createElement('input');
+            file_input.type = 'file';
+            file_input.id = input_field_name;
+            file_input.name = input_field_name;
+            file_input.addEventListener('change',
+                      function (evt) {
+                          var files = evt.target.files;
+                          if (files.length > 0) {
+                              var file = files[0];
+                              var reader = new FileReader();
+                              reader.onload = function () {
+                                  workspace.clear();
+                                  var xml = Blockly.Xml.textToDom(this.result);
+                                  console.log("Loading workspace from file.");
+                                  Blockly.Xml.domToWorkspace(workspace, xml);
+                              };
+                              reader.readAsText(file);
+                              // This is done in order to allow open the same file several times in the row
+                              document.body.removeChild(file_input);
+                          }
+                      }, false);
+            // Hidding element from view
+            file_input.style = 'position: fixed; top: -100em';
+        document.body.appendChild(file_input);
+        }
+        file_input.click();
+      }
+    },
+
+    save_to_file: function() {
+      var filename = 'blockly_workspace.xml';
+      var xml = Blockly.Xml.workspaceToDom(workspace);
+      var xml_text = Blockly.Xml.domToText(xml);
+      var blob = new Blob([xml_text], {type: 'text/xml'});
+      if (window.navigator.msSaveOrOpenBlob) {
+          window.navigator.msSaveBlob(blob, filename);
+      } else {
+          var elem = window.document.createElement('a');
+          elem.href = window.URL.createObjectURL(blob);
+          elem.download = filename;
+          document.body.appendChild(elem);
+          elem.click();
+          document.body.removeChild(elem);
+      }
+      console.log("Workspace saved.");
     }
   };
 })();

@@ -34,14 +34,20 @@
 
 import rospy
 import time
+import os
+import threading
+from subprocess import Popen
 from std_msgs.msg import String
 from std_srvs.srv import Empty, EmptyResponse, Trigger, TriggerResponse
 from autobahn.asyncio.websocket import WebSocketServerProtocol, \
     WebSocketServerFactory
-import roslaunch
-import os
 from robot_blockly.srv import SetCurrentBlockId, SetCurrentBlockIdResponse
-from subprocess import Popen
+
+try:
+    import asyncio
+except ImportError:
+    # Trollius >= 0.3 was renamed
+    import trollius as asyncio
 
 
 class CodeStatus(object):
@@ -90,13 +96,6 @@ class CodeExecution(object):
                 if cls.__node_process.poll() is None:
                     cls.__node_process.terminate()
             cls.__node_process = Popen(arguments)
-
-
-try:
-    import asyncio
-except ImportError:
-    # Trollius >= 0.3 was renamed
-    import trollius as asyncio
 
 
 class BlocklyServerProtocol(WebSocketServerProtocol):
@@ -250,7 +249,6 @@ class RobotBlocklyBackend(object):
         while not rospy.is_shutdown():
             time.sleep(.1)
             yield
-
         loop.stop()
 
     def talker(self):
