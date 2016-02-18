@@ -33,11 +33,12 @@
 #
 
 import rospy
-import threading
+import time
 from std_msgs.msg import String
 from std_srvs.srv import Empty, EmptyResponse, Trigger, TriggerResponse
 from autobahn.asyncio.websocket import WebSocketServerProtocol, \
     WebSocketServerFactory
+import roslaunch
 import os
 from robot_blockly.srv import SetCurrentBlockId, SetCurrentBlockIdResponse
 from subprocess import Popen
@@ -89,6 +90,13 @@ class CodeExecution(object):
                 if cls.__node_process.poll() is None:
                     cls.__node_process.terminate()
             cls.__node_process = Popen(arguments)
+
+
+try:
+    import asyncio
+except ImportError:
+    # Trollius >= 0.3 was renamed
+    import trollius as asyncio
 
 
 class BlocklyServerProtocol(WebSocketServerProtocol):
@@ -237,6 +245,14 @@ class RobotBlocklyBackend(object):
         response.success = (CodeStatus.PAUSED == CodeStatus.get_current_status())
         return response
 
+    @staticmethod
+    def wait_until_ros_node_shutdown(loop):
+        while not rospy.is_shutdown():
+            time.sleep(.1)
+            yield
+
+        loop.stop()
+
     def talker(self):
         # In ROS, nodes are uniquely named. If two nodes with the same
         # node are launched, the previous one is kicked off. The
@@ -248,11 +264,9 @@ class RobotBlocklyBackend(object):
         CodeStatus.initialize_publisher()
         self.__current_block_publisher = rospy.Publisher('current_block_id', String, queue_size=5)
 
-        try:
-            import asyncio
-        except ImportError:
-            # Trollius >= 0.3 was renamed
-            import trollius as asyncio
+        rospy.Service('program_is_paused', Trigger, RobotBlocklyBackend.__is_status_paused)
+        rospy.Service('program_completed', Empty, RobotBlocklyBackend.__set_status_completed)
+        rospy.Service('program_set_current_block_id', SetCurrentBlockId, self.__set_current_block_id)
 
         factory = WebSocketServerFactory(u"ws://0.0.0.0:9000", debug=False)
         factory.protocol = BlocklyServerProtocol
@@ -260,21 +274,14 @@ class RobotBlocklyBackend(object):
         loop = asyncio.get_event_loop()
         coro = loop.create_server(factory, '0.0.0.0', 9000)
         server = loop.run_until_complete(coro)
+        asyncio.async(RobotBlocklyBackend.wait_until_ros_node_shutdown(loop))
 
-        rospy.Service('program_is_paused', Trigger, RobotBlocklyBackend.__is_status_paused)
-        rospy.Service('program_completed', Empty, RobotBlocklyBackend.__set_status_completed)
-        rospy.Service('program_set_current_block_id', SetCurrentBlockId, self.__set_current_block_id)
+        loop.run_forever()
 
-        try:
-            loop.run_forever()
-        except KeyboardInterrupt:
-            pass
-        finally:
-            server.close()
-            loop.close()
-
-        # spin() simply keeps python from exiting until this node is stopped
-        # rospy.spin()
+        print("Closing...")
+        server.close()
+        loop.run_until_complete(server.wait_closed())
+        loop.close()
 
 if __name__ == '__main__':
     backend = RobotBlocklyBackend()
