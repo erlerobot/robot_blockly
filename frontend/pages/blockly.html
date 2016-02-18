@@ -30,7 +30,7 @@
         <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
         <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
-    
+
     <!-- Include Blocky -->
     <script src="../blockly/blockly_compressed.js"></script>
     <script src="../blockly/blocks_compressed.js"></script>
@@ -75,7 +75,7 @@
                       <a href="http://erlerobotics.com">Erle Robotics</a>
                     </ul>
 
-                    
+
 <!--                     <a class="dropdown-toggle" data-toggle="dropdown" href="#">
                         <i class="fa fa-user fa-fw"></i>  <i class="fa fa-caret-down"></i>
                     </a>
@@ -91,7 +91,7 @@
                         <li><a href="login.html"><i class="fa fa-sign-out fa-fw"></i> Logout</a>
                         </li>
                     </ul>
- -->                    
+ -->
                     <!-- /.dropdown-user -->
                 </li>
                 <!-- /.dropdown -->
@@ -101,7 +101,7 @@
             <div class="navbar-default sidebar" role="navigation">
                 <div class="sidebar-nav navbar-collapse">
                     <ul class="nav" id="side-menu">
-                        
+
 <!--                         <li class="sidebar-search">
                             <div class="input-group custom-search-form">
                                 <input type="text" class="form-control" placeholder="Search...">
@@ -112,7 +112,7 @@
                                 </span>
                             </div>
                         </li> -->
-                        
+
                        <!--  <li>
                             <a href="blockly.html"><i class="active fa fa-cubes fa-fw"></i> Blockly</a>
                         </li> -->
@@ -123,6 +123,12 @@
                                 <li>
                                     <a href="#" onclick='sendText();'>Launch</a>
                                 </li>
+                                <li>
+                                    <a href="#" onclick="loadFromFile();">Load From File</a>
+                                </li>
+                                <li>
+                                    <a href="#" onclick="saveToFile();">Save To File</a>
+                                </li>
 <!--                                 <li>
                                     <a href="#" onclick="localstorage();">Save</a>
                                 </li>
@@ -131,8 +137,8 @@
 
                                     <ul class="nav nav-third-level">
                                       <li><a href="#">Test1</a></li>
-                                      <li><a href="#">Test2</a></li>                      
-                                    </ul>  
+                                      <li><a href="#">Test2</a></li>
+                                    </ul>
                                 </li>
  --><!--                                 <li>
                                     <a href="#" onclick="tojavascript()">Javascript</a>
@@ -176,16 +182,16 @@
                           return x;
                       }
                       </div>
-<!--                       
+<!--
                       <script>
                           var editor = ace.edit("editor");
                           editor.setTheme("ace/theme/monokai");
                           editor.getSession().setMode("ace/mode/javascript");
                       </script>
- -->                      
+ -->
 
 <!--                   <textarea id="profile_text" style="width:100%; height:100px;">
-                        Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. 
+                        Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
 
                         Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
                       </textarea> -->
@@ -355,6 +361,10 @@
 	          <block type="rover_steering"></block>
 	          <block type="rover_control"></block>
     </category>
+    <category id="brain" name="Erle-Brain" colour="0">
+	  <block type="turn_on_blue_led"></block>
+	  <block type="turn_on_orange_led"></block>              
+    </category>
     </xml>
 
 
@@ -427,7 +437,7 @@
         alert(code);
       } catch (e) {
         alert(e);
-      }            
+      }
   };
 
   function tophp(){
@@ -438,7 +448,7 @@
         alert(code);
       } catch (e) {
         alert(e);
-      }            
+      }
   };
 
   function topython(){
@@ -449,19 +459,19 @@
         alert(code);
       } catch (e) {
         alert(e);
-      }            
+      }
   };
 
   // hide blockly and show the code
   function hide_blockly() {
       document.getElementById("blocklyDiv").style.display = 'none';
       document.getElementById("blocklyArea").style.display = 'none';
-      // onresize();        
+      // onresize();
       window.dispatchEvent(new Event('resize'));
 
       // show the code
       Blockly.Python.addReservedWords('code');
-      var code = Blockly.Python.workspaceToCode(workspace);      
+      var code = Blockly.Python.workspaceToCode(workspace);
       // // the old way of placing the code, this required a textarea
       // document.getElementById("editor").innerHTML = code;
 
@@ -480,7 +490,7 @@
       // alert("resizing");
       // window.dispatchEvent(new Event('resize'));
   };
-</script>  
+</script>
 
 
 
@@ -488,7 +498,7 @@
 
   // restore at the beginning.
   // This is launched after the page has finished loading
-  function restorelocal(){    
+  function restorelocal(){
     var xml_text = localStorage.getItem("blocks_cache");
     try {
       var xml = Blockly.Xml.textToDom(xml_text);
@@ -532,7 +542,8 @@
 
   // window.onload = function() {
   function launchwebsockets() {
-    socket = new WebSocket("ws://0.0.0.0:9000");
+    var hostName = window.location.hostname;
+    socket = new WebSocket("ws://" + hostName + ":9000");
     // socket = new WebSocket("ws://127.0.0.1:9000");
     // socket = new WebSocket("ws://10.0.0.1:9000");
     // socket = new WebSocket("ws:/erle-brain-2.local:9000");
@@ -566,12 +577,12 @@
 
   function sendText() {
     if (isopen) {
-       
+
       Blockly.Python.addReservedWords('code');
       var code = Blockly.Python.workspaceToCode(workspace);
       // socket.send("Hello, world!");
       socket.send(code);
-      console.log("Text message sent.");               
+      console.log("Text message sent.");
     } else {
        console.log("Connection not opened.")
     }
@@ -588,6 +599,66 @@
        console.log("Connection not opened.")
     }
   };
+
+  function loadFromFile() {
+      var can_load_file = false;
+      if (workspace.getAllBlocks().length > 0) {
+        can_load_file = confirm("Current workspace is not empty. Do you want to override it?");
+      } else {
+        can_load_file = true;
+      }
+
+      if (true == can_load_file) {
+        var input_field_name = 'load_workspace_from_file_input';
+        var file_input = document.getElementById(input_field_name);
+        if (null == file_input) {
+            var file_input = document.createElement('input');
+            file_input.type = 'file';
+            file_input.id = input_field_name;
+            file_input.name = input_field_name;
+            file_input.addEventListener('change',
+                      function (evt) {
+                          var files = evt.target.files;
+                          if (files.length > 0) {
+                              var file = files[0];
+                              var reader = new FileReader();
+                              reader.onload = function () {
+                                  workspace.clear();
+                                  var xml = Blockly.Xml.textToDom(this.result);
+                                  console.log("Loading workspace from file.");
+                                  Blockly.Xml.domToWorkspace(workspace, xml);
+                              }
+                              reader.readAsText(file);
+                              // This is done in order to allow open the same file several times in the row
+                              document.body.removeChild(file_input);
+                          }
+                      }, false);
+            // Hidding element from view
+            file_input.style = 'position: fixed; top: -100em';
+		    document.body.appendChild(file_input);
+        }
+        file_input.click();
+      }
+  };
+
+  function saveToFile() {
+    var filename = 'blockly_workspace.xml';
+    var xml = Blockly.Xml.workspaceToDom(workspace);
+    var xml_text = Blockly.Xml.domToText(xml);
+    var blob = new Blob([xml_text], {type: 'text/xml'});
+    if(window.navigator.msSaveOrOpenBlob) {
+        window.navigator.msSaveBlob(blob, filename);
+    } else {
+        var elem = window.document.createElement('a');
+        elem.href = window.URL.createObjectURL(blob);
+        elem.download = filename;
+        document.body.appendChild(elem);
+        elem.click();
+        document.body.removeChild(elem);
+    }
+    console.log("Workspace saved.");
+  };
+
 </script>
 
 
