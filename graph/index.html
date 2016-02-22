@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+   <head>
+		<script type="text/javascript" src="assets/libs/d3/d3.v3.min.js"></script>
+		<script type="text/javascript" src="assets/libs/jquery/jquery-1.10.2.min.js"></script>
+
+		<link rel="stylesheet" type="text/css" href="assets/libs/bootswatch/flatly/bootstrap.min.css">
+		<link rel="stylesheet" type="text/css" href="assets/libs/bootstrap/css/bootstrap-3.0.3.min.css">
+		<link rel="stylesheet" type="text/css" href="assets/libs/messenger/css/messenger.css">
+		<link rel="stylesheet" type="text/css" href="assets/libs/messenger/css/messenger-theme-flat.css">		
+		<script type="text/javascript" src="assets/libs/messenger/js/messenger.min.js"></script>
+		<script type="text/javascript" src="assets/libs/messenger/js/messenger-theme-flat.js"></script>
+		<script type="text/javascript">
+			Messenger.options = {
+			    extraClasses: 'messenger-fixed messenger-on-bottom messenger-on-right',
+			    theme: 'flat'
+			};
+		</script>
+		<script type="text/javascript" src="assets/libs/glow.js"></script>
+		<link rel="stylesheet" type="text/css" href="assets/css/main.css">
+
+		<script type="text/javascript" src="js/graph.js"></script>
+		<script type="text/javascript" src="js/main.js"></script>
+
+	    <style type="text/css">
+	        #mynetwork {
+		        width: 100%;
+		        height: 300px;
+		        border: 1px solid lightgray;
+	        }
+	        p{
+	        	max-width:600px;
+	        }
+	    </style>
+   	</head>
+   	<body>
+		<p>Open your browser's JavaScript console to see what's happening (hit F12).</p>
+		<button onclick='sendText();'>Send Text Message</button>
+		<button onclick='sendBinary();'>Send Binary Message</button>
+		<div id="moleculeDisplay" style="border: 1px solid black; background-color: #FFF" class="row"></div>
+		<!-- <div id="mynetwork"></div> -->
+   	</body>
+</html>

@@ -1,0 +1,3 @@
+.DS_Store
+scripts/test.py
+scripts/__pycache__/
