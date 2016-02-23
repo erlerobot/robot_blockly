@@ -41,11 +41,6 @@ cd <catkin_ws_root>
 catkin_make
 source devel/setup.bash
 roslaunch robot_blockly robot_blockly.launch
-sudo pip3 install autobahn
-cd <catkin_ws_root>
-catkin_make_isolated --pkg robot_blockly --install
-source install_isolated/setup.bash
-rosrun robot_blockly robot_blockly_backend.py
 
 # now go to http://erle-brain-2.local/
 #  and start playing!
