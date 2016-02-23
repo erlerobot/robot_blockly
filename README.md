@@ -23,23 +23,24 @@ cd robot_blockly/frontend
 git clone https://github.com/erlerobot/blockly
 git clone https://github.com/erlerobot/ace-builds
 cd ../scripts
-
+```
+Using apache is optional, you can skip this.
+```
 # install apache
 sudo apt-get install apache2
 # make sure that Apache is running properly in your robot and then
 sudo ./deploy.sh
-
 ```
 
 #### Backend
 ```
 # Install dependencies
 sudo pip3 install rosdep rosinstall_generator wstool rosinstall
-sudo pip3 install autobahn
+sudo pip3 install autobahn asyncio catkin_pkg rospkg
 cd <catkin_ws_root>
-catkin_make_isolated --pkg robot_blockly --install
-source install_isolated/setup.bash
-rosrun robot_blockly robot_blockly_backend.py
+catkin_make
+source devel/setup.bash
+roslaunch robot_blockly robot_blockly.launch
 
 # now go to http://erle-brain-2.local/
 #  and start playing!
