@@ -13,38 +13,20 @@ This package has been renamed to meet the ROS naming conventions http://wiki.ros
 ![](img/ROSimple-code.png)
 
 ### Installation:
-`git clone --recurse-submodules https://github.com/erlerobot/robot_blockly`
+``
 
-#### Frontend
 ```
-cd <catkin_ws_root>/src
-git clone https://github.com/erlerobot/robot_blockly
-cd robot_blockly/frontend
-git clone https://github.com/erlerobot/blockly
-git clone https://github.com/erlerobot/ace-builds
-cd ../scripts
-```
-Using apache is optional, you can skip this.
-```
-# install apache
-sudo apt-get install apache2
-# make sure that Apache is running properly in your robot and then
-sudo ./deploy.sh
+mkdir -p ~/blockly_ws/src
+cd ~/blockly_ws/src
+git clone --recurse-submodules https://github.com/erlerobot/robot_blockly
+cd ..
+catkin_make_isolated -j2 --pkg robot_blockly --install
 ```
 
-#### Backend
+### Launch it:
 ```
-# Install dependencies
-sudo pip3 install rosdep rosinstall_generator wstool rosinstall
-sudo pip3 install autobahn asyncio catkin_pkg rospkg
-cd <catkin_ws_root>
-catkin_make
-source devel/setup.bash
+source ~/blockly_ws/install_isolated
 roslaunch robot_blockly robot_blockly.launch
-
-# now go to http://erle-brain-2.local/
-#  and start playing!
-
 ```
 
 ### Create your own blocks
