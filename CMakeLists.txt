@@ -13,6 +13,15 @@ catkin_package(CATKIN_DEPENDS std_msgs message_runtime)
 # do not wildcard install files since the root folder of the package will contain a debian folder for releasing
 catkin_install_python(PROGRAMS
   scripts/robot_blockly_backend.py
+  scripts/pywebserver.py
 #  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/scripts
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}/scripts
 )
+
+install(DIRECTORY launch 
+  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
+ )
+
+install(DIRECTORY frontend
+  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
+ )
