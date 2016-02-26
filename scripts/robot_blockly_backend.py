@@ -88,7 +88,7 @@ class CodeExecution(object):
         with cls.__run_lock:
             if cls.__node_process is not None:
                 rate = rospy.Rate(5)
-                for _ in xrange(10):
+                for _ in range(10):
                     if cls.__node_process.poll() is None:
                         rate.sleep()
                     else:
