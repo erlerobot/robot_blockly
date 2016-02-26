@@ -35,7 +35,6 @@ roslaunch robot_blockly robot_blockly.launch
 - Launch `python build.py` to regenerate the blocks.
 
 ### License
-
 blockly has been built based on [blockly](http://github.com/erlerobot/blockly), [ACE](http://github.com/erlerobot/ace-builds) and Bootstrap. Refer to their sources for the corresponding licenses.
 
 Unless specified, the rest of the code is freed under a GPLv3 License.
