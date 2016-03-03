@@ -122,13 +122,13 @@
                             <a href="#"><i class="fa fa-cubes fa-fw"></i> Builder<span class="fa arrow"></span></a>
                             <ul class="nav nav-second-level">
                                 <li>
-                                    <a href="#" onclick='sendText();'>Launch</a>
+                                    <a id="launch_button" name="launch_button" href="#" onclick='ExecutionLogicModule.launch_code();'>Launch</a>
                                 </li>
                                 <li>
-                                    <a href="#" onclick="loadFromFile();">Load From File</a>
+                                    <a id="load_from_file_button" name="load_from_file_button" href="#" onclick='ExecutionLogicModule.load_from_file();'>Load From File</a>
                                 </li>
                                 <li>
-                                    <a href="#" onclick="saveToFile();">Save To File</a>
+                                    <a id="save_to_file_button" name="save_to_file_button" href="#" onclick='ExecutionLogicModule.save_to_file();'>Save To File</a>
                                 </li>
 <!--                                 <li>
                                     <a href="#" onclick="localstorage();">Save</a>
@@ -364,8 +364,8 @@
     </category>
     <category id="brain" name="Erle-Brain" colour="0">
 	  <block type="turn_on_blue_led"></block>
-	  <block type="turn_on_orange_led"></block>  
-	  <block type="get_laser"></block>              
+	  <block type="turn_on_orange_led"></block>
+	  <block type="get_laser"></block>
           <block type="take_a_picture"></block>
     </category>
     </xml>
@@ -382,6 +382,10 @@
 
     <!-- Custom Theme JavaScript -->
     <script src="../dist/js/sb-admin-2.js"></script>
+
+    <!-- Code execution logic -->
+    <script src="./js/execution_logic.js"></script>
+
 
 <!-- ACE editor configuration -->
 <script type="text/javascript">
@@ -517,7 +521,7 @@
     }
 
     // Launch websockets
-    launchwebsockets();
+    ExecutionLogicModule.launch_websockets();
 
     // Recursively store everything after x miliseconds
     // automate_localstorage();
@@ -539,128 +543,6 @@
     // console.log("Rtved: "+xml_text_stored)
     // alert("Saved: "+xml_text);
   }
-
-  var socket = null;
-  var isopen = false;
-
-  // window.onload = function() {
-  function launchwebsockets() {
-    var hostName = window.location.hostname;
-    socket = new WebSocket("ws://" + hostName + ":9000");
-    // socket = new WebSocket("ws://127.0.0.1:9000");
-    // socket = new WebSocket("ws://10.0.0.1:9000");
-    // socket = new WebSocket("ws:/erle-brain-2.local:9000");
-    // socket = new WebSocket("ws://192.168.1.57:9000");
-    socket.binaryType = "arraybuffer";
-
-    socket.onopen = function() {
-       console.log("Connected!");
-       isopen = true;
-    }
-
-    socket.onmessage = function(e) {
-       if (typeof e.data == "string") {
-          console.log("Text message received: " + e.data);
-       } else {
-          var arr = new Uint8Array(e.data);
-          var hex = '';
-          for (var i = 0; i < arr.length; i++) {
-             hex += ('00' + arr[i].toString(16)).substr(-2);
-          }
-          console.log("Binary message received: " + hex);
-       }
-    }
-
-    socket.onclose = function(e) {
-       console.log("Connection closed.");
-       socket = null;
-       isopen = false;
-    }
-  };
-
-  function sendText() {
-    if (isopen) {
-
-      Blockly.Python.addReservedWords('code');
-      var code = Blockly.Python.workspaceToCode(workspace);
-      // socket.send("Hello, world!");
-      socket.send(code);
-      console.log("Text message sent.");
-    } else {
-       console.log("Connection not opened.")
-    }
-  };
-
-  function sendBinary() {
-    if (isopen) {
-       var buf = new ArrayBuffer(32);
-       var arr = new Uint8Array(buf);
-       for (i = 0; i < arr.length; ++i) arr[i] = i;
-       socket.send(buf);
-       console.log("Binary message sent.");
-    } else {
-       console.log("Connection not opened.")
-    }
-  };
-
-  function loadFromFile() {
-      var can_load_file = false;
-      if (workspace.getAllBlocks().length > 0) {
-        can_load_file = confirm("Current workspace is not empty. Do you want to override it?");
-      } else {
-        can_load_file = true;
-      }
-
-      if (true == can_load_file) {
-        var input_field_name = 'load_workspace_from_file_input';
-        var file_input = document.getElementById(input_field_name);
-        if (null == file_input) {
-            var file_input = document.createElement('input');
-            file_input.type = 'file';
-            file_input.id = input_field_name;
-            file_input.name = input_field_name;
-            file_input.addEventListener('change',
-                      function (evt) {
-                          var files = evt.target.files;
-                          if (files.length > 0) {
-                              var file = files[0];
-                              var reader = new FileReader();
-                              reader.onload = function () {
-                                  workspace.clear();
-                                  var xml = Blockly.Xml.textToDom(this.result);
-                                  console.log("Loading workspace from file.");
-                                  Blockly.Xml.domToWorkspace(workspace, xml);
-                              }
-                              reader.readAsText(file);
-                              // This is done in order to allow open the same file several times in the row
-                              document.body.removeChild(file_input);
-                          }
-                      }, false);
-            // Hidding element from view
-            file_input.style = 'position: fixed; top: -100em';
-		    document.body.appendChild(file_input);
-        }
-        file_input.click();
-      }
-  };
-
-  function saveToFile() {
-    var filename = 'blockly_workspace.xml';
-    var xml = Blockly.Xml.workspaceToDom(workspace);
-    var xml_text = Blockly.Xml.domToText(xml);
-    var blob = new Blob([xml_text], {type: 'text/xml'});
-    if(window.navigator.msSaveOrOpenBlob) {
-        window.navigator.msSaveBlob(blob, filename);
-    } else {
-        var elem = window.document.createElement('a');
-        elem.href = window.URL.createObjectURL(blob);
-        elem.download = filename;
-        document.body.appendChild(elem);
-        elem.click();
-        document.body.removeChild(elem);
-    }
-    console.log("Workspace saved.");
-  };
 
 </script>
 
