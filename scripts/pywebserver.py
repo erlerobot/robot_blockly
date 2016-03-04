@@ -1,6 +1,6 @@
-#!/usr/bin/env python3
-import http.server
-import socketserver
+#!/usr/bin/env python
+import SimpleHTTPServer
+import SocketServer
 import socket
 import os
 from rospkg import RosPack
@@ -14,12 +14,10 @@ print("Changing serve path to: " + frontend_path)
 os.chdir(frontend_path)
 
 HOST = socket.gethostname()
-PORT = 80
+PORT = 8000
 address = ("",PORT)
 
-Handler = http.server.SimpleHTTPRequestHandler
-
-httpd = socketserver.TCPServer(address, Handler)
+httpd = SocketServer.TCPServer(address, SimpleHTTPServer.SimpleHTTPRequestHandler)
 
 print("serving at port", PORT)
 httpd.serve_forever()

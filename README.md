@@ -17,7 +17,7 @@ This package has been renamed to meet the ROS naming conventions http://wiki.ros
 Pre-requisites:
 
 ```
-sudo apt-get install apache2 python-pip
+sudo apt-get install python-pip
 sudo pip install rosdep rosinstall_generator wstool rosinstall
 sudo pip install autobahn trollius
 ```
@@ -35,18 +35,15 @@ To build the workspace (or rebuild it - you can do this while the robot_blockly_
 ```
 cd ../
 catkin_make_isolated --pkg robot_blockly --install
+```
+
+To start the backend and build in HTTP server:
+```
 source install_isolated/setup.bash 
-cd src/robot_blockly/scripts/
-./deploy.sh
+roslaunch robot_blockly robot_blockly.launch 
 ```
 
-To start the backend:
-```
-roscore
-rosrun robot_blockly robot_blockly_backend.py 
-```
-
-Point your browser to: `http://localhost/pages/blockly.html`
+Point your browser to: `http://localhost:8000/pages/blockly.html`
 
 ### Create your own blocks
 - Open `frontend/demos/blockfactory/index.html`
