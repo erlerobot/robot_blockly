@@ -36,7 +36,6 @@
 
     <!-- Include Blocky -->
     <script src="../blockly/blockly_compressed.js"></script>
-    <script src="../blockly/blockly_compressed.js"></script>
     <script src="../blockly/blocks_compressed.js"></script>
     <script src="../blockly/javascript_compressed.js"></script>
     <script src="../blockly/python_compressed.js"></script>
@@ -68,6 +67,7 @@
                     <span class="icon-bar"></span>
                 </button>
                 <a class="navbar-brand" href="../index.html">robot_blockly</a>
+                <a class="" style="vertical-align: bottom;" href="http://www.ros.org">powered by ROS</a>
             </div>
             <!-- /.navbar-header -->
 
@@ -125,7 +125,13 @@
                             <a href="#"><i class="fa fa-cubes fa-fw"></i> Builder<span class="fa arrow"></span></a>
                             <ul class="nav nav-second-level">
                                 <li>
-                                    <a href="#" onclick='sendText();'>Launch</a>
+                                    <a id="launch_button" name="launch_button" href="#" onclick='ExecutionLogicModule.launch_code();'>Launch</a>
+                                </li>
+                                <li>
+                                    <a id="load_from_file_button" name="load_from_file_button" href="#" onclick='ExecutionLogicModule.load_from_file();'>Load From File</a>
+                                </li>
+                                <li>
+                                    <a id="save_to_file_button" name="save_to_file_button" href="#" onclick='ExecutionLogicModule.save_to_file();'>Save To File</a>
                                 </li>
 <!--                                 <li>
                                     <a href="#" onclick="localstorage();">Save</a>
@@ -425,6 +431,10 @@
     <!-- Custom Theme JavaScript -->
     <script src="../dist/js/sb-admin-2.js"></script>
 
+    <!-- Code execution logic -->
+    <script src="./js/execution_logic.js"></script>
+
+
 <!-- ACE editor configuration -->
 <script type="text/javascript">
   document.getElementById('editor').style.fontSize='16px';
@@ -559,7 +569,7 @@
     }
 
     // Launch websockets
-    launchwebsockets();
+    ExecutionLogicModule.launch_websockets();
 
     // Recursively store everything after x miliseconds
     // automate_localstorage();
@@ -582,67 +592,6 @@
     // alert("Saved: "+xml_text);
   }
 
-  var socket = null;
-  var isopen = false;
-
-  // window.onload = function() {
-  function launchwebsockets() {
-    socket = new WebSocket("ws://0.0.0.0:9000");
-    // socket = new WebSocket("ws://127.0.0.1:9000");
-    // socket = new WebSocket("ws://10.0.0.1:9000");
-    // socket = new WebSocket("ws:/erle-brain-2.local:9000");
-    // socket = new WebSocket("ws://192.168.1.57:9000");
-    socket.binaryType = "arraybuffer";
-
-    socket.onopen = function() {
-       console.log("Connected!");
-       isopen = true;
-    }
-
-    socket.onmessage = function(e) {
-       if (typeof e.data == "string") {
-          console.log("Text message received: " + e.data);
-       } else {
-          var arr = new Uint8Array(e.data);
-          var hex = '';
-          for (var i = 0; i < arr.length; i++) {
-             hex += ('00' + arr[i].toString(16)).substr(-2);
-          }
-          console.log("Binary message received: " + hex);
-       }
-    }
-
-    socket.onclose = function(e) {
-       console.log("Connection closed.");
-       socket = null;
-       isopen = false;
-    }
-  };
-
-  function sendText() {
-    if (isopen) {
-
-      Blockly.Python.addReservedWords('code');
-      var code = Blockly.Python.workspaceToCode(workspace);
-      // socket.send("Hello, world!");
-      socket.send(code);
-      console.log("Text message sent.");
-    } else {
-       console.log("Connection not opened.")
-    }
-  };
-
-  function sendBinary() {
-    if (isopen) {
-       var buf = new ArrayBuffer(32);
-       var arr = new Uint8Array(buf);
-       for (i = 0; i < arr.length; ++i) arr[i] = i;
-       socket.send(buf);
-       console.log("Binary message sent.");
-    } else {
-       console.log("Connection not opened.")
-    }
-  };
 </script>
 
 
