@@ -125,6 +125,9 @@
                                     <a id="launch_button" name="launch_button" href="#" onclick='ExecutionLogicModule.launch_code();'>Launch</a>
                                 </li>
                                 <li>
+                                    <a id="end_button" name="end_button" href="#" onclick='ExecutionLogicModule.end_execution();' style="display:none;">End execution</a>
+                                </li>
+                                <li>
                                     <a id="load_from_file_button" name="load_from_file_button" href="#" onclick='ExecutionLogicModule.load_from_file();'>Load From File</a>
                                 </li>
                                 <li>
@@ -351,28 +354,23 @@
           <block type="spider_left"></block>
           <block type="spider_turn_right"></block>
           <block type="spider_turn_left"></block>
-          <block type="spider_turn_right_degrees"></block>
-          <block type="spider_turn_left_degrees"></block>
     </category>
     <category id="copter" name="Erle-Copter" colour="190">
     </category>
     <category id="hexacopter" name="Erle-HexaCopter" colour="90">
     </category>
     <category id="rover" name="Erle-Rover" colour="50">
-           <block type="rover_mode"></block>
-           <block type="rover_forward"></block>
-	       <block type="rover_steering"></block>
-	       <block type="rover_control"></block>
-	</category>         
-    <category id="brain" name="Erle-Brain" colour="0">
-          <block type="turn_on_blue_led"></block>
-          <block type="turn_on_orange_led"></block> 
-          <block type="get_laser"></block>     
-          <block type="take_a_picture"></block>
-          <block type="calibrate_imu"></block>
+              <block type="rover_mode"></block>
+              <block type="rover_forward"></block>
+	          <block type="rover_steering"></block>
+	          <block type="rover_control"></block>
     </category>
-
-
+    <category id="brain" name="Erle-Brain" colour="0">
+	  <block type="turn_on_blue_led"></block>
+	  <block type="turn_on_orange_led"></block>
+	  <block type="get_laser"></block>
+          <block type="take_a_picture"></block>
+    </category>
     </xml>
 
 
