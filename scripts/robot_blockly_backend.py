@@ -36,12 +36,24 @@ import rospy
 import time
 import os
 import threading
+import signal
+import rosnode
 from subprocess import Popen
 from std_msgs.msg import String
 from std_srvs.srv import Empty, EmptyResponse, Trigger, TriggerResponse
 from autobahn.asyncio.websocket import WebSocketServerProtocol, \
     WebSocketServerFactory
 from robot_blockly.srv import SetCurrentBlockId, SetCurrentBlockIdResponse
+from std_msgs.msg import String
+from sensor_msgs.msg import Joy
+from crab_msgs.msg import apm_imu
+from crab_msgs.msg import BodyCommand
+from crab_msgs.msg import BodyState
+from crab_msgs.msg import GaitCommand
+from crab_msgs.msg import LegIKRequest
+from crab_msgs.msg import LegJointsState
+from crab_msgs.msg import LegPositionState
+from crab_msgs.msg import LegsJointsState
 
 try:
     import asyncio
@@ -96,6 +108,11 @@ class CodeExecution(object):
                 if cls.__node_process.poll() is None:
                     cls.__node_process.terminate()
             cls.__node_process = Popen(arguments)
+            global pid
+            pid = cls.__node_process.pid
+            print("\n######################")
+            print("test.py PID="+str(pid))
+            print("######################\n")
 
 
 class BlocklyServerProtocol(WebSocketServerProtocol):
@@ -160,6 +177,40 @@ class BlocklyServerProtocol(WebSocketServerProtocol):
                         CodeStatus.set_current_status(CodeStatus.PAUSED)
                     elif 'resume' == method_name:
                         CodeStatus.set_current_status(CodeStatus.RUNNING)
+                    elif 'end' == method_name:
+                        #End test.py execution
+                        global pid
+                        print("@@@@@@@@@@@@@@@@@@")
+                        try:
+                            print("kill pid="+str(pid))
+                            os.kill(pid, signal.SIGKILL)
+                            ros_nodes = rosnode.get_node_names()
+                            if '/imu_talker' in ros_nodes: #brain
+                                ##set default values
+                                pub = rospy.Publisher('/statusleds', String, queue_size=10, latch=True)
+                                msg = 'blue_off'
+                                pub.publish(msg)
+                                msg = 'orange_off'
+                                pub.publish(msg)
+                            if '/crab_leg_kinematics' in ros_nodes: #spider
+                                print("spider running")
+                                pub = rospy.Publisher('/joy', Joy, queue_size=10, latch=True)
+                                msg = Joy()
+                                msg.header.stamp = rospy.Time.now()
+                                rate = rospy.Rate(10)
+                                valueAxe = 0.0
+                                valueButton = 0
+                                for i in range (0, 20):
+                                    msg.axes.append(valueAxe)
+                                for e in range (0, 17):
+                                    msg.buttons.append(valueButton)
+                                pub.publish(msg)
+                                rate.sleep()
+                                print("DEFAULT MESSAGES SENT")
+                            print("@@@@@@@@@@@@@@@@@@")
+                        except NameError:
+                            print("execution script not running.")
+                            pass
                     else:
                         rospy.logerr('Called unknown method %s', method_name)
 
@@ -178,6 +229,8 @@ class BlocklyServerProtocol(WebSocketServerProtocol):
 
         target.write("#!/usr/bin/env python3\n")
         target.write("import rospy\n")
+        target.write("import rosnode\n")
+        target.write("import subprocess\n")
         target.write("from std_msgs.msg import String\n")
         target.write("from std_srvs.srv import Empty, Trigger\n")
         target.write("from robot_blockly.srv import SetCurrentBlockId\n")

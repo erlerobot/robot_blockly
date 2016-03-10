@@ -8,6 +8,8 @@ var ExecutionLogicModule = (function () {
     NOT_CONNECTED: "not_connected"
   };
 
+  var END_BUTTON_ID = "end_button";
+  var REFRESH_BUTTON_ID = "refresh_button";
   var LAUNCH_BUTTON_ID = "launch_button";
   var current_status = CODE_STATUS.NOT_CONNECTED;
   var current_block = null;
@@ -44,6 +46,8 @@ var ExecutionLogicModule = (function () {
     var graph_tab_selector = "a[href='graph.html']";
     var load_from_file_button_selector = "a[id='load_from_file_button']";
     var save_to_file_button_selector = "a[id='save_to_file_button']";
+    var end_button_selector = "a[id='end_button']";
+
     switch (current_status) {
       case CODE_STATUS.PAUSED:
       case CODE_STATUS.RUNNING:
@@ -56,6 +60,7 @@ var ExecutionLogicModule = (function () {
         $(graph_tab_selector).hide();
         $(load_from_file_button_selector).hide();
         $(save_to_file_button_selector).hide();
+        $(end_button_selector).show();
         break;
 
       case CODE_STATUS.COMPLETED:
@@ -74,6 +79,7 @@ var ExecutionLogicModule = (function () {
         $(graph_tab_selector).show();
         $(load_from_file_button_selector).show();
         $(save_to_file_button_selector).show();
+        $(end_button_selector).hide();
         break;
 
       default:
@@ -281,6 +287,26 @@ var ExecutionLogicModule = (function () {
           document.body.removeChild(elem);
       }
       console.log("Workspace saved.");
+    },
+
+    end_execution: function() {
+      var end_button = document.getElementById(END_BUTTON_ID);
+      var launch_button = document.getElementById(LAUNCH_BUTTON_ID);
+      var refresh_button = document.getElementById(REFRESH_BUTTON_ID);
+      if (is_connection_closed()) {
+          console.log("Connection not opened.");
+          return;
+      }
+      launch_button.firstChild.data = "EXECUTION CANCELED";
+      launch_button.onclick = null;
+      
+      end_button.style.display = "none";
+      refresh_button.style.display = "block";
+
+      var message_data = 'end';   
+      socket.send(message_data);
+      console.log("Text message sent.");
     }
+    
   };
 })();
