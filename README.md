@@ -1,19 +1,12 @@
 # robot_blockly
 
-------
-
-This package has been renamed to meet the ROS naming conventions http://wiki.ros.org/ROS/Patterns/Conventions
-
-------
 
 `robot_blockly` is a ROS package that provides web-based visualization and block programming tools for robots and drones.
 
-*Note: The package has been renamed from ros_rosimple to robot_blockly to meet http://wiki.ros.org/ROS/Patterns/Conventions*
 ![](img/ROSimple-peek.png)
 ![](img/ROSimple-code.png)
 
 ### Installation:
-``
 
 ```
 mkdir -p ~/blockly_ws/src
@@ -40,12 +33,14 @@ blockly has been built based on [blockly](http://github.com/erlerobot/blockly), 
 Unless specified, the rest of the code is freed under a GPLv3 License.
 
 ### Documentation
-- [Erle Robotics blockly docs](http://erlerobotics.com/docs/ROS/Blockly/Intro.html)
+- [Erle Robotics blockly docs](http://erlerobotics.com/docs/Robot_Operating_System/ROS/Blockly/Intro.html)
 - [ROS Wiki](http://wiki.ros.org/blockly)
 
 
 # Robots where blockly has been implemented:
 - [Erle-Spider](http://erlerobotics.com/blog/product/erle-spider-the-ubuntu-drone-with-legs/)
-- [Erle-Rover](https://erlerobotics.com/blog/product/erle-rover/) (Work in progress)
+- [Erle-Rover](https://erlerobotics.com/blog/product/erle-rover/) 
+- [Shadow Robot hands](http://www.shadowrobot.com/)
 
 Do you need help getting your robot supported? Launch your questions at http://forum.erlerobotics.com.
+
