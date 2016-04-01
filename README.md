@@ -11,6 +11,19 @@
 ```
 mkdir -p ~/blockly_ws/src
 cd ~/blockly_ws/src
+git clone https://github.com/erlerobot/robot_blockly
+cd robot_blockly/frontend/
+git clone https://github.com/erlerobot/ace-builds.git
+git clone https://github.com/erlerobot/blockly.git
+cd ~/blockly_ws/
+catkin_make_isolated -j2 --pkg robot_blockly --install
+```
+You can also try 
+```
+mkdir -p ~/blockly_ws/src
+cd ~/blockly_ws/src
+git clone https://github.com/erlerobot/robot_blockly
+
 git clone --recurse-submodules https://github.com/erlerobot/robot_blockly
 cd ..
 catkin_make_isolated -j2 --pkg robot_blockly --install
