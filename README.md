@@ -29,7 +29,7 @@ catkin_make_isolated -j2 --pkg robot_blockly --install
 
 ### Launch it:
 ```
-source ~/blockly_ws/install_isolated
+source ~/blockly_ws/install_isolated/setup.bash
 roslaunch robot_blockly robot_blockly.launch
 ```
 
