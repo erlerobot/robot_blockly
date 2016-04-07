@@ -47,6 +47,7 @@ var ExecutionLogicModule = (function () {
     var load_from_file_button_selector = "a[id='load_from_file_button']";
     var save_to_file_button_selector = "a[id='save_to_file_button']";
     var end_button_selector = "a[id='end_button']";
+    var clean_ws_button_selector = "a[id='clean_ws_button']";
 
     switch (current_status) {
       case CODE_STATUS.PAUSED:
@@ -61,6 +62,7 @@ var ExecutionLogicModule = (function () {
         $(load_from_file_button_selector).hide();
         $(save_to_file_button_selector).hide();
         $(end_button_selector).show();
+        $(clean_ws_button_selector).hide();
         break;
 
       case CODE_STATUS.COMPLETED:
@@ -80,6 +82,7 @@ var ExecutionLogicModule = (function () {
         $(load_from_file_button_selector).show();
         $(save_to_file_button_selector).show();
         $(end_button_selector).hide();
+        $(clean_ws_button_selector).show();
         break;
 
       default:
@@ -306,7 +309,12 @@ var ExecutionLogicModule = (function () {
       var message_data = 'end';   
       socket.send(message_data);
       console.log("Text message sent.");
+    },
+
+    clean_ws: function() {
+      workspace.clear();
+      console.log("Workspace cleaned.");
     }
-    
+
   };
 })();
