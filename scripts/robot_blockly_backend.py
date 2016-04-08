@@ -38,6 +38,8 @@ import os
 import threading
 import signal
 import rosnode
+import mavros
+
 from subprocess import Popen
 from std_msgs.msg import String
 from std_srvs.srv import Empty, EmptyResponse, Trigger, TriggerResponse
@@ -54,6 +56,7 @@ from crab_msgs.msg import LegIKRequest
 from crab_msgs.msg import LegJointsState
 from crab_msgs.msg import LegPositionState
 from crab_msgs.msg import LegsJointsState
+from mavros_msgs.msg import OverrideRCIn
 
 try:
     import asyncio
@@ -207,6 +210,19 @@ class BlocklyServerProtocol(WebSocketServerProtocol):
                                 pub.publish(msg)
                                 rate.sleep()
                                 print("DEFAULT MESSAGES SENT")
+                            if '/mavros/rc/override' in ros_nodes: #rover
+                                print("rover")
+                                pub = rospy.Publisher('/mavros/rc/override', OverrideRCIn, queue_size=10)
+                                msg = OverrideRCIn()
+                                msg.channels[0] = 1500
+                                msg.channels[1] = 0
+                                msg.channels[2] = 1500
+                                msg.channels[3] = 0
+                                msg.channels[4] = 0
+                                msg.channels[5] = 0
+                                msg.channels[6] = 0
+                                msg.channels[7] = 0
+                                pub.publish(msg)
                             print("@@@@@@@@@@@@@@@@@@")
                         except NameError:
                             print("execution script not running.")
