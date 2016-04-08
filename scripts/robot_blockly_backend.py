@@ -210,7 +210,7 @@ class BlocklyServerProtocol(WebSocketServerProtocol):
                                 pub.publish(msg)
                                 rate.sleep()
                                 print("DEFAULT MESSAGES SENT")
-                            if '/mavros/rc/override' in ros_nodes: #rover
+                            if '/mavros' in ros_nodes: #rover
                                 print("rover")
                                 pub = rospy.Publisher('/mavros/rc/override', OverrideRCIn, queue_size=10)
                                 msg = OverrideRCIn()
