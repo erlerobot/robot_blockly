@@ -38,6 +38,8 @@ roslaunch robot_blockly robot_blockly.launch
 - Design you own block and then add the metadata to: `frontend/blockly/blocks` and `frontend/blockly/generator`
 - Launch `python build.py` to regenerate the blocks.
 
+In-depth explanation [here](http://erlerobotics.com/Docs/Robot_Operating_System/ROS/Blockly/Block_creation)
+
 ### License
 blockly has been built based on [blockly](http://github.com/erlerobot/blockly), [ACE](http://github.com/erlerobot/ace-builds) and Bootstrap. Refer to their sources for the corresponding licenses.
 
