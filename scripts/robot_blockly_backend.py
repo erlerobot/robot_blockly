@@ -39,6 +39,7 @@ import threading
 import signal
 import rosnode
 import mavros
+import rospkg
 
 from subprocess import Popen
 from std_msgs.msg import String
@@ -420,5 +421,10 @@ class RobotBlocklyBackend(object):
         loop.close()
 
 if __name__ == '__main__':
+    #remove old images
+    rospack = rospkg.RosPack()
+    png_path = rospack.get_path('robot_blockly') + '/frontend/pages/images/'
+    os.system("rm "+ png_path +"*png")
+
     backend = RobotBlocklyBackend()
     backend.talker()
