@@ -168,12 +168,15 @@ class BlocklyServerProtocol(WebSocketServerProtocol):
                 method_name = message_data[0]
                 if len(message_data) > 1:
                     method_body = message_data[1]
-                    if 'play' == method_name:
+                    if method_name.startswith('play'):
                         CodeStatus.set_current_status(CodeStatus.RUNNING)
                         BlocklyServerProtocol.build_ros_node(method_body)
                         rospy.loginfo('The file generated contains...')
                         os.system('cat test.py')
-                        CodeExecution.run_process(['python3', 'test.py'])
+                        if method_name == 'play2':
+                            CodeExecution.run_process(['python', 'test.py'])
+                        elif method_name == 'play3':
+                            CodeExecution.run_process(['python3', 'test.py'])
                     else:
                         rospy.logerr('Called unknown method %s', method_name)
                 else:

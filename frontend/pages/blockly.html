@@ -122,7 +122,7 @@
                             <a href="#"><i class="fa fa-cubes fa-fw"></i> Builder<span class="fa arrow"></span></a>
                             <ul class="nav nav-second-level">
                                 <li>
-                                    <a id="launch_button" name="launch_button" href="#" onclick='ExecutionLogicModule.launch_code();'>Launch</a>
+                                    <a id="launch_button" name="launch_button" href="#" onclick="ExecutionLogicModule.launch_code($('input[name=group_py]:checked').val());">Launch</a>
                                 </li>
                                 <li>
                                     <a id="end_button" name="end_button" href="#" onclick='ExecutionLogicModule.end_execution();' style="display:none;">End execution</a>
@@ -160,6 +160,13 @@
 
                         <li>
                             <a href="graph.html"><i class="fa fa-sitemap fa-fw"></i> Graph</a>
+                        </li>
+                        <li>
+                            <div style="color:#75A8D3; text-align:center" >
+                                <span>Python:</span>
+                                <input id="python3" type="radio" value="3" name="group_py" checked />3
+                                <input id="python2" type="radio" value="2" name="group_py" />2
+                            </div>
                         </li>
                     </ul>
                 </div>
@@ -405,7 +412,6 @@
     <!-- Code execution logic -->
     <script src="./js/execution_logic.js"></script>
 
-
 <!-- ACE editor configuration -->
 <script type="text/javascript">
   document.getElementById('editor').style.fontSize='16px';
@@ -517,8 +523,6 @@
       // window.dispatchEvent(new Event('resize'));
   };
 </script>
-
-
 
 <script type="text/javascript">
 

@@ -185,7 +185,7 @@ var ExecutionLogicModule = (function () {
       };
     },
 
-    launch_code: function () {
+    launch_code: function (python_version) {
 
       if (is_connection_closed()) {
         console.log("Connection not opened.");
@@ -194,7 +194,7 @@ var ExecutionLogicModule = (function () {
       var message_data = '';
       switch (current_status) {
         case CODE_STATUS.COMPLETED:
-          message_data = 'play\n';
+          message_data = 'play'+python_version+'\n'; //play2 or play3
           Blockly.Python.addReservedWords('code');
           var saved_statement_prefix = Blockly.Python.STATEMENT_PREFIX;
           try {
