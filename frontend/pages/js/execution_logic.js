@@ -47,6 +47,7 @@ var ExecutionLogicModule = (function () {
     var load_from_file_button_selector = "a[id='load_from_file_button']";
     var save_to_file_button_selector = "a[id='save_to_file_button']";
     var end_button_selector = "a[id='end_button']";
+    var clean_ws_button_selector = "a[id='clean_ws_button']";
 
     switch (current_status) {
       case CODE_STATUS.PAUSED:
@@ -61,6 +62,7 @@ var ExecutionLogicModule = (function () {
         $(load_from_file_button_selector).hide();
         $(save_to_file_button_selector).hide();
         $(end_button_selector).show();
+        $(clean_ws_button_selector).hide();
         break;
 
       case CODE_STATUS.COMPLETED:
@@ -80,6 +82,7 @@ var ExecutionLogicModule = (function () {
         $(load_from_file_button_selector).show();
         $(save_to_file_button_selector).show();
         $(end_button_selector).hide();
+        $(clean_ws_button_selector).show();
         break;
 
       default:
@@ -182,7 +185,7 @@ var ExecutionLogicModule = (function () {
       };
     },
 
-    launch_code: function () {
+    launch_code: function (python_version) {
 
       if (is_connection_closed()) {
         console.log("Connection not opened.");
@@ -191,7 +194,7 @@ var ExecutionLogicModule = (function () {
       var message_data = '';
       switch (current_status) {
         case CODE_STATUS.COMPLETED:
-          message_data = 'play\n';
+          message_data = 'play'+python_version+'\n'; //play2 or play3
           Blockly.Python.addReservedWords('code');
           var saved_statement_prefix = Blockly.Python.STATEMENT_PREFIX;
           try {
@@ -306,7 +309,12 @@ var ExecutionLogicModule = (function () {
       var message_data = 'end';   
       socket.send(message_data);
       console.log("Text message sent.");
+    },
+
+    clean_ws: function() {
+      workspace.clear();
+      console.log("Workspace cleaned.");
     }
-    
+
   };
 })();

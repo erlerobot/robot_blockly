@@ -122,7 +122,7 @@
                             <a href="#"><i class="fa fa-cubes fa-fw"></i> Builder<span class="fa arrow"></span></a>
                             <ul class="nav nav-second-level">
                                 <li>
-                                    <a id="launch_button" name="launch_button" href="#" onclick='ExecutionLogicModule.launch_code();'>Launch</a>
+                                    <a id="launch_button" name="launch_button" href="#" onclick="ExecutionLogicModule.launch_code($('input[name=group_py]:checked').val());">Launch</a>
                                 </li>
                                 <li>
                                     <a id="end_button" name="end_button" href="#" onclick='ExecutionLogicModule.end_execution();' style="display:none;">End execution</a>
@@ -135,6 +135,9 @@
                                 </li>
                                 <li>
                                     <a id="save_to_file_button" name="save_to_file_button" href="#" onclick='ExecutionLogicModule.save_to_file();'>Save To File</a>
+                                </li>
+                                <li>
+                                    <a id="clean_ws_button" name="clean_ws_button" href="#" onclick='ExecutionLogicModule.clean_ws();'>Clean workspace</a>
                                 </li>
 <!--                                 <li>
                                     <a href="#" onclick="localstorage();">Save</a>
@@ -157,6 +160,13 @@
 
                         <li>
                             <a href="graph.html"><i class="fa fa-sitemap fa-fw"></i> Graph</a>
+                        </li>
+                        <li>
+                            <div style="color:#75A8D3; text-align:center" >
+                                <span>Python:</span>
+                                <input id="python3" type="radio" value="3" name="group_py" checked />3
+                                <input id="python2" type="radio" value="2" name="group_py" />2
+                            </div>
                         </li>
                     </ul>
                 </div>
@@ -366,11 +376,9 @@
     <category id="hexacopter" name="Erle-HexaCopter" colour="90">
     </category>
     <category id="rover" name="Erle-Rover" colour="50">
-           <block type="rover_mode"></block>
-           <block type="rover_forward"></block>
-	       <block type="rover_steering"></block>
-	       <block type="rover_control"></block>
-	</category>         
+          <block type="rover_mode"></block>
+          <block type="rover_control"></block>
+    </category>         
     <category id="brain" name="Erle-Brain" colour="0">
           <block type="turn_on_blue_led"></block>
           <block type="turn_on_orange_led"></block> 
@@ -378,6 +386,10 @@
           <block type="take_a_picture"></block>
           <block type="calibrate_imu"></block>
           <block type="camera_color_location"></block>
+          <block type="start_hokuyo_laser"></block>
+          <block type="start_sick_laser"></block>
+          <block type="start_slam"></block>
+          <block type="find_path"></block>
     </category>
 
 
@@ -398,7 +410,6 @@
 
     <!-- Code execution logic -->
     <script src="./js/execution_logic.js"></script>
-
 
 <!-- ACE editor configuration -->
 <script type="text/javascript">
@@ -511,8 +522,6 @@
       // window.dispatchEvent(new Event('resize'));
   };
 </script>
-
-
 
 <script type="text/javascript">
 

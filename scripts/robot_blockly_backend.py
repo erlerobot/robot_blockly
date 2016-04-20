@@ -38,6 +38,8 @@ import os
 import threading
 import signal
 import rosnode
+import mavros
+
 from subprocess import Popen
 from std_msgs.msg import String
 from std_srvs.srv import Empty, EmptyResponse, Trigger, TriggerResponse
@@ -54,6 +56,7 @@ from crab_msgs.msg import LegIKRequest
 from crab_msgs.msg import LegJointsState
 from crab_msgs.msg import LegPositionState
 from crab_msgs.msg import LegsJointsState
+from mavros_msgs.msg import OverrideRCIn
 
 try:
     import asyncio
@@ -164,12 +167,15 @@ class BlocklyServerProtocol(WebSocketServerProtocol):
                 method_name = message_data[0]
                 if len(message_data) > 1:
                     method_body = message_data[1]
-                    if 'play' == method_name:
+                    if method_name.startswith('play'):
                         CodeStatus.set_current_status(CodeStatus.RUNNING)
                         BlocklyServerProtocol.build_ros_node(method_body)
                         rospy.loginfo('The file generated contains...')
                         os.system('cat test.py')
-                        CodeExecution.run_process(['python3', 'test.py'])
+                        if method_name == 'play2':
+                            CodeExecution.run_process(['python', 'test.py'])
+                        elif method_name == 'play3':
+                            CodeExecution.run_process(['python3', 'test.py'])
                     else:
                         rospy.logerr('Called unknown method %s', method_name)
                 else:
@@ -207,6 +213,19 @@ class BlocklyServerProtocol(WebSocketServerProtocol):
                                 pub.publish(msg)
                                 rate.sleep()
                                 print("DEFAULT MESSAGES SENT")
+                            if '/mavros' in ros_nodes: #rover
+                                print("rover")
+                                pub = rospy.Publisher('/mavros/rc/override', OverrideRCIn, queue_size=10)
+                                msg = OverrideRCIn()
+                                msg.channels[0] = 1500
+                                msg.channels[1] = 0
+                                msg.channels[2] = 1500
+                                msg.channels[3] = 0
+                                msg.channels[4] = 0
+                                msg.channels[5] = 0
+                                msg.channels[6] = 0
+                                msg.channels[7] = 0
+                                pub.publish(msg)
                             print("@@@@@@@@@@@@@@@@@@")
                         except NameError:
                             print("execution script not running.")
@@ -388,7 +407,7 @@ class RobotBlocklyBackend(object):
         rospy.Service('program_completed', Empty, RobotBlocklyBackend.__set_status_completed)
         rospy.Service('program_set_current_block_id', SetCurrentBlockId, self.__set_current_block_id)
 
-        factory = WebSocketServerFactory(u"ws://0.0.0.0:9000", debug=False)
+        factory = WebSocketServerFactory(u"ws://0.0.0.0:9000")
         factory.protocol = BlocklyServerProtocol
 
         loop = asyncio.get_event_loop()

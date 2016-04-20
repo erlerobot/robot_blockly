@@ -1,16 +1,16 @@
 <html>
 <head>
 <script src="/pages/maps/jquery-1.11.0.min.js"></script>
+<meta http-equiv="refresh" content="5; URL=/pages/maps/imageViewer.html">
 </head>
 <body>
-	<p>Reload this page to see the last image</p>
-	<div id="name"> </div>
+	<p>This page is being auto reloaded after 5 seconds</p>
 	<img id="viewer" src="" width="640px"/>
 	<div id="info"> </div>
 <script>
 $(function() {
 
-	var baseUrl = "/pages/images/";
+	var baseUrl = "/pages/maps/";
 	var pictureIndex = 0;
 	var pictures = [];
 
@@ -38,7 +38,6 @@ $(function() {
 		} else if (pictureIndex < 0) {
 			pictureIndex = pictures.length - 1;
 		}
-		$('#name').text("Image: "+pictures[pictureIndex]);
 		$('#viewer').attr('src', baseUrl + pictures[pictureIndex]);
 		$('#info').text((pictureIndex + 1) + "/" + pictures.length);
 	}
