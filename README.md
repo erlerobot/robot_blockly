@@ -28,7 +28,7 @@ mkdir -p blockly/src
 cd blockly/src
 wstool init
 
-If you have added an ssh key for your machine on github, use:
+If you have added an ssh key for your machine to your github account, use:
 wstool set robot_blockly --git git@github.com:shadow-robot/robot_blockly
 
 Otherwise run:
