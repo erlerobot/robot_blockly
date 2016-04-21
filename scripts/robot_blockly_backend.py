@@ -255,6 +255,7 @@ class BlocklyServerProtocol(WebSocketServerProtocol):
         target.write("from robot_blockly.srv import SetCurrentBlockId\n")
         target.write("\n")
         target.write("rospy.init_node('blockly_node', anonymous=True)\n")
+        target.write("ros_initial_nodes = rosnode.get_node_names()\n")
         target.write("\n")
         target.write("def check_status(block_id):\n")
         target.write("    rospy.wait_for_service('program_is_paused')\n")
@@ -355,7 +356,14 @@ def euler_from_quaternion(quaternion, axes='sxyz'):
         target.write(blockly_code+"\n")
         # target.write("rospy.spin()\n")
         target.write("\n")
-
+        target.write("ros_final_nodes = rosnode.get_node_names()\n")
+        target.write("S_initial = set(ros_initial_nodes)\n")
+        target.write("S_final = set(ros_final_nodes)\n")
+        target.write("new_nodes = S_initial.symmetric_difference(S_final)\n")
+        target.write("rosnode.kill_nodes(new_nodes)\n")
+        target.write("rosnode.rosnode_cleanup()\n")
+        target.write("\n")
+        target.write("\n")
         # close the file
         target.close()
         ###########################
