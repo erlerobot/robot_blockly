@@ -230,6 +230,14 @@ class BlocklyServerProtocol(WebSocketServerProtocol):
                         except NameError:
                             print("execution script not running.")
                             pass
+                    elif method_name.startswith('control'):
+                        robot = method_name.split('control_')[1]
+                        if robot.startswith('spider'):
+                            direction = robot.split('spider_')[1]
+                            print("\n Direction:")
+                            print(direction)
+                        elif robot.startswith('rover'):
+                            direction = robot.split('rover_')[1]
                     else:
                         rospy.logerr('Called unknown method %s', method_name)
 
