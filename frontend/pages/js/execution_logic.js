@@ -49,6 +49,7 @@ var ExecutionLogicModule = (function () {
     var end_button_selector = "a[id='end_button']";
     var clean_ws_button_selector = "a[id='clean_ws_button']";
     var manual_mode_button_selector = "a[id='manual_mode_button']";
+    var pythondiv_selector = "div[id='pythondiv']";
 
     switch (current_status) {
       case CODE_STATUS.PAUSED:
@@ -65,6 +66,8 @@ var ExecutionLogicModule = (function () {
         $(end_button_selector).show();
         $(clean_ws_button_selector).hide();
         $(manual_mode_button_selector).hide();
+        $(pythondiv_selector).hide();
+
         break;
 
       case CODE_STATUS.COMPLETED:
@@ -86,6 +89,8 @@ var ExecutionLogicModule = (function () {
         $(end_button_selector).hide();
         $(clean_ws_button_selector).show();
         $(manual_mode_button_selector).show();
+        $(pythondiv_selector).show();
+
         break;
 
       default:
@@ -365,7 +370,10 @@ var ExecutionLogicModule = (function () {
                     break;
                     case 27: // ESC 
                         console.log("ESC.");
+                        var message_data = 'end';   
+                        socket.send(message_data);
                         location.reload();//stop listening
+
                     break;
 
                     default: return; // exit this handler for other keys
@@ -394,6 +402,8 @@ var ExecutionLogicModule = (function () {
                     break;
                     case 27: // ESC 
                         console.log("ESC.r");
+                        var message_data = 'end';   
+                        socket.send(message_data);
                         location.reload();//stop listening
                     break;
 
@@ -403,6 +413,8 @@ var ExecutionLogicModule = (function () {
             });
         }
         if (robot.toString() == "stop"){
+            var message_data = 'end';   
+            socket.send(message_data);
             location.reload();
         }
 

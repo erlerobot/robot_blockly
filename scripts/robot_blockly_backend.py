@@ -234,8 +234,31 @@ class BlocklyServerProtocol(WebSocketServerProtocol):
                         robot = method_name.split('control_')[1]
                         if robot.startswith('spider'):
                             direction = robot.split('spider_')[1]
-                            print("\n Direction:")
-                            print(direction)
+                            print("MANUAL  "+direction)
+                            pub = rospy.Publisher('/joy', Joy, queue_size=10)
+                            msg = Joy()
+                            msg.header.stamp = rospy.Time.now()
+                            rate = rospy.Rate(10)
+                               
+                            valueAxe = 0.0
+                            valueButton = 0
+                            for i in range (0, 20):
+                                msg.axes.append(valueAxe)
+                            for e in range (0, 17):
+                                msg.buttons.append(valueButton)
+
+                            if direction == 'up':#forward
+                                msg.axes[1] = 1
+                            elif direction == 'down':#backwards
+                                msg.axes[1] = -1
+                            elif direction == 'left':
+                                msg.axes[0] = 1
+                            elif direction == 'right':
+                                msg.axes[0] = -1
+
+                            pub.publish(msg)
+                            rate.sleep() 
+
                         elif robot.startswith('rover'):
                             direction = robot.split('rover_')[1]
                     else:
