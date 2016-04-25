@@ -191,45 +191,46 @@ class BlocklyServerProtocol(WebSocketServerProtocol):
                             print("kill pid="+str(pid))
                             os.kill(pid, signal.SIGKILL)
                             ros_nodes = rosnode.get_node_names()
-                            if '/imu_talker' in ros_nodes: #brain
-                                ##set default values
-                                pub = rospy.Publisher('/statusleds', String, queue_size=10, latch=True)
-                                msg = 'blue_off'
-                                pub.publish(msg)
-                                msg = 'orange_off'
-                                pub.publish(msg)
-                            if '/crab_leg_kinematics' in ros_nodes: #spider
-                                print("spider running")
-                                pub = rospy.Publisher('/joy', Joy, queue_size=10, latch=True)
-                                msg = Joy()
-                                msg.header.stamp = rospy.Time.now()
-                                rate = rospy.Rate(10)
-                                valueAxe = 0.0
-                                valueButton = 0
-                                for i in range (0, 20):
-                                    msg.axes.append(valueAxe)
-                                for e in range (0, 17):
-                                    msg.buttons.append(valueButton)
-                                pub.publish(msg)
-                                rate.sleep()
-                                print("DEFAULT MESSAGES SENT")
-                            if '/mavros' in ros_nodes: #rover
-                                print("rover")
-                                pub = rospy.Publisher('/mavros/rc/override', OverrideRCIn, queue_size=10)
-                                msg = OverrideRCIn()
-                                msg.channels[0] = 1500
-                                msg.channels[1] = 0
-                                msg.channels[2] = 1500
-                                msg.channels[3] = 0
-                                msg.channels[4] = 0
-                                msg.channels[5] = 0
-                                msg.channels[6] = 0
-                                msg.channels[7] = 0
-                                pub.publish(msg)
-                            print("@@@@@@@@@@@@@@@@@@")
                         except NameError:
                             print("execution script not running.")
                             pass
+
+                        if '/imu_talker' in ros_nodes: #brain
+                            ##set default values
+                            pub = rospy.Publisher('/statusleds', String, queue_size=10, latch=True)
+                            msg = 'blue_off'
+                            pub.publish(msg)
+                            msg = 'orange_off'
+                            pub.publish(msg)
+                        if '/crab_leg_kinematics' in ros_nodes: #spider
+                            print("spider running")
+                            pub = rospy.Publisher('/joy', Joy, queue_size=10, latch=True)
+                            msg = Joy()
+                            msg.header.stamp = rospy.Time.now()
+                            rate = rospy.Rate(10)
+                            valueAxe = 0.0
+                            valueButton = 0
+                            for i in range (0, 20):
+                                msg.axes.append(valueAxe)
+                            for e in range (0, 17):
+                                msg.buttons.append(valueButton)
+                            pub.publish(msg)
+                            print("DEFAULT MESSAGES SENT")
+                        if '/mavros' in ros_nodes: #rover
+                            print("rover")
+                            pub = rospy.Publisher('/mavros/rc/override', OverrideRCIn, queue_size=10)
+                            msg = OverrideRCIn()
+                            msg.channels[0] = 1500
+                            msg.channels[1] = 0
+                            msg.channels[2] = 1500
+                            msg.channels[3] = 0
+                            msg.channels[4] = 0
+                            msg.channels[5] = 0
+                            msg.channels[6] = 0
+                            msg.channels[7] = 0
+                            pub.publish(msg)
+                        print("@@@@@@@@@@@@@@@@@@")
+
                     elif method_name.startswith('control'):
                         robot = method_name.split('control_')[1]
                         if robot.startswith('spider'):
@@ -251,10 +252,12 @@ class BlocklyServerProtocol(WebSocketServerProtocol):
                                 msg.axes[1] = 1
                             elif direction == 'down':#backwards
                                 msg.axes[1] = -1
-                            elif direction == 'left':
-                                msg.axes[0] = 1
-                            elif direction == 'right':
-                                msg.axes[0] = -1
+                            elif direction == 'left':#turn left
+                                #msg.axes[0] = 1
+                                msg.axes[2] = 1
+                            elif direction == 'right':#turn rigth
+                                #msg.axes[0] = -1
+                                msg.axes[2] = -1
 
                             pub.publish(msg)
                             rate.sleep() 
