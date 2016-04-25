@@ -342,6 +342,10 @@ var ExecutionLogicModule = (function () {
         $(graph_tab_selector).hide();
         $(stop_control_button_selector).show();
 
+        document.getElementById("blocklyDiv").visibility = "hidden";
+        document.getElementById("blocklyDiv").innerHTML = "<img src='http://www.dartodo.com/wp-content/uploads/2015/05/logo-erle-300x300.png'>";
+
+
         if (robot.toString() == "spider"){
             $(control_rover_button_selector).hide();
 
