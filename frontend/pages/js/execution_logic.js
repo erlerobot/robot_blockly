@@ -376,8 +376,7 @@ var ExecutionLogicModule = (function () {
                         console.log("ESC.");
                         var message_data = 'end';   
                         socket.send(message_data);
-                        location.reload();//stop listening
-
+                        window.location.href = "../index.html";
                     break;
 
                     default: return; // exit this handler for other keys
@@ -387,34 +386,40 @@ var ExecutionLogicModule = (function () {
         }
         if (robot.toString() == "rover"){
             $(control_spider_button_selector).hide();
-            document.getElementById("blocklyDiv").innerHTML = "<div style='margin-left:30px; width:100%;'><img src='/pages/img/ErleRover_W6.jpg' width='400'><br><img src='/pages/img/keys_spider.png' width='400'></div>";
+            document.getElementById("blocklyDiv").innerHTML = "<div style='margin-left:30px; width:100%;'><img src='/pages/img/caution.png' width='400'><br><img src='/pages/img/ErleRover_W6.jpg' width='400'><br><img src='/pages/img/keys_spider.png' width='400'></div>";
 
-            $(document).keydown(function(e) {
-                switch(e.which) {
-                    case 37: // left
-                        console.log("left.r");
-                    break;
+            $(document).keyup(function(r) {
+                    switch(r.which) {
+                        case 37: // left
+                            console.log("left.r");
+                            var message_data = 'control_rover_left';
+                            socket.send(message_data);
+                        break;
+                        case 38: // up
+                            console.log("up.r");
+                            var message_data = 'control_rover_up';
+                            socket.send(message_data);
+                        break;
+                        case 39: // right
+                            console.log("right.r");
+                            var message_data = 'control_rover_right';
+                            socket.send(message_data);
+                        break;
+                        case 40: // down
+                            console.log("down.r");
+                            var message_data = 'control_rover_down';
+                            socket.send(message_data);
+                        break;
+                        case 27: // ESC 
+                            console.log("ESC.r");
+                            var message_data = 'end';   
+                            socket.send(message_data);
+                            window.location.href = "../index.html";
+                        break;
 
-                    case 38: // up
-                        console.log("up.r");
-                    break;
-
-                    case 39: // right
-                        console.log("right.r");
-                    break;
-                    case 40: // down
-                        console.log("down.r");
-                    break;
-                    case 27: // ESC 
-                        console.log("ESC.r");
-                        var message_data = 'end';   
-                        socket.send(message_data);
-                        location.reload();//stop listening
-                    break;
-
-                    default: return; // exit this handler for other keys
-                }
-                e.preventDefault(); // prevent the default action (scroll / move caret)
+                        default: return; // exit this handler for other keys
+                    }    
+                r.preventDefault(); // prevent the default action (scroll / move caret)
             });
         }
         if (robot.toString() == "stop"){

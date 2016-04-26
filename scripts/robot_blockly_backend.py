@@ -57,6 +57,7 @@ from crab_msgs.msg import LegJointsState
 from crab_msgs.msg import LegPositionState
 from crab_msgs.msg import LegsJointsState
 from mavros_msgs.msg import OverrideRCIn
+from mavros_msgs.srv import SetMode
 
 try:
     import asyncio
@@ -235,7 +236,6 @@ class BlocklyServerProtocol(WebSocketServerProtocol):
                         robot = method_name.split('control_')[1]
                         if robot.startswith('spider'):
                             direction = robot.split('spider_')[1]
-                            print("MANUAL  "+direction)
                             pub = rospy.Publisher('/joy', Joy, queue_size=10)
                             msg = Joy()
                             msg.header.stamp = rospy.Time.now()
@@ -260,10 +260,46 @@ class BlocklyServerProtocol(WebSocketServerProtocol):
                                 msg.axes[2] = -1
 
                             pub.publish(msg)
-                            rate.sleep() 
+                            rate.sleep()
 
                         elif robot.startswith('rover'):
-                            direction = robot.split('rover_')[1]
+                            direction = robot.split('rover_')[1]   
+                            rospy.wait_for_service('/mavros/set_mode')
+                            change_mode = rospy.ServiceProxy('/mavros/set_mode', SetMode)
+                            resp1 = change_mode(custom_mode='manual')
+                            print (resp1)
+                            if 'True' in str(resp1):
+                                pub = rospy.Publisher('mavros/rc/override', OverrideRCIn, queue_size=10)
+                                r = rospy.Rate(10) #2hz
+                                msg = OverrideRCIn()
+                                throttle_channel=2
+                                steer_channel=0
+
+                                speed_slow = 1558
+                                #speed_turbo = 2000 #dangerous
+                                speed = speed_slow
+
+                                if direction == 'up':#forward
+                                    msg.channels[throttle_channel]=speed
+                                    msg.channels[steer_channel]=1385 #straight
+                                elif direction == 'down':#backwards
+                                    msg.channels[throttle_channel]=1450 #slow
+                                    msg.channels[steer_channel]=1385 #straight
+                                elif direction == 'left':#turn left
+                                    msg.channels[throttle_channel]=speed
+                                    msg.channels[steer_channel]=1285
+                                elif direction == 'right':#turn rigth
+                                    msg.channels[throttle_channel]=speed
+                                    msg.channels[steer_channel]=1485
+
+                                start = time.time()
+                                flag=True
+                                while not rospy.is_shutdown() and flag:
+                                    sample_time=time.time()
+                                    if ((sample_time - start) > 0.5):
+                                        flag=False
+                                    pub.publish(msg)
+                                    r.sleep()
                     else:
                         rospy.logerr('Called unknown method %s', method_name)
 
