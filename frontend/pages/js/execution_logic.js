@@ -48,6 +48,8 @@ var ExecutionLogicModule = (function () {
     var save_to_file_button_selector = "a[id='save_to_file_button']";
     var end_button_selector = "a[id='end_button']";
     var clean_ws_button_selector = "a[id='clean_ws_button']";
+    var manual_mode_button_selector = "a[id='manual_mode_button']";
+    var pythondiv_selector = "div[id='pythondiv']";
 
     switch (current_status) {
       case CODE_STATUS.PAUSED:
@@ -63,6 +65,9 @@ var ExecutionLogicModule = (function () {
         $(save_to_file_button_selector).hide();
         $(end_button_selector).show();
         $(clean_ws_button_selector).hide();
+        $(manual_mode_button_selector).hide();
+        $(pythondiv_selector).hide();
+
         break;
 
       case CODE_STATUS.COMPLETED:
@@ -83,6 +88,9 @@ var ExecutionLogicModule = (function () {
         $(save_to_file_button_selector).show();
         $(end_button_selector).hide();
         $(clean_ws_button_selector).show();
+        $(manual_mode_button_selector).show();
+        $(pythondiv_selector).show();
+
         break;
 
       default:
@@ -314,6 +322,115 @@ var ExecutionLogicModule = (function () {
     clean_ws: function() {
       workspace.clear();
       console.log("Workspace cleaned.");
+    },
+
+    manual_control: function(robot){
+
+        workspace.options.readOnly = true;
+
+        var blocks_tab_selector = "a[href='#home'][data-toggle='tab']";
+        var python_tab_selector = "a[href='#profile'][data-toggle='tab']";
+        var builder_selector = "a[id='builder']";
+        var graph_tab_selector = "a[href='graph.html']";
+        var control_spider_button_selector = "a[id='control_spider_button']";
+        var control_rover_button_selector = "a[id='control_rover_button']";
+        var stop_control_button_selector = "a[id='stop_control_button']";
+
+        $(blocks_tab_selector).hide();
+        $(python_tab_selector).hide();
+        $(builder_selector).hide();
+        $(graph_tab_selector).hide();
+        $(stop_control_button_selector).show();
+
+        document.getElementsByClassName('blocklyToolboxDiv')[0].style.visibility='hidden';
+
+
+        if (robot.toString() == "spider"){
+            $(control_rover_button_selector).hide();
+            document.getElementById("blocklyDiv").innerHTML = "<div style='margin-left:30px; width:100%;'><img src='/pages/img/ErleSpider_W4.jpg' width='400'><br><img src='/pages/img/keys_spider.png' width='400'></div>";
+
+            $(document).keydown(function(e) {
+                switch(e.which) {
+                    case 37: // left
+                        console.log("left.");
+                        var message_data = 'control_spider_left';
+                        socket.send(message_data);
+                    break;
+                    case 38: // up
+                        console.log("up.");
+                        var message_data = 'control_spider_up';
+                        socket.send(message_data);
+                    break;
+
+                    case 39: // right
+                        console.log("right.");
+                        var message_data = 'control_spider_right';
+                        socket.send(message_data);
+                    break;
+                    case 40: // down
+                        console.log("down.");
+                        var message_data = 'control_spider_down';
+                        socket.send(message_data);
+                    break;
+                    case 27: // ESC 
+                        console.log("ESC.");
+                        var message_data = 'end';   
+                        socket.send(message_data);
+                        window.location.href = "../index.html";
+                    break;
+
+                    default: return; // exit this handler for other keys
+                }
+                e.preventDefault(); // prevent the default action (scroll / move caret)
+            });
+        }
+        if (robot.toString() == "rover"){
+            $(control_spider_button_selector).hide();
+            document.getElementById("blocklyDiv").innerHTML = "<div style='margin-left:30px; width:100%;'><img src='/pages/img/caution.png' width='400'><br><img src='/pages/img/ErleRover_W6.jpg' width='400'><br><img src='/pages/img/keys_spider.png' width='400'></div>";
+
+            $(document).keyup(function(r) {
+                    switch(r.which) {
+                        case 37: // left
+                            console.log("left.r");
+                            var message_data = 'control_rover_left';
+                            socket.send(message_data);
+                        break;
+                        case 38: // up
+                            console.log("up.r");
+                            var message_data = 'control_rover_up';
+                            socket.send(message_data);
+                        break;
+                        case 39: // right
+                            console.log("right.r");
+                            var message_data = 'control_rover_right';
+                            socket.send(message_data);
+                        break;
+                        case 40: // down
+                            console.log("down.r");
+                            var message_data = 'control_rover_down';
+                            socket.send(message_data);
+                        break;
+                        case 27: // ESC 
+                            console.log("ESC.r");
+                            var message_data = 'end';   
+                            socket.send(message_data);
+                            window.location.href = "../index.html";
+                        break;
+
+                        default: return; // exit this handler for other keys
+                    }    
+                r.preventDefault(); // prevent the default action (scroll / move caret)
+            });
+        }
+        if (robot.toString() == "stop"){
+            var message_data = 'end';   
+            socket.send(message_data);
+            window.location.href = "../index.html";
+            //location.reload();
+        }
+
+
+        console.log("Manual control selected.");
     }
 
   };

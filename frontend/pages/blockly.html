@@ -119,7 +119,7 @@
                         </li> -->
 
                         <li>
-                            <a href="#"><i class="fa fa-cubes fa-fw"></i> Builder<span class="fa arrow"></span></a>
+                            <a id="builder" href="#"><i class="fa fa-cubes fa-fw"></i> Builder<span class="fa arrow"></span></a>
                             <ul class="nav nav-second-level">
                                 <li>
                                     <a id="launch_button" name="launch_button" href="#" onclick="ExecutionLogicModule.launch_code($('input[name=group_py]:checked').val());">Launch</a>
@@ -139,6 +139,13 @@
                                 <li>
                                     <a id="clean_ws_button" name="clean_ws_button" href="#" onclick='ExecutionLogicModule.clean_ws();'>Clean workspace</a>
                                 </li>
+                                <li>
+                                    <div id="pythondiv" style="color:#75A8D3; text-align:center" >
+                                        <span>Python:</span>
+                                        <input id="python3" type="radio" value="3" name="group_py" checked />3
+                                        <input id="python2" type="radio" value="2" name="group_py" />2
+                                    </div>
+                                </li>
 <!--                                 <li>
                                     <a href="#" onclick="localstorage();">Save</a>
                                 </li>
@@ -153,6 +160,7 @@
  --><!--                                 <li>
                                     <a href="#" onclick="tojavascript()">Javascript</a>
                                 </li>
+
  -->
                             </ul>
                             <!-- /.nav-second-level -->
@@ -161,12 +169,20 @@
                         <li>
                             <a href="graph.html"><i class="fa fa-sitemap fa-fw"></i> Graph</a>
                         </li>
+
                         <li>
-                            <div style="color:#75A8D3; text-align:center" >
-                                <span>Python:</span>
-                                <input id="python3" type="radio" value="3" name="group_py" checked />3
-                                <input id="python2" type="radio" value="2" name="group_py" />2
-                            </div>
+                            <a id="manual_mode_button" name="manual_mode_button" href="#"> Manual control<span class="fa arrow"></span></a>
+                            <ul class="nav nav-third-level">
+                                <li>
+                                    <a id="control_spider_button" name="control_spider_button" href="#" onclick="ExecutionLogicModule.manual_control('spider');">Control Spider</a>
+                                </li>
+                                <li>
+                                    <a id="control_rover_button" name="control_rover_button" href="#" onclick="ExecutionLogicModule.manual_control('rover');">Control Rover</a>
+                                </li>
+                                <li>
+                                    <a id="stop_control_button" name="stop_control_button" href="#" onclick="ExecutionLogicModule.manual_control('stop');" style="display:none;">Stop Control</a>
+                                </li>
+                            </ul>
                         </li>
                     </ul>
                 </div>
@@ -568,7 +584,6 @@
   }
 
 </script>
-
 
 </body>
 

@@ -57,6 +57,7 @@ from crab_msgs.msg import LegJointsState
 from crab_msgs.msg import LegPositionState
 from crab_msgs.msg import LegsJointsState
 from mavros_msgs.msg import OverrideRCIn
+from mavros_msgs.srv import SetMode
 
 try:
     import asyncio
@@ -191,45 +192,114 @@ class BlocklyServerProtocol(WebSocketServerProtocol):
                             print("kill pid="+str(pid))
                             os.kill(pid, signal.SIGKILL)
                             ros_nodes = rosnode.get_node_names()
-                            if '/imu_talker' in ros_nodes: #brain
-                                ##set default values
-                                pub = rospy.Publisher('/statusleds', String, queue_size=10, latch=True)
-                                msg = 'blue_off'
-                                pub.publish(msg)
-                                msg = 'orange_off'
-                                pub.publish(msg)
-                            if '/crab_leg_kinematics' in ros_nodes: #spider
-                                print("spider running")
-                                pub = rospy.Publisher('/joy', Joy, queue_size=10, latch=True)
-                                msg = Joy()
-                                msg.header.stamp = rospy.Time.now()
-                                rate = rospy.Rate(10)
-                                valueAxe = 0.0
-                                valueButton = 0
-                                for i in range (0, 20):
-                                    msg.axes.append(valueAxe)
-                                for e in range (0, 17):
-                                    msg.buttons.append(valueButton)
-                                pub.publish(msg)
-                                rate.sleep()
-                                print("DEFAULT MESSAGES SENT")
-                            if '/mavros' in ros_nodes: #rover
-                                print("rover")
-                                pub = rospy.Publisher('/mavros/rc/override', OverrideRCIn, queue_size=10)
-                                msg = OverrideRCIn()
-                                msg.channels[0] = 1500
-                                msg.channels[1] = 0
-                                msg.channels[2] = 1500
-                                msg.channels[3] = 0
-                                msg.channels[4] = 0
-                                msg.channels[5] = 0
-                                msg.channels[6] = 0
-                                msg.channels[7] = 0
-                                pub.publish(msg)
-                            print("@@@@@@@@@@@@@@@@@@")
                         except NameError:
                             print("execution script not running.")
                             pass
+
+                        if '/imu_talker' in ros_nodes: #brain
+                            ##set default values
+                            pub = rospy.Publisher('/statusleds', String, queue_size=10, latch=True)
+                            msg = 'blue_off'
+                            pub.publish(msg)
+                            msg = 'orange_off'
+                            pub.publish(msg)
+                        if '/crab_leg_kinematics' in ros_nodes: #spider
+                            print("spider running")
+                            pub = rospy.Publisher('/joy', Joy, queue_size=10, latch=True)
+                            msg = Joy()
+                            msg.header.stamp = rospy.Time.now()
+                            rate = rospy.Rate(10)
+                            valueAxe = 0.0
+                            valueButton = 0
+                            for i in range (0, 20):
+                                msg.axes.append(valueAxe)
+                            for e in range (0, 17):
+                                msg.buttons.append(valueButton)
+                            pub.publish(msg)
+                            print("DEFAULT MESSAGES SENT")
+                        if '/mavros' in ros_nodes: #rover
+                            print("rover")
+                            pub = rospy.Publisher('/mavros/rc/override', OverrideRCIn, queue_size=10)
+                            msg = OverrideRCIn()
+                            msg.channels[0] = 1500
+                            msg.channels[1] = 0
+                            msg.channels[2] = 1500
+                            msg.channels[3] = 0
+                            msg.channels[4] = 0
+                            msg.channels[5] = 0
+                            msg.channels[6] = 0
+                            msg.channels[7] = 0
+                            pub.publish(msg)
+                        print("@@@@@@@@@@@@@@@@@@")
+
+                    elif method_name.startswith('control'):
+                        robot = method_name.split('control_')[1]
+                        if robot.startswith('spider'):
+                            direction = robot.split('spider_')[1]
+                            pub = rospy.Publisher('/joy', Joy, queue_size=10)
+                            msg = Joy()
+                            msg.header.stamp = rospy.Time.now()
+                            rate = rospy.Rate(10)
+                               
+                            valueAxe = 0.0
+                            valueButton = 0
+                            for i in range (0, 20):
+                                msg.axes.append(valueAxe)
+                            for e in range (0, 17):
+                                msg.buttons.append(valueButton)
+
+                            if direction == 'up':#forward
+                                msg.axes[1] = 1
+                            elif direction == 'down':#backwards
+                                msg.axes[1] = -1
+                            elif direction == 'left':#turn left
+                                #msg.axes[0] = 1
+                                msg.axes[2] = 1
+                            elif direction == 'right':#turn rigth
+                                #msg.axes[0] = -1
+                                msg.axes[2] = -1
+
+                            pub.publish(msg)
+                            rate.sleep()
+
+                        elif robot.startswith('rover'):
+                            direction = robot.split('rover_')[1]   
+                            rospy.wait_for_service('/mavros/set_mode')
+                            change_mode = rospy.ServiceProxy('/mavros/set_mode', SetMode)
+                            resp1 = change_mode(custom_mode='manual')
+                            print (resp1)
+                            if 'True' in str(resp1):
+                                pub = rospy.Publisher('mavros/rc/override', OverrideRCIn, queue_size=10)
+                                r = rospy.Rate(10) #2hz
+                                msg = OverrideRCIn()
+                                throttle_channel=2
+                                steer_channel=0
+
+                                speed_slow = 1558
+                                #speed_turbo = 2000 #dangerous
+                                speed = speed_slow
+
+                                if direction == 'up':#forward
+                                    msg.channels[throttle_channel]=speed
+                                    msg.channels[steer_channel]=1385 #straight
+                                elif direction == 'down':#backwards
+                                    msg.channels[throttle_channel]=1450 #slow
+                                    msg.channels[steer_channel]=1385 #straight
+                                elif direction == 'left':#turn left
+                                    msg.channels[throttle_channel]=speed
+                                    msg.channels[steer_channel]=1285
+                                elif direction == 'right':#turn rigth
+                                    msg.channels[throttle_channel]=speed
+                                    msg.channels[steer_channel]=1485
+
+                                start = time.time()
+                                flag=True
+                                while not rospy.is_shutdown() and flag:
+                                    sample_time=time.time()
+                                    if ((sample_time - start) > 0.5):
+                                        flag=False
+                                    pub.publish(msg)
+                                    r.sleep()
                     else:
                         rospy.logerr('Called unknown method %s', method_name)
 
