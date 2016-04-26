@@ -342,12 +342,12 @@ var ExecutionLogicModule = (function () {
         $(graph_tab_selector).hide();
         $(stop_control_button_selector).show();
 
-        document.getElementById("blocklyDiv").visibility = "hidden";
-        document.getElementById("blocklyDiv").innerHTML = "<img src='http://www.dartodo.com/wp-content/uploads/2015/05/logo-erle-300x300.png'>";
+        document.getElementsByClassName('blocklyToolboxDiv')[0].style.visibility='hidden';
 
 
         if (robot.toString() == "spider"){
             $(control_rover_button_selector).hide();
+            document.getElementById("blocklyDiv").innerHTML = "<div style='margin-left:30px; width:100%;'><img src='/pages/img/ErleSpider_W4.jpg' width='400'><br><img src='/pages/img/keys_spider.png' width='400'></div>";
 
             $(document).keydown(function(e) {
                 switch(e.which) {
@@ -387,6 +387,7 @@ var ExecutionLogicModule = (function () {
         }
         if (robot.toString() == "rover"){
             $(control_spider_button_selector).hide();
+            document.getElementById("blocklyDiv").innerHTML = "<div style='margin-left:30px; width:100%;'><img src='/pages/img/ErleRover_W6.jpg' width='400'><br><img src='/pages/img/keys_spider.png' width='400'></div>";
 
             $(document).keydown(function(e) {
                 switch(e.which) {
@@ -419,7 +420,8 @@ var ExecutionLogicModule = (function () {
         if (robot.toString() == "stop"){
             var message_data = 'end';   
             socket.send(message_data);
-            location.reload();
+            window.location.href = "../index.html";
+            //location.reload();
         }
 
 
