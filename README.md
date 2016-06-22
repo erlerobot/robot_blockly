@@ -49,10 +49,10 @@ source install_isolated/setup.bash
 roslaunch robot_blockly robot_blockly.launch 
 ```
 
-Point your browser to: `http://localhost:8000/pages/blockly.html`
+Point your browser to: [http://localhost:8000/pages/blockly.html](http://localhost:8000/pages/blockly.html)
 
 ### Create your own blocks
-- Open `frontend/demos/blockfactory/index.html`
+- Open [http://localhost:8000/blockly/demos/blockfactory/index.html](http://localhost:8000/blockly/demos/blockfactory/index.html)
 - Design you own block and then add the metadata to: `frontend/blockly/blocks` and `frontend/blockly/generator`
 - Launch `python build.py` to regenerate the blocks.
 
