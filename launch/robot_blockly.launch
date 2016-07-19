@@ -1,4 +1,5 @@
 <launch>
 	<node name="robot_blockly_backend" pkg="robot_blockly" type="robot_blockly_backend.py" output="screen" />
-	<node name="robot_blockly_webserver" pkg="robot_blockly" type="pywebserver.py"/>
+	<node name="robot_blockly_webserver" pkg="robot_blockly" type="pywebserver.py" />
+	<rosparam param="block_packages">[default_blocks, sr_blockly_blocks]</rosparam>
 </launch>
