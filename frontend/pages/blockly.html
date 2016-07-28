@@ -560,7 +560,7 @@
     var xml_text = localStorage.getItem("blocks_cache");
     try {
       var xml = Blockly.Xml.textToDom(xml_text);
-      Blockly.Xml.domToWorkspace(workspace, xml);
+      Blockly.Xml.domToWorkspace(xml, workspace);
 
       automate_localstorage();
     }
