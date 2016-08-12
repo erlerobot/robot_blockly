@@ -6,6 +6,8 @@ import os
 from rospkg import RosPack
 import rospy
 
+rospy.init_node("robot_blockly_webserver")
+
 rp = RosPack()
 frontend_path = rp.get_path('robot_blockly')
 frontend_path += '/frontend'
@@ -14,7 +16,7 @@ print("Changing serve path to: " + frontend_path)
 
 os.chdir(frontend_path)
 
-block_packages = rospy.get_param('block_packages')
+block_packages = rospy.get_param('~block_packages')
 block_packages = ["/" + package for package in block_packages]
 block_javascript_files = ";".join([package + "/blocks_uncompressed.js" for package in block_packages])
 
