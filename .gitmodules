@@ -1,6 +1,6 @@
 [submodule "frontend/blockly"]
 	path = frontend/blockly
-	url = http://github.com/shadow-robot/blockly
+	url = https://github.com/google/blockly.git
 [submodule "frontend/ace-builds"]
 	path = frontend/ace-builds
 	url = http://github.com/erlerobot/ace-builds

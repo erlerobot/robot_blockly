@@ -16,6 +16,7 @@ os.chdir(frontend_path)
 
 block_packages = rospy.get_param('block_packages')
 block_packages = ["/" + package for package in block_packages]
+block_javascript_files = ";".join([package + "/blocks_uncompressed.js" for package in block_packages])
 
 HOST = socket.gethostname()
 PORT = 8000
@@ -32,6 +33,16 @@ class MyRequestHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
         else:
             os.chdir(frontend_path)
         return SimpleHTTPServer.SimpleHTTPRequestHandler.do_GET(self)
+
+    def do_POST(self):
+        length = int(self.headers.getheader('content-length'))
+        data_string = self.rfile.read(length)
+        if "get_block_packages" == data_string:
+            result = block_javascript_files
+        else:
+            result = "Usupported method"
+        self.wfile.write(result)
+
 
 Handler = MyRequestHandler
 httpd = SocketServer.TCPServer(address, Handler)
