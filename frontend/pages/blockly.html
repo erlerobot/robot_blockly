@@ -353,57 +353,66 @@
     // alert("Saved: "+xml_text);
   }
 
-  $.post("ajax", "get_block_packages", function(data) {
-      var scriptsToLoad = data.split(";");
-      var arrayLength = scriptsToLoad.length;
-      for (var i = 0; i < arrayLength; i++) {
-          if (arrayLength - 1 > i) {
-              $.getScript(scriptsToLoad[i]);
-          }
-          else {
-              $.getScript(scriptsToLoad[i], function() {
-                  var toolboxXml = '<xml xmlns="http://www.w3.org/1999/xhtml">' + toolboxXmlText + '</xml>';
-                  workspace = Blockly.inject(blocklyDiv,
-                    {toolbox: toolboxXml,
-                       scrollbars: true,
-                       rtl: false,
-                       zoom:
-                           {enabled: true,
-                            controls: true,
-                            wheel: true,
-                            maxScale: 4,
-                            minScale: .25,
-                            scaleSpeed: 1.1
-                           },
-                       grid:
-                           {spacing: 25,
-                            length: 3,
-                            colour: '#ccc',
-                            snap: false},
-                       trashcan: true});
+  function load_workspace() {
+      var toolboxXml = '<xml xmlns="http://www.w3.org/1999/xhtml">' + toolboxXmlText + '</xml>';
+      workspace = Blockly.inject(blocklyDiv,
+        {toolbox: toolboxXml,
+           scrollbars: true,
+           rtl: false,
+           zoom:
+               {enabled: true,
+                controls: true,
+                wheel: true,
+                maxScale: 4,
+                minScale: .25,
+                scaleSpeed: 1.1
+               },
+           grid:
+               {spacing: 25,
+                length: 3,
+                colour: '#ccc',
+                snap: false},
+           trashcan: true});
 
-                  var onresize = function(e) {
-                  // Compute the absolute coordinates and dimensions of blocklyArea.
-                  var element = blocklyArea;
-                  var x = 0;
-                  var y = 0;
-                  do {
-                    x += element.offsetLeft;
-                    y += element.offsetTop;
-                    element = element.offsetParent;
-                  } while (element);
-                  // Position blocklyDiv over blocklyArea.
-                  blocklyDiv.style.left = x + 'px';
-                  blocklyDiv.style.top = y + 'px';
-                  blocklyDiv.style.width = blocklyArea.offsetWidth + 'px';
-                  blocklyDiv.style.height = blocklyArea.offsetHeight  + 'px';
-                  // blocklyDiv.style.height = blocklyArea.offsetHeight - 51 - 42 + 171 + 'px';
-                  };
-                  window.addEventListener('resize', onresize, false);
-                  onresize();
-                  Blockly.svgResize(workspace);
-                  restorelocal();
-              });
+      var onresize = function(e) {
+      // Compute the absolute coordinates and dimensions of blocklyArea.
+      var element = blocklyArea;
+      var x = 0;
+      var y = 0;
+      do {
+        x += element.offsetLeft;
+        y += element.offsetTop;
+        element = element.offsetParent;
+      } while (element);
+      // Position blocklyDiv over blocklyArea.
+      blocklyDiv.style.left = x + 'px';
+      blocklyDiv.style.top = y + 'px';
+      blocklyDiv.style.width = blocklyArea.offsetWidth + 'px';
+      blocklyDiv.style.height = blocklyArea.offsetHeight  + 'px';
+      // blocklyDiv.style.height = blocklyArea.offsetHeight - 51 - 42 + 171 + 'px';
+      };
+      window.addEventListener('resize', onresize, false);
+      onresize();
+      Blockly.svgResize(workspace);
+      restorelocal();
+    }
+
+
+
+  $.post("ajax", "get_block_packages", function(data) {
+      if ("EMPTY" == data) {
+          load_workspace();
+      }
+      else {
+          var scriptsToLoad = data.split(";");
+          var arrayLength = scriptsToLoad.length;
+          for (var i = 0; i < arrayLength; i++) {
+              if (arrayLength - 1 > i) {
+                  $.getScript(scriptsToLoad[i]);
+              }
+              else {
+                  $.getScript(scriptsToLoad[i], load_workspace);
+              }
           }
       }
   });

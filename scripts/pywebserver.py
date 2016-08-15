@@ -12,13 +12,15 @@ rp = RosPack()
 frontend_path = rp.get_path('robot_blockly')
 frontend_path += '/frontend'
 
-print("Changing serve path to: " + frontend_path)
+rospy.loginfo("Changing serve path to: " + frontend_path)
 
 os.chdir(frontend_path)
 
 block_packages = rospy.get_param('~block_packages')
 block_packages = ["/" + package for package in block_packages]
 block_javascript_files = ";".join([package + "/blocks_uncompressed.js" for package in block_packages])
+if "" == block_javascript_files:
+    block_javascript_files = "EMPTY"
 
 HOST = socket.gethostname()
 PORT = 8000
