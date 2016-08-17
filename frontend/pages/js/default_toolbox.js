@@ -2,7 +2,7 @@ if (null == toolboxXmlText) {
     var toolboxXmlText = "";
 }
 toolboxXmlText += `
-    <category id="catLogic" name="Logic">
+    <category id="catLogic" name="Logic" colour="210">
       <block type="controls_if"></block>
       <block type="logic_compare"></block>
       <block type="logic_operation"></block>
@@ -11,7 +11,7 @@ toolboxXmlText += `
       <block type="logic_null"></block>
       <block type="logic_ternary"></block>
     </category>
-    <category id="catLoops" name="Loops">
+    <category id="catLoops" name="Loops" colour="120">
       <block type="controls_repeat_ext">
         <value name="TIMES">
           <block type="math_number">
@@ -40,7 +40,7 @@ toolboxXmlText += `
       <block type="controls_forEach"></block>
       <block type="controls_flow_statements"></block>
     </category>
-    <category id="catMath" name="Math">
+    <category id="catMath" name="Math" colour="230">
       <block type="math_number"></block>
       <block type="math_arithmetic"></block>
       <block type="math_single"></block>
@@ -83,7 +83,7 @@ toolboxXmlText += `
       </block>
       <block type="math_random_float"></block>
     </category>
-    <category id="catLists" name="Lists">
+    <category id="catLists" name="Lists" colour="290">
       <block type="lists_create_with">
         <mutation items="0"></mutation>
       </block>
@@ -133,7 +133,7 @@ toolboxXmlText += `
         </value>
       </block>
     </category>
-    <category id="catText" name="Text">
+    <category id="catText" name="Text" colour="20">
       <block type="text"></block>
       <block type="text_join"></block>
       <block type="text_append">
@@ -173,6 +173,6 @@ toolboxXmlText += `
         </value>
       </block>
     </category>
-    <category id="catVariables" custom="VARIABLE" name="Variables"></category>
-    <category id="catFunctions" custom="PROCEDURE" name="Functions"></category>
+    <category id="catVariables" colour="330" custom="VARIABLE" name="Variables"></category>
+    <category id="catFunctions" colour="290" custom="PROCEDURE" name="Functions"></category>
 `;
