@@ -250,7 +250,7 @@ var ExecutionLogicModule = (function () {
                                   workspace.clear();
                                   var xml = Blockly.Xml.textToDom(this.result);
                                   console.log("Loading workspace from file.");
-                                  Blockly.Xml.domToWorkspace(workspace, xml);
+                                  Blockly.Xml.domToWorkspace(xml, workspace);
                               };
                               reader.readAsText(file);
                               // This is done in order to allow open the same file several times in the row
