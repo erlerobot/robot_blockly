@@ -12,7 +12,7 @@ rp = RosPack()
 frontend_path = rp.get_path('robot_blockly')
 frontend_path += '/frontend'
 
-rospy.loginfo("Changing serve path to: " + frontend_path)
+rospy.loginfo("Changing server path to: " + frontend_path)
 
 os.chdir(frontend_path)
 
