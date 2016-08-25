@@ -397,25 +397,24 @@
       restorelocal();
     }
 
-
-
-  $.post("ajax", "get_block_packages", function(data) {
-      if ("EMPTY" == data) {
-          load_workspace();
-      }
-      else {
-          var scriptsToLoad = data.split(";");
-          var arrayLength = scriptsToLoad.length;
-          for (var i = 0; i < arrayLength; i++) {
-              if (arrayLength - 1 > i) {
-                  $.getScript(scriptsToLoad[i]);
-              }
-              else {
-                  $.getScript(scriptsToLoad[i], load_workspace);
+  Blockly.callWebService('robot_blockly', 'get_block_packages', '', true,
+      function(data) {
+          if ("EMPTY" == data) {
+              load_workspace();
+          }
+          else {
+              var scriptsToLoad = data;
+              var arrayLength = scriptsToLoad.length;
+              for (var i = 0; i < arrayLength; i++) {
+                  if (arrayLength - 1 > i) {
+                      $.getScript(scriptsToLoad[i]);
+                  }
+                  else {
+                      $.getScript(scriptsToLoad[i], load_workspace);
+                  }
               }
           }
-      }
-  });
+      });
 
 </script>
 
