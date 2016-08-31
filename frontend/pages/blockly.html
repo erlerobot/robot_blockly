@@ -353,28 +353,27 @@
     // alert("Saved: "+xml_text);
   }
 
-  function load_workspace() {
-      var toolboxXml = '<xml xmlns="http://www.w3.org/1999/xhtml">' + toolboxXmlText + '</xml>';
-      workspace = Blockly.inject(blocklyDiv,
-        {toolbox: toolboxXml,
-           scrollbars: true,
-           rtl: false,
-           zoom:
-               {enabled: true,
-                controls: true,
-                wheel: true,
-                maxScale: 4,
-                minScale: .25,
-                scaleSpeed: 1.1
-               },
-           grid:
-               {spacing: 25,
-                length: 3,
-                colour: '#ccc',
-                snap: false},
-           trashcan: true});
+  Blockly.loadWorkspace(function() {
+    workspace = Blockly.inject(blocklyDiv,
+        {toolbox: Blockly.getToolboxXmlText(),
+          scrollbars: true,
+          rtl: false,
+          zoom:
+          {enabled: true,
+            controls: true,
+            wheel: true,
+            maxScale: 4,
+            minScale: .25,
+            scaleSpeed: 1.1
+          },
+          grid:
+          {spacing: 25,
+            length: 3,
+            colour: '#ccc',
+            snap: false},
+          trashcan: true});
 
-      var onresize = function(e) {
+    var onresize = function(e) {
       // Compute the absolute coordinates and dimensions of blocklyArea.
       var element = blocklyArea;
       var x = 0;
@@ -390,30 +389,12 @@
       blocklyDiv.style.width = blocklyArea.offsetWidth + 'px';
       blocklyDiv.style.height = blocklyArea.offsetHeight  + 'px';
       // blocklyDiv.style.height = blocklyArea.offsetHeight - 51 - 42 + 171 + 'px';
-      };
-      window.addEventListener('resize', onresize, false);
-      onresize();
-      Blockly.svgResize(workspace);
-      restorelocal();
-    }
-
-  Blockly.callWebService('robot_blockly', 'get_block_packages', '', true,
-      function(data) {
-          if ("EMPTY" == data) {
-              load_workspace();
-          }
-          else {
-              var scriptsToLoad = data;
-              var deferreds = [];
-              var arrayLength = scriptsToLoad.length;
-              for (var i = 0; i < arrayLength; i++) {
-                  deferreds.push($.getScript(scriptsToLoad[i]));
-              }
-              $.when.apply($, deferreds).then(function () {
-                  load_workspace();
-              });
-          }
-      });
+    };
+    window.addEventListener('resize', onresize, false);
+    onresize();
+    Blockly.svgResize(workspace);
+    restorelocal();
+  });
 
 </script>
 

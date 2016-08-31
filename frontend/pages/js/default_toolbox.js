@@ -1,7 +1,4 @@
-if (null == toolboxXmlText) {
-    var toolboxXmlText = "";
-}
-toolboxXmlText += `
+Blockly.appendToToolbox(`
     <category id="catLogic" name="Logic" colour="210">
       <block type="controls_if"></block>
       <block type="logic_compare"></block>
@@ -175,4 +172,4 @@ toolboxXmlText += `
     </category>
     <category id="catVariables" colour="330" custom="VARIABLE" name="Variables"></category>
     <category id="catFunctions" colour="290" custom="PROCEDURE" name="Functions"></category>
-`;
+`);
