@@ -66,7 +66,16 @@ Point your browser to: [http://localhost:8000/pages/blockly.html](http://localho
 - catkin_make will automatically merge all Javascript files into a single file. So in case if you have changed Javascript file you need to run catkin_make.
 
 #### Dynamic data loading from server
-Sometimes it is convinient to load data from server for component
+Sometimes it is convinient to load data from server for component.
+In order to implement server side processing web service modules were introduced.
+You need to create file **web_service_module.py** in your library package and put there class **WebServiceModule**.
+This class can have functions which accepts parameters object and return result object.
+
+API **Blockly.callWebService** provides possibility to call such methods by name and pass parameter from Javascript.
+
+Also **Blockly.waitForComponentToLoad** allows to call such web modules and wait for it's execution before loading workspace.
+It can be used to configure blocks depending on the server data.
+An example can be found [here](https://github.com/shadow-robot/sr_blockly/blob/master/sr_blockly_blocks/blocks/trajectory_named_waypoint.js).
 
 ### License
 blockly has been built based on [blockly](http://github.com/google/blockly), [ACE](http://github.com/erlerobot/ace-builds) and Bootstrap. Refer to their sources for the corresponding licenses.
