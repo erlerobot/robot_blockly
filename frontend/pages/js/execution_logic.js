@@ -236,30 +236,30 @@ var ExecutionLogicModule = (function () {
         var input_field_name = 'load_workspace_from_file_input';
         var file_input = document.getElementById(input_field_name);
         if (null == file_input) {
-            file_input = document.createElement('input');
-            file_input.type = 'file';
-            file_input.id = input_field_name;
-            file_input.name = input_field_name;
-            file_input.addEventListener('change',
-                      function (evt) {
-                          var files = evt.target.files;
-                          if (files.length > 0) {
-                              var file = files[0];
-                              var reader = new FileReader();
-                              reader.onload = function () {
-                                  workspace.clear();
-                                  var xml = Blockly.Xml.textToDom(this.result);
-                                  console.log("Loading workspace from file.");
-                                  Blockly.Xml.domToWorkspace(xml, workspace);
-                              };
-                              reader.readAsText(file);
-                              // This is done in order to allow open the same file several times in the row
-                              document.body.removeChild(file_input);
-                          }
-                      }, false);
-            // Hidding element from view
-            file_input.style = 'position: fixed; top: -100em';
-        document.body.appendChild(file_input);
+          file_input = document.createElement('input');
+          file_input.type = 'file';
+          file_input.id = input_field_name;
+          file_input.name = input_field_name;
+          file_input.addEventListener('change',
+            function (evt) {
+              var files = evt.target.files;
+              if (files.length > 0) {
+                var file = files[0];
+                var reader = new FileReader();
+                reader.onload = function () {
+                  workspace.clear();
+                  var xml = Blockly.Xml.textToDom(this.result);
+                  console.log("Loading workspace from file.");
+                  Blockly.Xml.domToWorkspace(xml, workspace);
+                };
+                reader.readAsText(file);
+                // This is done in order to allow open the same file several times in the row
+                document.body.removeChild(file_input);
+              }
+            }, false);
+          // Hidding element from view
+          file_input.style = 'position: fixed; top: -100em';
+          document.body.appendChild(file_input);
         }
         file_input.click();
       }
@@ -271,16 +271,59 @@ var ExecutionLogicModule = (function () {
       var xml_text = Blockly.Xml.domToText(xml);
       var blob = new Blob([xml_text], {type: 'text/xml'});
       if (window.navigator.msSaveOrOpenBlob) {
-          window.navigator.msSaveBlob(blob, filename);
+        window.navigator.msSaveBlob(blob, filename);
       } else {
-          var elem = window.document.createElement('a');
-          elem.href = window.URL.createObjectURL(blob);
-          elem.download = filename;
-          document.body.appendChild(elem);
-          elem.click();
-          document.body.removeChild(elem);
+        var elem = window.document.createElement('a');
+        elem.href = window.URL.createObjectURL(blob);
+        elem.download = filename;
+        document.body.appendChild(elem);
+        elem.click();
+        document.body.removeChild(elem);
       }
       console.log("Workspace saved.");
+    },
+
+    save_js_file: function() {
+      $('<div id="save_function_dialog"></div>').dialog({
+        modal: true,
+        title: "Save function",
+        open: function () {
+          // Hidding close button on dialog title bar
+          $(".ui-dialog-titlebar-close", $(this).parent()).hide();
+
+          var functions = '';
+          var allProcedures = Blockly.Procedures.allProcedures(workspace);
+          var allProceduresLength = allProcedures.length;
+          if (2 == allProceduresLength) {
+            for (var i = 0; i < allProceduresLength; ++i) {
+              var proceduresCategoryLength = allProcedures[i].length;
+              for (var j = 0; j < proceduresCategoryLength; ++j) {
+                var procedureName = allProcedures[i][j][0];
+                functions += '<option value="' + procedureName + '">' + procedureName + '</option>';
+              }
+            }
+            $(this).html('<form><fieldset>' +
+              '<label for="category">Category</label><input type="text" name="category" id="category">' +
+              '<label for="function">Function</label><select name="function" id="function">' + functions + '</select>' +
+              '</fieldset></form>');
+          }
+          else {
+            $(this).html('Error during dialog initialization. Please read logs for more information.');
+            console.log('Number of procedure types should be two (with and without return value). But it is ' +
+              allProceduresLength);
+          }
+        },
+        buttons: {
+          Save: function () {
+            $(this).dialog("close");
+            $("#save_function_dialog").remove();
+          },
+          Cancel: function () {
+            $(this).dialog("close");
+            $("#save_function_dialog").remove();
+          }
+        }
+      });
     }
   };
 })();
