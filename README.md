@@ -65,6 +65,9 @@ Point your browser to: [http://localhost:8000/pages/blockly.html](http://localho
 - Design you own block and then add the metadata to: `blocks` and `generators` in the block repository. An xml snippet should be included in any Javascript file of the block repository, please see [sr_blockly](https://github.com/shadow-robot/sr_blockly/toolbox) for an example of how to do this.
 - catkin_make will automatically merge all Javascript files into a single file. So in case if you have changed Javascript file you need to run catkin_make.
 
+#### Dynamic data loading from server
+Sometimes it is convinient to load data from server for component
+
 ### License
 blockly has been built based on [blockly](http://github.com/google/blockly), [ACE](http://github.com/erlerobot/ace-builds) and Bootstrap. Refer to their sources for the corresponding licenses.
 

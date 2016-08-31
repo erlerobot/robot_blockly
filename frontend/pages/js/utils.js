@@ -31,7 +31,7 @@ Blockly.readFile = function(file) {
  * @param {string} file relative path to the file on the web server.
  */
 Blockly.callWebService = function(module, method, parameters, asynchronous, success_callback, error_callback) {
-    $.ajax({
+    result = $.ajax({
         url: 'web_service_module',
         type: 'post',
         dataType: 'json',
@@ -55,4 +55,5 @@ Blockly.callWebService = function(module, method, parameters, asynchronous, succ
             parameters: parameters
         })
     });
+    return result;
 }
