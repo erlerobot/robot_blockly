@@ -404,15 +404,14 @@
           }
           else {
               var scriptsToLoad = data;
+              var deferreds = [];
               var arrayLength = scriptsToLoad.length;
               for (var i = 0; i < arrayLength; i++) {
-                  if (arrayLength - 1 > i) {
-                      $.getScript(scriptsToLoad[i]);
-                  }
-                  else {
-                      $.getScript(scriptsToLoad[i], load_workspace);
-                  }
+                  deferreds.push($.getScript(scriptsToLoad[i]));
               }
+              $.when.apply($, deferreds).then(function () {
+                  load_workspace();
+              });
           }
       });
 
