@@ -65,6 +65,18 @@ Point your browser to: [http://localhost:8000/pages/blockly.html](http://localho
 - Design you own block and then add the metadata to: `blocks` and `generators` in the block repository. An xml snippet should be included in any Javascript file of the block repository, please see [sr_blockly](https://github.com/shadow-robot/sr_blockly/tree/master/sr_blockly_blocks/toolbox) for an example of how to do this.
 - catkin_make will automatically merge all Javascript files into a single file. So in case if you have changed Javascript file you need to run catkin_make.
 
+#### Dynamic data loading from server
+Sometimes it is convinient to load data from the server for a component.
+In order to implement server side processing web service modules were introduced.
+You need to create the file **web_service_module.py** in your library package and put in there the class **WebServiceModule**.
+This class can have functions which accept a parameter object and return a result object.
+
+API **Blockly.callWebService** provides the possibility to call such methods by name and pass a parameter from Javascript.
+
+Also **Blockly.waitForComponentToLoad** allows you to call such web modules and wait for it's execution before loading workspace.
+It can be used to configure blocks depending on the server data.
+An example can be found [here](https://github.com/shadow-robot/sr_blockly/blob/master/sr_blockly_blocks/blocks/trajectory_named_waypoint.js).
+
 ### License
 blockly has been built based on [blockly](http://github.com/google/blockly), [ACE](http://github.com/erlerobot/ace-builds) and Bootstrap. Refer to their sources for the corresponding licenses.
 
