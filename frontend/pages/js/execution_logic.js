@@ -302,10 +302,15 @@ var ExecutionLogicModule = (function () {
                 functions += '<option value="' + procedureName + '">' + procedureName + '</option>';
               }
             }
-            $(this).html('<form><fieldset>' +
-              '<label for="category">Category</label><input type="text" name="category" id="category">' +
-              '<label for="function">Function</label><select name="function" id="function">' + functions + '</select>' +
-              '</fieldset></form>');
+            if (0 == functions.length) {
+              $(this).html('There are no functions in the workspace to save.');
+            }
+            else {
+              $(this).html('<form><fieldset>' +
+                '<label for="category">Category</label><input type="text" name="category" id="category">' +
+                '<label for="function">Function</label><select name="function" id="function">' + functions + '</select>' +
+                '</fieldset></form>');
+            }
           }
           else {
             $(this).html('Error during dialog initialization. Please read logs for more information.');
