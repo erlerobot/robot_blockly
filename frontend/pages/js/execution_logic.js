@@ -306,10 +306,34 @@ var ExecutionLogicModule = (function () {
               $(this).html('There are no functions in the workspace to save.');
             }
             else {
-              $(this).html('<form><fieldset>' +
-                '<label for="category">Category</label><input type="text" name="category" id="category">' +
-                '<label for="function">Function</label><select name="function" id="function">' + functions + '</select>' +
-                '</fieldset></form>');
+              categories_options = '';
+              var domDocument = $.parseXML(Blockly.getToolboxXmlText());
+              var $xml = $(domDocument);
+              var leaf_categories = $xml.find('category:not(:has(category))');
+              var leaf_categories_length = leaf_categories.length;
+              for (var i = 0; i < leaf_categories_length; ++i) {
+                var parent_element = leaf_categories[i];
+                var category_full_path = '';
+                while ((null != parent_element) && ('category' == parent_element.nodeName)) {
+                  var category_name = parent_element.getAttribute('name');
+                  if (null != category_name) {
+                    if (0 == category_full_path.length) {
+                      category_full_path = category_name;
+                    }
+                    else {
+                      category_full_path = category_name + '/' + category_full_path;
+                    }
+                  }
+                  parent_element = parent_element.parentElement;
+                }
+                categories_options += '<option value="' + category_full_path + '">' + category_full_path + '</option>';
+              }
+              $(this).html('<fieldset>' +
+                '<fieldset><legend>Category</legend><select name="category_sel" id="category_sel">' +
+                categories_options + '</select>' +
+                '<input type="text" name="category" id="category"></fieldset>' +
+                '<fieldset><legend>Function</legend><select name="function" id="function">' + functions + '</select>' +
+                '</fieldset></fieldset>');
             }
           }
           else {
