@@ -31,7 +31,7 @@ Blockly.readFile = function(file) {
  * @param {string} module module name.
  * @param {string} method method name.
  * @param {object} parameters single object with all parameters either array or dictionary.
- * @param {boolean} asynchronous make call asyncrohous.
+ * @param {boolean} asynchronous make call asynchronous.
  * @param {function} success_callback success callback.
  * @param {function} error_callback error callback.
  */
