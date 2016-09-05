@@ -268,7 +268,7 @@ var ExecutionLogicModule = (function () {
     save_to_file: function() {
       var filename = 'blockly_workspace.xml';
       var xml = Blockly.Xml.workspaceToDom(workspace);
-      var xml_text = Blockly.Xml.domToText(xml);
+      var xml_text = Blockly.Xml.domToPrettyText(xml);
       var blob = new Blob([xml_text], {type: 'text/xml'});
       if (window.navigator.msSaveOrOpenBlob) {
         window.navigator.msSaveBlob(blob, filename);
@@ -329,10 +329,10 @@ var ExecutionLogicModule = (function () {
                 categories_options += '<option value="' + category_full_path + '">' + category_full_path + '</option>';
               }
               $(this).html('<fieldset>' +
-                '<fieldset><legend>Category</legend><select name="category_sel" id="category_sel">' +
+                '<fieldset><legend>Category</legend><select name="save_dialog_category_sel" id="save_dialog_category_sel">' +
                 categories_options + '</select>' +
-                '<input type="text" name="category" id="category"></fieldset>' +
-                '<fieldset><legend>Function</legend><select name="function" id="function">' + functions + '</select>' +
+                '<input type="text" name="save_dialog_category" id="save_dialog_category"></fieldset>' +
+                '<fieldset><legend>Function</legend><select name="save_dialog_function" id="save_dialog_function">' + functions + '</select>' +
                 '</fieldset></fieldset>');
             }
           }
@@ -344,6 +344,47 @@ var ExecutionLogicModule = (function () {
         },
         buttons: {
           Save: function () {
+            var categoryName = $('#save_dialog_category').val();
+            if ($.trim(categoryName).length === 0) {
+              categoryName = $('#save_dialog_category_sel :selected').text();;
+            }
+            var functionName = $('#save_dialog_function :selected').text();
+
+            var filename = functionName + '.js';
+            var topBlocks = workspace.getTopBlocks();
+            var topBlocksLength = topBlocks.length;
+            var functionBlock = null;
+            for (var i = 0; i < topBlocksLength; i++) {
+              if (topBlocks[i].getProcedureDef) {
+                var procName = topBlocks[i].getProcedureDef();
+                if (Blockly.Names.equals(procName[0], functionName)) {
+                  functionBlock = topBlocks[i];
+                  break;
+                }
+              }
+            }
+            if (null == functionBlock) {
+              console.log('Could not find function block');
+              return;
+            }
+            var xml = Blockly.Xml.blockToDom(functionBlock);
+            xml.removeAttribute('id');
+            $('[id]', xml).removeAttr('id');
+            var xmlText = Blockly.Xml.domToPrettyText(xml);
+            var javascriptText = 'Blockly.appendToToolboxCategory("' + categoryName + '",`' + xmlText + '`);';
+            var blob = new Blob([javascriptText], {type: 'text/javascript'});
+            if (window.navigator.msSaveOrOpenBlob) {
+              window.navigator.msSaveBlob(blob, filename);
+            } else {
+              var elem = window.document.createElement('a');
+              elem.href = window.URL.createObjectURL(blob);
+              elem.download = filename;
+              document.body.appendChild(elem);
+              elem.click();
+              document.body.removeChild(elem);
+            }
+            console.log("Function saved.");
+
             $(this).dialog("close");
             $("#save_function_dialog").remove();
           },

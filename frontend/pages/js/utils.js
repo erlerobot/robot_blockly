@@ -93,6 +93,16 @@ Blockly.appendToToolbox = function(xml) {
 }
 
 /**
+ * Append toolbox xml to category during initialization of the workspace.
+ * @param {string} categoryName full name of the category, is separated by / sign.
+ * @param {string} xml code of the toolbox to append to already existing one.
+ */
+Blockly.appendToToolboxCategory = function(categoryName, xml) {
+  // TODO: Implement !!!
+  Blockly.toolboxXmlText += '<category id="' + categoryName + '" name="' + categoryName + '">' + xml + '</category>';
+}
+
+/**
  * Return toolbox XML during initialization of the workspace.
  */
 Blockly.getToolboxXmlText = function() {
