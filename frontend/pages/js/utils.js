@@ -80,8 +80,8 @@ Blockly.asyncCallWebService = function(module, method, parameters, success_callb
  * Global variable for toolbox XML.
  */
 
-if (null == Blockly.toolboxXmlText) {
-  Blockly.toolboxXmlText = "";
+if (null == Blockly.toolboxXmlDocument) {
+  Blockly.toolboxXmlDocument = $.parseXML('<xml xmlns="http://www.w3.org/1999/xhtml"></xml>');
 }
 
 /**
@@ -89,7 +89,31 @@ if (null == Blockly.toolboxXmlText) {
  * @param {string} xml code of the toolbox to append to already existing one.
  */
 Blockly.appendToToolbox = function(xml) {
-  Blockly.toolboxXmlText += xml;
+
+  var mergeTwoNodes = function(originalDocumentNode, appendedDocumentNode) {
+    for (var i = 0; i < appendedDocumentNode.childNodes.length; i++) {
+      var appendedNode = appendedDocumentNode.childNodes[i];
+      var foundCategory = false;
+      if ('category' == appendedNode.nodeName) {
+        for (var j = 0; !foundCategory && (j < originalDocumentNode.childNodes.length); j++) {
+          var originalNode = originalDocumentNode.childNodes[j];
+          if (('category' == originalNode.nodeName) &&
+            (appendedNode.attributes['name'].nodeValue == originalNode.attributes['name'].nodeValue)) {
+
+            mergeTwoNodes(originalNode, appendedNode);
+            foundCategory = true;
+          }
+        }
+      }
+      if (!foundCategory) {
+        originalDocumentNode.appendChild(appendedNode);
+        i--;
+      }
+    }
+  }
+
+  var appendedXmlDocument = $.parseXML('<xml xmlns="http://www.w3.org/1999/xhtml">' + xml + '</xml>');
+  mergeTwoNodes(Blockly.toolboxXmlDocument.documentElement, appendedXmlDocument.documentElement);
 }
 
 /**
@@ -98,15 +122,21 @@ Blockly.appendToToolbox = function(xml) {
  * @param {string} xml code of the toolbox to append to already existing one.
  */
 Blockly.appendToToolboxCategory = function(categoryName, xml) {
-  // TODO: Implement !!!
-  Blockly.toolboxXmlText += '<category id="' + categoryName + '" name="' + categoryName + '">' + xml + '</category>';
+  if (null != categoryName) {
+    var categoriesList = categoryName.split('/');
+    var xmlText = xml;
+    for (var i = categoriesList.length - 1; i >= 0; i--) {
+      xmlText = '<category name="' + categoriesList[i] + '">' + xmlText + '</category>';
+    }
+    Blockly.appendToToolbox(xmlText);
+  }
 }
 
 /**
  * Return toolbox XML during initialization of the workspace.
  */
 Blockly.getToolboxXmlText = function() {
-  return '<xml xmlns="http://www.w3.org/1999/xhtml">' + Blockly.toolboxXmlText + '</xml>';
+  return Blockly.Xml.domToText(Blockly.toolboxXmlDocument);
 }
 
 /**
