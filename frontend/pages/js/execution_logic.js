@@ -329,11 +329,14 @@ var ExecutionLogicModule = (function () {
                 categories_options += '<option value="' + category_full_path + '">' + category_full_path + '</option>';
               }
               $(this).html('<fieldset>' +
-                '<fieldset><legend>Category</legend><select name="save_dialog_category_sel" id="save_dialog_category_sel">' +
+                '<fieldset><legend>Category</legend><select name="save_dialog_category_sel" id="save_dialog_category_sel" style="width:100%">' +
                 categories_options + '</select>' +
-                '<input type="text" name="save_dialog_category" id="save_dialog_category"></fieldset>' +
-                '<fieldset><legend>Function</legend><select name="save_dialog_function" id="save_dialog_function">' + functions + '</select>' +
+                '<input type="text" name="save_dialog_category" id="save_dialog_category" style="width:100%"></fieldset>' +
+                '<fieldset><legend>Function</legend><select name="save_dialog_function" id="save_dialog_function" style="width:100%">' + functions + '</select>' +
                 '</fieldset></fieldset>');
+              $("select#save_dialog_category_sel").change(function() {
+                $('#save_dialog_category').val($('#save_dialog_category_sel :selected').text()); });
+              $('#save_dialog_category').val($('#save_dialog_category_sel :selected').text());
             }
           }
           else {
@@ -346,7 +349,7 @@ var ExecutionLogicModule = (function () {
           Save: function () {
             var categoryName = $('#save_dialog_category').val();
             if ($.trim(categoryName).length === 0) {
-              categoryName = $('#save_dialog_category_sel :selected').text();;
+              categoryName = $('#save_dialog_category_sel :selected').text();
             }
             var functionName = $('#save_dialog_function :selected').text();
 
