@@ -128,6 +128,41 @@ Blockly.appendToToolboxCategory = function(categoryName, xml) {
     for (var i = categoriesList.length - 1; i >= 0; i--) {
       xmlText = '<category name="' + categoriesList[i] + '">' + xmlText + '</category>';
     }
+
+    var cachedWorkspaceXml = localStorage.getItem("blocks_cache");
+    if ((null != cachedWorkspaceXml)) {
+      cachedWorkspaceXml = $.trim(cachedWorkspaceXml);
+    }
+
+    if ((null == cachedWorkspaceXml) || (0 == cachedWorkspaceXml.length)) {
+      cachedWorkspaceXml = '<xml xmlns="http://www.w3.org/1999/xhtml"></xml>';
+    }
+
+    var xmlDocument = $.parseXML('<xml xmlns="http://www.w3.org/1999/xhtml">' + xmlText + '</xml>');
+    var $xmlDocument = $(xmlDocument);
+    var proceduresList = $('block', $xmlDocument).filter(
+      '[type="procedures_defnoreturn"],[type="procedures_defreturn"]');
+    for (var i = 0; i < proceduresList.length; i++) {
+      var collapsedAttribute = proceduresList[i].attributes['collapsed'];
+      if (null == collapsedAttribute) {
+        proceduresList[i].setAttribute('collapsed', 'true')
+      }
+      var nameSearchResult = $('field[name="NAME"]', proceduresList[i]);
+      if (0 == nameSearchResult.length) {
+        console.log('Could not find name for procedure. Skipping it.')
+      }
+      else {
+        var procedureName = nameSearchResult[0].innerText;
+        if (-1 == cachedWorkspaceXml.indexOf('>' + procedureName + '</field>')) {
+          cachedWorkspaceXml = cachedWorkspaceXml.replace('</xml>', '') + Blockly.Xml.domToText(proceduresList[i]) +
+            '</xml>';
+        }
+      }
+    }
+
+    localStorage.setItem("blocks_cache", cachedWorkspaceXml);
+
+    var xmlText = Blockly.Xml.domToText(xmlDocument.documentElement.firstChild);
     Blockly.appendToToolbox(xmlText);
   }
 }
