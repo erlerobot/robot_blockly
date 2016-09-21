@@ -296,14 +296,14 @@ var ExecutionLogicModule = (function () {
           $(".ui-dialog-titlebar-close", $(this).parent()).hide();
 
           var functions = '';
-          var allProcedures = Blockly.Procedures.allProcedures(workspace);
-          var allProceduresLength = allProcedures.length;
-          if (2 == allProceduresLength) {
-            for (var i = 0; i < allProceduresLength; ++i) {
-              var proceduresCategoryLength = allProcedures[i].length;
-              for (var j = 0; j < proceduresCategoryLength; ++j) {
-                var procedureName = allProcedures[i][j][0];
-                functions += '<option value="' + procedureName + '">' + procedureName + '</option>';
+          var all_procedures = Blockly.Procedures.allProcedures(workspace);
+          var all_procedures_length = all_procedures.length;
+          if (2 == all_procedures_length) {
+            for (var i = 0; i < all_procedures_length; ++i) {
+              var procedures_category_length = all_procedures[i].length;
+              for (var j = 0; j < procedures_category_length; ++j) {
+                var procedure_name = all_procedures[i][j][0];
+                functions += '<option value="' + procedure_name + '">' + procedure_name + '</option>';
               }
             }
             if (0 == functions.length) {
@@ -311,8 +311,8 @@ var ExecutionLogicModule = (function () {
             }
             else {
               categories_options = '';
-              var domDocument = $.parseXML(Blockly.getToolboxXmlText());
-              var $xml = $(domDocument);
+              var dom_document = $.parseXML(Blockly.getToolboxXmlText());
+              var $xml = $(dom_document);
               var leaf_categories = $xml.find('category:not(:has(category))');
               var leaf_categories_length = leaf_categories.length;
               for (var i = 0; i < leaf_categories_length; ++i) {
@@ -333,10 +333,13 @@ var ExecutionLogicModule = (function () {
                 categories_options += '<option value="' + category_full_path + '">' + category_full_path + '</option>';
               }
               $(this).html('<fieldset>' +
-                '<fieldset><legend>Category</legend><select name="save_dialog_category_sel" id="save_dialog_category_sel" style="width:100%">' +
+                '<fieldset><legend>Category</legend><select name="save_dialog_category_sel" ' +
+                'id="save_dialog_category_sel" style="width:100%">' +
                 categories_options + '</select>' +
-                '<input type="text" name="save_dialog_category" id="save_dialog_category" style="width:100%"></fieldset>' +
-                '<fieldset><legend>Function</legend><select name="save_dialog_function" id="save_dialog_function" style="width:100%">' + functions + '</select>' +
+                '<input type="text" name="save_dialog_category" id="save_dialog_category" style="width:100%">' +
+                '</fieldset>' +
+                '<fieldset><legend>Function</legend><select name="save_dialog_function" ' +
+                'id="save_dialog_function" style="width:100%">' + functions + '</select>' +
                 '</fieldset></fieldset>');
               $("select#save_dialog_category_sel").change(function() {
                 $('#save_dialog_category').val($('#save_dialog_category_sel :selected').text()); });
@@ -346,41 +349,41 @@ var ExecutionLogicModule = (function () {
           else {
             $(this).html('Error during dialog initialization. Please read logs for more information.');
             console.log('Number of procedure types should be two (with and without return value). But it is ' +
-              allProceduresLength);
+              all_procedures_length);
           }
         },
         buttons: {
           Save: function () {
-            var categoryName = $('#save_dialog_category').val();
-            if ($.trim(categoryName).length === 0) {
-              categoryName = $('#save_dialog_category_sel :selected').text();
+            var category_name = $('#save_dialog_category').val();
+            if ($.trim(category_name).length === 0) {
+              category_name = $('#save_dialog_category_sel :selected').text();
             }
-            var functionName = $('#save_dialog_function :selected').text();
+            var function_name = $('#save_dialog_function :selected').text();
 
-            var filename = functionName + '.js';
-            var topBlocks = workspace.getTopBlocks();
-            var topBlocksLength = topBlocks.length;
-            var functionBlock = null;
-            for (var i = 0; i < topBlocksLength; i++) {
-              if (topBlocks[i].getProcedureDef) {
-                var procName = topBlocks[i].getProcedureDef();
-                if (Blockly.Names.equals(procName[0], functionName)) {
-                  functionBlock = topBlocks[i];
+            var filename = function_name + '.js';
+            var top_blocks = workspace.getTopBlocks();
+            var top_blocks_length = top_blocks.length;
+            var function_block = null;
+            for (var i = 0; i < top_blocks_bength; i++) {
+              if (top_blocks[i].getProcedureDef) {
+                var procedure_name = top_blocks[i].getProcedureDef();
+                if (Blockly.Names.equals(procedure_name[0], function_name)) {
+                  function_block = top_blocks[i];
                   break;
                 }
               }
             }
-            if (null == functionBlock) {
+            if (null == function_block) {
               console.log('Could not find function block');
               return;
             }
-            var xml = Blockly.Xml.blockToDom(functionBlock);
+            var xml = Blockly.Xml.blockToDom(function_block);
             xml.removeAttribute('id');
             $('[id]', xml).removeAttr('id');
-            var xmlText = Blockly.Xml.domToPrettyText(xml);
-            var javascriptText = 'Blockly.appendToToolboxCategory("' + categoryName + '",`' + xmlText + '`);';
+            var xml_text = Blockly.Xml.domToPrettyText(xml);
+            var javascript_text = 'Blockly.appendToToolboxCategory("' + category_name + '",`' + xml_text + '`);';
 
-            save_text_to_file(filename, javascriptText, 'text/javascript');
+            save_text_to_file(filename, javascript_text, 'text/javascript');
 
             $(this).dialog("close");
             $("#save_function_dialog").remove();
