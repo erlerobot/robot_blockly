@@ -115,7 +115,7 @@ var ExecutionLogicModule = (function () {
   }
 
   function save_text_to_file(filename, xml_text, mime_type) {
-    var blob = new Blob([xml_text], {type: 'text/xml'});
+    var blob = new Blob([xml_text], {type: mime_type});
     if (window.navigator.msSaveOrOpenBlob) {
       window.navigator.msSaveBlob(blob, filename);
     } else {
