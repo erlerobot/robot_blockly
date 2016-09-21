@@ -114,6 +114,21 @@ var ExecutionLogicModule = (function () {
     return (CODE_STATUS.NOT_CONNECTED == current_status);
   }
 
+  function save_text_to_file(filename, xml_text, mime_type) {
+    var blob = new Blob([xml_text], {type: 'text/xml'});
+    if (window.navigator.msSaveOrOpenBlob) {
+      window.navigator.msSaveBlob(blob, filename);
+    } else {
+      var elem = window.document.createElement('a');
+      elem.href = window.URL.createObjectURL(blob);
+      elem.download = filename;
+      document.body.appendChild(elem);
+      elem.click();
+      document.body.removeChild(elem);
+    }
+    console.log("File saved.");
+  }
+
   return {
 
     launch_websockets: function () {
@@ -248,7 +263,8 @@ var ExecutionLogicModule = (function () {
                 var reader = new FileReader();
                 reader.onload = function () {
                   workspace.clear();
-                  var xml = Blockly.Xml.textToDom(this.result);
+                  var importResult = Blockly.importFunctionsToWorkspace(this.result, Blockly.getToolboxXmlText());
+                  var xml = Blockly.Xml.textToDom(importResult.workspaceXml);
                   console.log("Loading workspace from file.");
                   Blockly.Xml.domToWorkspace(xml, workspace);
                 };
@@ -266,21 +282,9 @@ var ExecutionLogicModule = (function () {
     },
 
     save_to_file: function() {
-      var filename = 'blockly_workspace.xml';
       var xml = Blockly.Xml.workspaceToDom(workspace);
       var xml_text = Blockly.Xml.domToPrettyText(xml);
-      var blob = new Blob([xml_text], {type: 'text/xml'});
-      if (window.navigator.msSaveOrOpenBlob) {
-        window.navigator.msSaveBlob(blob, filename);
-      } else {
-        var elem = window.document.createElement('a');
-        elem.href = window.URL.createObjectURL(blob);
-        elem.download = filename;
-        document.body.appendChild(elem);
-        elem.click();
-        document.body.removeChild(elem);
-      }
-      console.log("Workspace saved.");
+      save_text_to_file('blockly_workspace.xml', xml_text, 'text/xml');
     },
 
     save_js_file: function() {
@@ -375,18 +379,8 @@ var ExecutionLogicModule = (function () {
             $('[id]', xml).removeAttr('id');
             var xmlText = Blockly.Xml.domToPrettyText(xml);
             var javascriptText = 'Blockly.appendToToolboxCategory("' + categoryName + '",`' + xmlText + '`);';
-            var blob = new Blob([javascriptText], {type: 'text/javascript'});
-            if (window.navigator.msSaveOrOpenBlob) {
-              window.navigator.msSaveBlob(blob, filename);
-            } else {
-              var elem = window.document.createElement('a');
-              elem.href = window.URL.createObjectURL(blob);
-              elem.download = filename;
-              document.body.appendChild(elem);
-              elem.click();
-              document.body.removeChild(elem);
-            }
-            console.log("Function saved.");
+
+            save_text_to_file(filename, javascriptText, 'text/javascript');
 
             $(this).dialog("close");
             $("#save_function_dialog").remove();

@@ -117,6 +117,55 @@ Blockly.appendToToolbox = function(xml) {
 }
 
 /**
+ * Append missing functions declarations to workspace.
+ * @param {string} workspaceXml XML string of the workspace.
+ * @param {string} functionsXml XML document which contains all functions which need to be imported.
+ * @return {object} it contains two fields with fixed workspace XML with injected functions and collapsed functions XML .
+ */
+Blockly.importFunctionsToWorkspace = function(workspaceXml, functionsXml) {
+
+  if ((null != workspaceXml)) {
+    workspaceXml = $.trim(workspaceXml);
+  }
+
+  if ((null == workspaceXml) || (0 == workspaceXml.length)) {
+    workspaceXml = '<xml xmlns="http://www.w3.org/1999/xhtml"></xml>';
+  }
+
+  var xmlDocument = $.parseXML(functionsXml);
+  var $xmlDocument = $(xmlDocument);
+  var proceduresList = $('block', $xmlDocument).filter(
+    '[type="procedures_defnoreturn"],[type="procedures_defreturn"]');
+  for (var i = 0; i < proceduresList.length; i++) {
+    var collapsedAttribute = proceduresList[i].attributes['collapsed'];
+    if (null == collapsedAttribute) {
+      proceduresList[i].setAttribute('collapsed', 'true')
+    }
+    var nameSearchResult = $('field[name="NAME"]', proceduresList[i]);
+    if (0 == nameSearchResult.length) {
+      console.log('Could not find name for procedure. Skipping it.')
+    }
+    else {
+      var procedureName = nameSearchResult[0].innerText;
+      if (-1 == workspaceXml.indexOf('>' + procedureName + '</field>')) {
+        workspaceXml = workspaceXml.replace('</xml>', '') + Blockly.Xml.domToText(proceduresList[i]) +
+          '</xml>';
+      }
+    }
+  }
+
+  var fixedFunctionXml = '';
+  if (null != xmlDocument.documentElement.firstChild) {
+    fixedFunctionXml = Blockly.Xml.domToText(xmlDocument.documentElement.firstChild);
+  }
+
+  return {
+    workspaceXml: workspaceXml,
+    functionsXml: fixedFunctionXml
+  };
+}
+
+/**
  * Append toolbox xml to category during initialization of the workspace.
  * @param {string} categoryName full name of the category, is separated by / sign.
  * @param {string} xml code of the toolbox to append to already existing one.
@@ -130,40 +179,11 @@ Blockly.appendToToolboxCategory = function(categoryName, xml) {
     }
 
     var cachedWorkspaceXml = localStorage.getItem("blocks_cache");
-    if ((null != cachedWorkspaceXml)) {
-      cachedWorkspaceXml = $.trim(cachedWorkspaceXml);
-    }
+    var importResult = Blockly.importFunctionsToWorkspace(cachedWorkspaceXml,
+      '<xml xmlns="http://www.w3.org/1999/xhtml">' + xmlText + '</xml>');
 
-    if ((null == cachedWorkspaceXml) || (0 == cachedWorkspaceXml.length)) {
-      cachedWorkspaceXml = '<xml xmlns="http://www.w3.org/1999/xhtml"></xml>';
-    }
-
-    var xmlDocument = $.parseXML('<xml xmlns="http://www.w3.org/1999/xhtml">' + xmlText + '</xml>');
-    var $xmlDocument = $(xmlDocument);
-    var proceduresList = $('block', $xmlDocument).filter(
-      '[type="procedures_defnoreturn"],[type="procedures_defreturn"]');
-    for (var i = 0; i < proceduresList.length; i++) {
-      var collapsedAttribute = proceduresList[i].attributes['collapsed'];
-      if (null == collapsedAttribute) {
-        proceduresList[i].setAttribute('collapsed', 'true')
-      }
-      var nameSearchResult = $('field[name="NAME"]', proceduresList[i]);
-      if (0 == nameSearchResult.length) {
-        console.log('Could not find name for procedure. Skipping it.')
-      }
-      else {
-        var procedureName = nameSearchResult[0].innerText;
-        if (-1 == cachedWorkspaceXml.indexOf('>' + procedureName + '</field>')) {
-          cachedWorkspaceXml = cachedWorkspaceXml.replace('</xml>', '') + Blockly.Xml.domToText(proceduresList[i]) +
-            '</xml>';
-        }
-      }
-    }
-
-    localStorage.setItem("blocks_cache", cachedWorkspaceXml);
-
-    var xmlText = Blockly.Xml.domToText(xmlDocument.documentElement.firstChild);
-    Blockly.appendToToolbox(xmlText);
+    localStorage.setItem("blocks_cache", importResult.workspaceXml);
+    Blockly.appendToToolbox(importResult.functionsXml);
   }
 }
 
