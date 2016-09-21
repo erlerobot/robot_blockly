@@ -364,7 +364,7 @@ var ExecutionLogicModule = (function () {
             var top_blocks = workspace.getTopBlocks();
             var top_blocks_length = top_blocks.length;
             var function_block = null;
-            for (var i = 0; i < top_blocks_bength; i++) {
+            for (var i = 0; i < top_blocks_length; i++) {
               if (top_blocks[i].getProcedureDef) {
                 var procedure_name = top_blocks[i].getProcedureDef();
                 if (Blockly.Names.equals(procedure_name[0], function_name)) {
