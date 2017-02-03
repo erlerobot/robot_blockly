@@ -55,5 +55,3 @@ Unless specified, the rest of the code is freed under a GPLv3 License.
 - [Erle-Rover](https://erlerobotics.com/blog/product/erle-rover/) 
 - [Shadow Robot hands](http://www.shadowrobot.com/)
 
-Do you need help getting your robot supported? Launch your questions at http://forum.erlerobotics.com.
-
