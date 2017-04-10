@@ -14,7 +14,7 @@ print("Changing serve path to: " + frontend_path)
 os.chdir(frontend_path)
 
 HOST = socket.gethostname()
-PORT = 80
+PORT = 1036
 address = ("",PORT)
 
 Handler = http.server.SimpleHTTPRequestHandler
