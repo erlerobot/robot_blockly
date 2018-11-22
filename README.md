@@ -8,6 +8,13 @@
 
 ### Installation:
 
+#### Requeriments for Erle-Brain3
+
+```bash
+sudo apt update
+sudo apt install -y git cmake python3 python3-pip python3-yaml
+sudo pip3 install autobahn rospkg
+```
 ```
 mkdir -p ~/blockly_ws/src
 cd ~/blockly_ws/src
@@ -16,6 +23,7 @@ cd robot_blockly/frontend/
 git clone https://github.com/erlerobot/ace-builds.git
 git clone https://github.com/erlerobot/blockly.git
 cd ~/blockly_ws/
+sed -i 's/crab_msgs.msg//g' scripts/robot_blockly_backend.py #Remove spider msgs
 catkin_make_isolated -j2 --pkg robot_blockly --install
 ```
 You can also try 
